@@ -10,7 +10,7 @@ info:
 servers:
   - url: 'http://localhost:3000'
 paths:
-  '/teams/{teamSecretPhrase}':
+  '/game/{teamSecretPhrase}/info':
     parameters:
       - schema:
           type: string
@@ -29,31 +29,77 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TeamInfo'
+                $ref: '#/components/schemas/TeamState'
         '404':
           description: Not Found
       operationId: get-teams-teamSecretPhrase
       description: get list of points of interests
       requestBody: {}
-    post:
-      summary: ''
-      operationId: post-teams-teamSecretPhrase
+  '/game/{teamSecretPhrase}/pois':
+    parameters:
+      - schema:
+          type: string
+        name: teamSecretPhrase
+        in: path
+        required: true
+    get:
+      summary: Your GET endpoint
+      tags: []
       responses:
         '200':
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TeamInfo'
+                $ref: '#/components/schemas/Nodes'
         '404':
           description: Not Found
-      description: Perform operation on node
+      operationId: get-game-teamSecretPhrase-nodes
+      description: get points of interests as nodes and ways
+  '/game/{teamSecretPhrase}/grid':
+    parameters:
+      - schema:
+          type: string
+        name: teamSecretPhrase
+        in: path
+        required: true
+    get:
+      summary: Your GET endpoint
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Grid'
+        '404':
+          description: Not Found
+      operationId: get-game-teamSecretPhrase-tiles
+      description: get addresses of map tiles for background rendering
+  '/game/{teamSecretPhrase}/action':
+    parameters:
+      - schema:
+          type: string
+        name: teamSecretPhrase
+        in: path
+        required: true
+    post:
+      summary: ''
+      operationId: post-game-teamSecretPhrase-operation
+      responses:
+        '200':
+          description: OK
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      description: perform an action upon node
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/NodeOperation'
-        description: ''
+              $ref: '#/components/schemas/NodeAction'
 components:
   schemas:
     Node:
@@ -77,7 +123,7 @@ components:
           description: x pos relative to displayed map
         'y':
           type: number
-          format: double
+          format: float
           example: 0
           minimum: 0
           maximum: 1
@@ -92,11 +138,10 @@ components:
             - team
             - puzzle
           example: way
-        '':
-          type: string
         data:
           type: string
           description: 'additional node type-specific data, e. g. url for puzzle'
+          example: Mastene Redkvicky
       required:
         - id
         - x
@@ -104,15 +149,14 @@ components:
         - type
     Nodes:
       title: Nodes
-      type: object
       description: List of nodes
       x-tags:
         - teams
-      properties:
-        '':
-          type: array
-          items:
-            $ref: '#/components/schemas/Node'
+      type: array
+      items:
+        $ref: '#/components/schemas/Node'
+      x-examples:
+        example-1: {}
     TeamState:
       title: Info
       type: object
@@ -134,43 +178,10 @@ components:
           description: Node ID
       required:
         - position
-    TeamInfo:
-      title: TeamInfo
-      type: object
-      properties:
-        nodes:
-          $ref: '#/components/schemas/Nodes'
-        state:
-          $ref: '#/components/schemas/TeamState'
-        tiles:
-          $ref: '#/components/schemas/Tiles'
-      required:
-        - nodes
-        - state
-    NodeOperation:
-      title: NodeOperation
-      type: object
-      properties:
-        nodeId:
-          type: string
-        operation:
-          type: string
-          enum:
-            - discover
-            - go
-            - requestChat
-            - requestVideo
-          example: go
-      required:
-        - nodeId
-        - operation
-      description: user operation on node
-      x-tags:
-        - teams
-        - client
     Tile:
       title: Tile
       type: object
+      description: 'map tile with relative coordinates (0..# of cols, 0..# of rows)'
       properties:
         url:
           type: string
@@ -183,16 +194,34 @@ components:
           type: integer
           example: 2
           minimum: 0
+        zoom:
+          type: integer
+          minimum: 1
+          maximum: 19
       required:
         - url
         - x
         - 'y'
-      description: 'map tile with relative coordinates (0..# of cols, 0..# of rows)'
-    Tiles:
-      title: Tiles
-      type: array
-      items:
-        $ref: '#/components/schemas/Tile'
+    Grid:
+      title: Grid
+      type: object
+      properties:
+        columns:
+          type: integer
+          minimum: 1
+        rows:
+          type: integer
+          minimum: 1
+        columnWidth:
+          type: integer
+          minimum: 1
+        rowHeight:
+          type: integer
+          minimum: 1
+        tiles:
+          type: array
+          items:
+            $ref: ''
     Way:
       title: Waz
       type: object
@@ -216,3 +245,29 @@ components:
       description: node id
       items:
         $ref: '#/components/schemas/Way'
+    Pois:
+      title: Pois
+      type: object
+      properties:
+        nodes:
+          $ref: '#/components/schemas/Nodes'
+        ways:
+          $ref: '#/components/schemas/Ways'
+    NodeAction:
+      title: NodeAction
+      type: object
+      properties:
+        nodeId:
+          type: string
+        action:
+          type: string
+          enum:
+            - go
+            - discover
+            - requestChat
+            - requestVideo
+          example: go
+      required:
+        - nodeId
+        - action
+      x-examples: {}
