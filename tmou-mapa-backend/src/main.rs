@@ -5,21 +5,40 @@
 use rocket::http::RawStr;
 use rocket::{Request, Data};
 use rocket::fairing::{Fairing, Info, Kind};
+use rocket_contrib::serve::StaticFiles;
+use rocket_contrib::json::Json;
+use rocket::http::Status;
+
+mod api_models;
+mod game_controller;
+use api_models::{NodeAction, Pois, Grid, TeamState};
 
 
-#[get("/game/<secret_phrase>/team")]
-fn teams(secret_phrase: &RawStr) -> String {
-    format!("Team Info for {}", secret_phrase.as_str())
+
+
+#[get("/game/<secret_phrase>/info")]
+fn info(secret_phrase: &RawStr) -> Json<TeamState> {
+    Json(game_controller::get_info(secret_phrase))
 }
 
-#[get("/game/<secret_phrase>/nodes")]
-fn nodes(secret_phrase: &RawStr) -> String {
-    format!("Sending nodes for {}", secret_phrase.as_str())
+#[post("/game/<secret_phrase>/action", data="<action>")]
+fn action(secret_phrase: &RawStr, action: Json<NodeAction>) -> Status {
+    match action.action.as_str()
+    {
+        "go" | "discover"  | "requestChat"  | "requestVideo" => Status::Ok,
+        _ => Status::NotFound
+    }
 }
 
-#[get("/game/<secret_phrase>/tiles")]
-fn tiles(secret_phrase: &RawStr) -> String {
-    format!("Sending tiles for {}", secret_phrase.as_str())
+
+#[get("/game/<secret_phrase>/pois")]
+fn pois(secret_phrase: &RawStr) -> Json<Pois> {
+    Json(game_controller::get_pois(secret_phrase))
+}
+
+#[get("/game/<secret_phrase>/grid")]
+fn grid(secret_phrase: &RawStr) -> Json<Grid> {
+    Json(game_controller::get_grid(secret_phrase))
 }
 
 #[get("/")]
@@ -27,10 +46,10 @@ fn index() -> String {
     format!("Become the legend!")
 }
 
-
 fn main() {
     rocket::ignite()
-        .mount("/", routes![index, teams, nodes, tiles])
+        .mount("/tiles", StaticFiles::from(concat!(env!("CARGO_MANIFEST_DIR"), "/pubfiles/tiles")))
+        .mount("/", routes![index, info, action, pois, grid])
         .attach(PhraseChecker)
         .launch();
 }
