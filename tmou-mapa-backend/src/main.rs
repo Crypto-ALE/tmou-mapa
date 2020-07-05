@@ -9,20 +9,32 @@ use rocket_contrib::serve::StaticFiles;
 use rocket_contrib::json::Json;
 use rocket::http::Status;
 
+mod errors;
 mod api_models;
+mod db_models;
+mod db_controller;
 mod game_controller;
+
+
 use api_models::{NodeAction, Pois, Grid, TeamState};
 
 
 
 
 #[get("/game/<secret_phrase>/info")]
-fn info(secret_phrase: &RawStr) -> Json<TeamState> {
-    Json(game_controller::get_info(secret_phrase))
+fn info(secret_phrase: &RawStr) -> Result<Json<TeamState>, Status>
+{
+    // TODO: more concise way?
+    match game_controller::get_info(secret_phrase)
+    {
+        Ok(info) => Ok(Json(info)),
+        Err(_) => Err(Status::NotFound)
+    }
 }
 
 #[post("/game/<secret_phrase>/action", data="<action>")]
-fn action(secret_phrase: &RawStr, action: Json<NodeAction>) -> Status {
+fn action(secret_phrase: &RawStr, action: Json<NodeAction>) -> Status 
+{
     match action.action.as_str()
     {
         "go" | "discover"  | "requestChat"  | "requestVideo" => Status::Ok,
@@ -32,21 +44,33 @@ fn action(secret_phrase: &RawStr, action: Json<NodeAction>) -> Status {
 
 
 #[get("/game/<secret_phrase>/pois")]
-fn pois(secret_phrase: &RawStr) -> Json<Pois> {
-    Json(game_controller::get_pois(secret_phrase))
+fn pois(secret_phrase: &RawStr) -> Result<Json<Pois>, Status>
+{
+    match game_controller::get_pois(secret_phrase)
+    {
+        Ok(pois) => Ok(Json(pois)),
+        Err(_) => Err(Status::NotFound)
+    }
 }
 
 #[get("/game/<secret_phrase>/grid")]
-fn grid(secret_phrase: &RawStr) -> Json<Grid> {
-    Json(game_controller::get_grid(secret_phrase))
+fn grid(secret_phrase: &RawStr) -> Result<Json<Grid>, Status> 
+{
+    match game_controller::get_grid(secret_phrase)
+    {
+        Ok(grid) => Ok(Json(grid)),
+        Err(_) => Err(Status::NotFound)
+    }
 }
 
 #[get("/")]
-fn index() -> String {
+fn index() -> String 
+{
     format!("Become the legend!")
 }
 
-fn main() {
+fn main() 
+{
     rocket::ignite()
         .mount("/tiles", StaticFiles::from(concat!(env!("CARGO_MANIFEST_DIR"), "/pubfiles/tiles")))
         .mount("/", routes![index, info, action, pois, grid])
@@ -56,7 +80,8 @@ fn main() {
 
 struct PhraseChecker;
 
-impl Fairing for PhraseChecker {
+impl Fairing for PhraseChecker 
+{
     fn  info(&self) -> Info {
         Info {
             name: "Phrase Checker",
