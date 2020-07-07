@@ -12,8 +12,11 @@ use rocket::http::Status;
 mod errors;
 mod api_models;
 mod db_models;
+mod osm_models;
 mod db_controller;
 mod game_controller;
+mod osm_reader;
+mod tests;
 
 
 use api_models::{NodeAction, Pois, Grid, TeamState};

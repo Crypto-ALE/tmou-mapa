@@ -1,3 +1,8 @@
+// TODO: 
+// - implement error::Error
+// - add types of encapsulated errors for better handling
+// - make an automatic response somehow?
+#[derive(Debug)]
 pub struct TmouError
 {
     pub message: String,
@@ -26,6 +31,14 @@ impl From<serde_json::error::Error> for TmouError
     fn from(err:serde_json::error::Error) -> Self
     {
         TmouError::new("deserialization failed", 404)
+    }
+}
+
+impl From<roxmltree::Error> for TmouError
+{
+    fn from(err:roxmltree::Error) -> Self
+    {
+        TmouError::new("Invalid OSM data", 404)
     }
 }
 

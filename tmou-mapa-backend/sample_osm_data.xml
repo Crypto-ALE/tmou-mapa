@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<osm version="0.6" generator="CGImap 0.8.2 (9497 thorn-02.openstreetmap.org)" copyright="OpenStreetMap and contributors" attribution="http://www.openstreetmap.org/copyright" license="http://opendatacommons.org/licenses/odbl/1-0/">
+ <bounds minlat="49.2191540" minlon="16.5989806" maxlat="49.2418554" maxlon="16.6393108"/>
+ 
+ 
+ <node id="1" visible="true" version="6" changeset="24976039" timestamp="2014-08-24T11:19:39Z" user="jirislaby" uid="476713" lat="49.2168281" lon="16.5838022"/>
+ <node id="2" visible="true" version="4" changeset="24976039" timestamp="2014-08-24T11:19:39Z" user="jirislaby" uid="476713" lat="49.2168812" lon="16.5834402"/>
+ <node id="3" visible="true" version="4" changeset="9991761" timestamp="2011-11-29T20:02:37Z" user="hopet" uid="191339" lat="49.2225809" lon="16.5981093"/>
+ <node id="4" visible="true" version="3" changeset="3682818" timestamp="2010-01-22T12:43:52Z" user="chimp" uid="172938" lat="49.2193031" lon="16.6335976">
+  <tag k="addr:conscriptionnumber" v="1288"/>
+  <tag k="addr:housenumber" v="1288/16"/>
+  <tag k="addr:postcode" v="61400"/>
+  <tag k="addr:street" v="Nouzová"/>
+  <tag k="addr:streetnumber" v="16"/>
+  <tag k="source:addr" v="uir_adr"/>
+  <tag k="uir_adr:ADRESA_KOD" v="19253168"/>
+ </node>
+
+ <way id="1000" visible="true" version="21" changeset="66220529" timestamp="2019-01-11T09:36:35Z" user="hanoj" uid="4788">
+  <nd ref="1"/>
+  <nd ref="2"/>
+  <nd ref="3"/>
+  <tag k="highway" v="trunk"/>
+  <tag k="lanes" v="2"/>
+  <tag k="lit" v="yes"/>
+  <tag k="maxspeed" v="80"/>
+  <tag k="name" v="VMO Dobrovského"/>
+  <tag k="oneway" v="yes"/>
+  <tag k="opening_date" v="2012-09-01"/>
+  <tag k="ref" v="42"/>
+  <tag k="source" v="mmb:up"/>
+ </way>
+ <way id="1001" visible="true" version="21" changeset="66220529" timestamp="2019-01-11T09:36:35Z" user="hanoj" uid="4788">
+  <nd ref="2"/>
+  <nd ref="3"/>
+  <nd ref="4"/>
+  <tag k="highway" v="trunk"/>
+  <tag k="lanes" v="2"/>
+  <tag k="lit" v="yes"/>
+  <tag k="maxspeed" v="80"/>
+  <tag k="name" v="VMO Dobrovského"/>
+  <tag k="oneway" v="yes"/>
+  <tag k="opening_date" v="2012-09-01"/>
+  <tag k="ref" v="42"/>
+  <tag k="source" v="mmb:up"/>
+ </way>
+</osm>
