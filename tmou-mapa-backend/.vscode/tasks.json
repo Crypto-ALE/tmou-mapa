@@ -1,26 +1,35 @@
 {
 	"version": "2.0.0",
 	"tasks": [
-		{
-			"type": "cargo",
-			"subcommand": "build",
-			"problemMatcher": [
-				"$rustc"
-			],
-			"group": "build",
-			"label": "Rust: cargo build - tmou-mapa-backend"
-		},
-		{
-			"type": "cargo",
-			"subcommand": "run",
-			"problemMatcher": [
-				"$rustc"
-			],
-			"label": "Rust: cargo run - tmou-mapa-backend",
-			"group": {
-				"kind": "build",
-				"isDefault": true 
-			}
-		}
-	]
+        {
+            "type": "cargo",
+            "subcommand": "build",
+            "problemMatcher": [
+                "$rustc"
+            ],
+            "group": "build",
+            "label": "Rust: cargo build - tmou-mapa-backend"
+        },
+        {
+            "type": "cargo",
+            "subcommand": "run",
+            "problemMatcher": [
+                "$rustc"
+            ],
+            "label": "Rust: cargo run - tmou-mapa-backend",
+            "group": "build"
+        },
+        {
+            "type": "cargo",
+            "subcommand": "test",
+            "problemMatcher": [
+                "$rustc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "label": "Rust: cargo test - tmou-mapa-backend"
+        }
+    ]
 }
