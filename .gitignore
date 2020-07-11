@@ -1,2 +1,4 @@
 **/target
 tmou-mapa-backend/memory_db.json
+tmou-mapa-frontend/node_modules/**
+tmou-mapa-frontend/dist/**
