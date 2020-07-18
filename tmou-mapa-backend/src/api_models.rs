@@ -5,8 +5,7 @@ use serde::{Serialize, Deserialize};
 #[derive(Serialize, Deserialize)]
 pub struct NodeAction
 {
-   pub nodeId: String,
-   pub action: String
+   pub nodeId: String
 }
 
 #[derive(Serialize, Deserialize)]
@@ -19,6 +18,12 @@ pub struct Node
    pub data: String
 }
 
+#[derive(Serialize, Deserialize)]
+pub struct NodeContents
+{
+   pub r#type: String,
+   pub data: String
+}
 
 #[derive(Serialize, Deserialize)]
 pub struct Way

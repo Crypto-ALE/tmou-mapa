@@ -34,3 +34,10 @@ pub struct Team
     pub position: String,
 }
 
+#[derive(Serialize, Deserialize, Clone, Default)]
+pub struct NodeContents 
+{
+    pub r#type: String,
+    pub data: String,
+}
+
