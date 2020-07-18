@@ -51,5 +51,14 @@ impl From<TmouError> for rocket::http::Status
     }
 }
 
+impl From<TmouError> for rocket::http::Status
+{
+    fn from(err:TmouError) -> Self
+    {
+        // wtf, how to get String into the rocket's Status::reason?
+        rocket::http::Status::new(err.response, "Unknown error")
+    }
+}
+
 
 pub type TmouResult<T> = Result<T, TmouError>;
