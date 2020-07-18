@@ -68,3 +68,10 @@ pub struct TeamState
    pub timeBehind: String,
    pub position: String
 }
+
+#[derive(Serialize, Deserialize)]
+pub struct TeamInfo
+{
+    pub state: TeamState,
+    pub pois: Pois
+}
