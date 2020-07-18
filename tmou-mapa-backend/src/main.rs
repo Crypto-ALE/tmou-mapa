@@ -7,6 +7,7 @@ use rocket::{Request, Data};
 use rocket::fairing::{Fairing, Info, Kind};
 use rocket_contrib::serve::StaticFiles;
 use rocket_contrib::json::Json;
+use rocket_contrib::templates::Template;
 use rocket::http::Status;
 
 mod errors;
@@ -73,6 +74,15 @@ fn grid(secret_phrase: &RawStr) -> Result<Json<Grid>, Status>
     }
 }
 
+
+#[get("/game/<secret_phrase>")]
+fn team_index(secret_phrase: &RawStr) -> Template 
+{
+    let context = std::collections::HashMap::<String,String>::new();
+    Template::render("index", context)
+}
+
+
 #[get("/")]
 fn index() -> String 
 {
@@ -82,9 +92,10 @@ fn index() -> String
 fn main() 
 {
     rocket::ignite()
-        .mount("/tiles", StaticFiles::from(concat!(env!("CARGO_MANIFEST_DIR"), "/pubfiles/tiles")))
-        .mount("/", routes![index, info, action, pois, grid])
+        .mount("/static", StaticFiles::from(concat!(env!("CARGO_MANIFEST_DIR"), "/static")))
+        .mount("/", routes![index, info, action, pois, grid, team_index])
         .attach(PhraseChecker)
+        .attach(Template::fairing())
         .launch();
 }
 
