@@ -16,6 +16,7 @@ mod osm_models;
 mod db_controller;
 mod game_controller;
 mod osm_reader;
+mod osm_logic;
 mod tests;
 
 
@@ -40,7 +41,8 @@ fn action(secret_phrase: &RawStr, action: Json<NodeAction>) -> Status
 {
     match action.action.as_str()
     {
-        "go" | "discover"  | "requestChat"  | "requestVideo" => Status::Ok,
+        "go" => {game_controller::go_to_node(secret_phrase, &action.nodeId); Status::Ok} // check movement! error handling!
+        "discover"  | "requestChat"  | "requestVideo" => Status::Ok,
         _ => Status::NotFound
     }
 }

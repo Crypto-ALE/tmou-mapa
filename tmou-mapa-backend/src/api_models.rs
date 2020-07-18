@@ -22,9 +22,8 @@ pub struct Node
 #[derive(Serialize, Deserialize)]
 pub struct Way
 {
-   pub nodes: Vec<String>,
-   pub name: String,
-   pub closed: bool
+    pub id: String,
+    pub nodes: Vec<String>,
 }
 
 #[derive(Serialize, Deserialize)]

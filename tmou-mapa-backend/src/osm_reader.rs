@@ -4,32 +4,42 @@ use std::fs::read_to_string;
 use std::collections::HashMap;
 
 
-pub fn read_osm(path: &str) -> TmouResult<Osm>
+fn get_osm_element<'a>(doc:&'a roxmltree::Document)->TmouResult<roxmltree::Node<'a,'a>>
+{
+    doc.root().first_child().ok_or(TmouError{message:"OSM data do not contain <osm>".to_string(), response:404})
+}
+
+pub fn read_osm_from_file(path: &str) -> TmouResult<Osm>
 {
     let xml = read_to_string(path)?;
+    read_osm_from_string(&xml)
+}
+
+pub fn read_osm_from_string(xml: &str) -> TmouResult<Osm>
+{
     let doc = roxmltree::Document::parse(&xml)?;
     let mut osm = Osm{nodes:HashMap::new(), ways:HashMap::new()};
-    for n in doc.root().first_child().unwrap().children()
+    for el in get_osm_element(&doc)?.children()
     {
-        match n.tag_name().name()
+        match el.tag_name().name()
         {
             "node" => 
             {
-                let on = read_node(&n);
+                let on = read_node(&el);
                 match on 
                 {
                     Some(n) => { osm.nodes.insert(n.0, n.1); ()},
-                    None => ()
+                    None => { println!("Malformed node: {:?}", el); ()}
 
                 }
             },
             "way" => 
             {
-                let on = read_way(&n);
+                let on = read_way(&el);
                 match on 
                 {
                     Some(n) => { osm.ways.insert(n.0, n.1); ()},
-                    None => ()
+                    None => { println!("Malformed node: {:?}", el); () }
 
                 }
            },
@@ -52,6 +62,10 @@ fn read_node(n: &roxmltree::Node) -> Option<(String, Node)>
 fn read_way(n: &roxmltree::Node) -> Option<(String, Way)>
 {
     let id = n.attribute("id")?;
-    let nodes = n.children().filter(|a| a.tag_name().name() == "nd" && a.has_attribute("ref")).map(|a| a.attribute("ref").unwrap().to_string()).collect();
+    let nodes = n
+        .children()
+        .filter(|a| a.tag_name().name() == "nd" && a.has_attribute("ref"))
+        .map(|a| a.attribute("ref")
+        .unwrap().to_string()).collect();
     Some((id.to_string(), Way{id:id.to_string(), nodes}))
 }

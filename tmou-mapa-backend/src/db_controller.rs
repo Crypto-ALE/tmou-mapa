@@ -18,7 +18,7 @@ pub trait DbControl
 {
     fn new() -> Self;
     fn init(&mut self, conn: &str) -> TmouResult<()>;
-    fn get_team(&self, phrase: &str) -> Option<&Team>;
+    fn get_team(&self, phrase: &str) -> Option<Team>;
     fn put_team(&mut self, team: Team) -> TmouResult<()>;
     fn get_pois_for_team(&self, phrase: &str) -> Option<Vec<Poi>>;
     fn put_pois_for_team(&mut self, pois:Vec<Poi>) -> ();
@@ -34,13 +34,6 @@ pub struct MemoryDbControl
 
 impl MemoryDbControl
 {
-    fn save(&mut self)->TmouResult<()>
-    {
-        let mut file = File::create(&self.filename)?;
-        let serialized = serde_json::to_string(self).unwrap();
-        file.write_all(&serialized.as_bytes())?;
-        Ok(())
-    }
 
     fn load(&mut self)->TmouResult<()>
     {
@@ -62,6 +55,15 @@ impl MemoryDbControl
             _ => Ok(()) // swallow
         }
     }
+
+    fn save(&self)->TmouResult<()>
+    {
+        let mut file = File::create(&self.filename)?;
+        let serialized = serde_json::to_string(self).unwrap();
+        file.write_all(&serialized.as_bytes())?;
+        Ok(())
+    }
+
 }
 
 impl DbControl for MemoryDbControl
@@ -78,9 +80,10 @@ impl DbControl for MemoryDbControl
         Ok(())
     }
 
-    fn get_team(&self, phrase: &str) -> Option<&Team>
+    fn get_team(&self, phrase: &str) -> Option<Team>
     {
-        self.teams.get(phrase)
+        let t = self.teams.get(phrase)?;
+        Some(t.clone())
     }
 
     fn put_team(&mut self, team: Team) -> TmouResult<()>

@@ -6,12 +6,12 @@
 pub struct TmouError
 {
     pub message: String,
-    pub response: i32
+    pub response: u16
 }
 
 impl TmouError 
 {
-    fn new(msg: &str, resp: i32) -> TmouError 
+    fn new(msg: &str, resp: u16) -> TmouError 
     {
         TmouError{message: msg.to_string(), response: resp}
     }
@@ -39,6 +39,15 @@ impl From<roxmltree::Error> for TmouError
     fn from(err:roxmltree::Error) -> Self
     {
         TmouError::new("Invalid OSM data", 404)
+    }
+}
+
+impl From<TmouError> for rocket::http::Status
+{
+    fn from(err:TmouError) -> Self
+    {
+        // wtf, how to get String into the rocket's Status::reason?
+        rocket::http::Status::new(err.response, "Unknown error")
     }
 }
 
