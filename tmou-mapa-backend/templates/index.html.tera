@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>TMOU</title>
-        <link rel="stylesheet" href="tmou.css">
+        <link rel="stylesheet" href="/static/tmou.css">
         <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css"
               integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
               crossorigin=""/>
@@ -21,7 +21,7 @@
         <button>Hledat šifru</button>
     </div>
 </div>
-<script src="/static/x.js"></script>
+<script src="/static/index.js"></script>
     <div class="overlay"> </div>
 </body>
 </html>
