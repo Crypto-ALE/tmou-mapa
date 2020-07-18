@@ -21,13 +21,10 @@ mod osm_logic;
 mod tests;
 mod map_contents;
 
-use api_models::{NodeAction, Pois, Grid, TeamState, NodeContents};
-
-
-
+use api_models::{NodeAction, Pois, Grid, NodeContents, TeamInfo};
 
 #[get("/game/<secret_phrase>/info")]
-fn info(secret_phrase: &RawStr) -> Result<Json<TeamState>, Status>
+fn info(secret_phrase: &RawStr) -> Result<Json<TeamInfo>, Status>
 {
     // TODO: more concise way?
     match game_controller::get_info(secret_phrase)
@@ -38,26 +35,24 @@ fn info(secret_phrase: &RawStr) -> Result<Json<TeamState>, Status>
 }
 
 #[post("/game/<secret_phrase>", data="<action>")]
-fn go(secret_phrase: &RawStr, action: Json<NodeAction>) -> Status 
+fn go(secret_phrase: &RawStr, action: Json<NodeAction>) -> Result<Json<TeamInfo>,Status>
 {
-    match game_controller::go_to_node(secret_phrase, &action.nodeId)
-    {
-        Ok(_) => Status::Ok,
-        Err(r) => rocket::http::Status::from(r)
-    }
+    game_controller::go_to_node(secret_phrase, &action.nodeId)?;
+    info(secret_phrase)
 }
 
 #[get("/game/<secret_phrase>/discover")]
 fn discover(secret_phrase: &RawStr) -> Result<Json<NodeContents>,Status> 
 {
-    let info = game_controller::get_info(secret_phrase)?;
-    match game_controller::discover_node(secret_phrase, &info.position)
+    let state = game_controller::get_team_state(secret_phrase)?;
+    match game_controller::discover_node(secret_phrase, &state.position)
     {
         Ok(nc) => Ok(Json(nc)),
         Err(_) => Err(Status::NotFound)
     }
 }
 
+/*
 #[get("/game/<secret_phrase>/pois")]
 fn pois(secret_phrase: &RawStr) -> Result<Json<Pois>, Status>
 {
@@ -78,11 +73,14 @@ fn grid(secret_phrase: &RawStr) -> Result<Json<Grid>, Status>
     }
 }
 
+*/
+
 #[allow(unused)]
-#[get("/game/<secret_phrase>")]
+#[get("/<secret_phrase>")]
 fn team_index(secret_phrase: &RawStr) -> Template 
 {
-    let context = std::collections::HashMap::<String,String>::new();
+    let mut context = std::collections::HashMap::<String,String>::new();
+    context.insert("secretPhrase".to_string(), secret_phrase.to_string());
     Template::render("index", context)
 }
 
@@ -97,7 +95,7 @@ fn main()
 {
     rocket::ignite()
         .mount("/static", StaticFiles::from(concat!(env!("CARGO_MANIFEST_DIR"), "/static")))
-        .mount("/", routes![index, info, go, discover, pois, grid, team_index])
+        .mount("/", routes![index, info, go, discover, /*pois, grid, */ team_index])
         .attach(PhraseChecker)
         .attach(Template::fairing())
         .launch();

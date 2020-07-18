@@ -22,7 +22,7 @@ const CENTER_Y: i32 = 44885;
 pub fn get_pois(phrase: &RawStr) -> TmouResult<api::Pois>
 {
     let osm = get_osm()?;
-    let team = get_info(&phrase)?;
+    let team = get_team_state(&phrase)?;
     let osm_ways= get_reachable_ways_for_node_id(&osm, team.position.to_string());
     let osm_nodes = get_nodes_in_ways(&osm, &osm_ways);
     let nodes = osm_nodes.iter().map(|n| node_osm_to_api(n)).collect();
@@ -52,7 +52,17 @@ pub fn get_grid(phrase: &RawStr) -> TmouResult<api::Grid>
         })
 }
 
-pub fn get_info(phrase: &RawStr) -> TmouResult<api::TeamState>
+pub fn get_info(phrase: &RawStr) -> TmouResult<api::TeamInfo>
+{
+    let state = get_team_state(phrase)?;
+    let pois = get_pois(phrase)?;
+
+    Ok(api::TeamInfo{state: state, pois: pois})
+}
+
+
+
+pub fn get_team_state(phrase: &RawStr) -> TmouResult<api::TeamState>
 {
     let mut ctrl = get_memory_db_control()?;
     let t = get_team_or_default(& mut ctrl, phrase)?;
