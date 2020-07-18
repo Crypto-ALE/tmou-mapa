@@ -150,14 +150,14 @@ fn node_osm_to_api(n: &osm::Node)->api::Node
 fn get_memory_db_control() -> TmouResult<impl DbControl>
 {
     let mut ctrl = MemoryDbControl::new();
-    ctrl.init(concat!(env!("CARGO_MANIFEST_DIR"), r"\memory_db.json"))?;
+    ctrl.init(concat!(env!("CARGO_MANIFEST_DIR"), r"/memory_db.json"))?;
     Ok(ctrl)
 }
 
 fn get_osm() -> TmouResult<osm::Osm>
 {
     println!("reading OSM File");
-    let fname = concat!(env!("CARGO_MANIFEST_DIR"), r"\pubfiles\tiles\osmdata.xml");
+    let fname = concat!(env!("CARGO_MANIFEST_DIR"), r"/pubfiles/tiles/osmdata.xml");
     println!("OSM Filename: {}", fname);
     read_osm_from_file(fname)
 }
