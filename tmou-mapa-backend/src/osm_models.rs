@@ -4,7 +4,8 @@ pub struct Node
 {
    pub id: String,
    pub lat: f32,
-   pub lon: f32
+   pub lon: f32,
+   pub r#type: String
 }
 
 pub struct Way

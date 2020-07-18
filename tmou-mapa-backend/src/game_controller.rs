@@ -148,7 +148,7 @@ fn node_osm_to_api(n: &osm::Node)->api::Node
         id: n.id.clone(), 
         y:n.lat.clone(),
         x:n.lon.clone(),
-        r#type:"Node".to_string(),
+        r#type:n.r#type.clone(),
         data: "<none>".to_string()
     }
 }

@@ -21,7 +21,7 @@ mod osm_logic;
 mod tests;
 mod map_contents;
 
-use api_models::{NodeAction, Pois, Grid, NodeContents, TeamInfo};
+use api_models::{NodeAction, /*Pois, Grid, */NodeContents, TeamInfo};
 
 #[get("/game/<secret_phrase>")]
 fn info(secret_phrase: &RawStr) -> Result<Json<TeamInfo>, Status>
