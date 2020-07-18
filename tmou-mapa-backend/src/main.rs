@@ -23,7 +23,7 @@ mod map_contents;
 
 use api_models::{NodeAction, Pois, Grid, NodeContents, TeamInfo};
 
-#[get("/game/<secret_phrase>/info")]
+#[get("/game/<secret_phrase>")]
 fn info(secret_phrase: &RawStr) -> Result<Json<TeamInfo>, Status>
 {
     // TODO: more concise way?
@@ -81,7 +81,7 @@ fn team_index(secret_phrase: &RawStr) -> Template
 {
     let mut context = std::collections::HashMap::<String,String>::new();
     context.insert("secretPhrase".to_string(), secret_phrase.to_string());
-    Template::render("index", context)
+    Template::render("index ", context)
 }
 
 
