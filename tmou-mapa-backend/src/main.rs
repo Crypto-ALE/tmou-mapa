@@ -81,7 +81,7 @@ fn team_index(secret_phrase: &RawStr) -> Template
 {
     let mut context = std::collections::HashMap::<String,String>::new();
     context.insert("secretPhrase".to_string(), secret_phrase.to_string());
-    Template::render("index ", context)
+    Template::render("index", context)
 }
 
 
