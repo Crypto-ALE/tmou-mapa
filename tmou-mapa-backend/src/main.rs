@@ -19,9 +19,9 @@ mod game_controller;
 mod osm_reader;
 mod osm_logic;
 mod tests;
+mod map_contents;
 
-
-use api_models::{NodeAction, Pois, Grid, TeamState};
+use api_models::{NodeAction, Pois, Grid, TeamState, NodeContents};
 
 
 
@@ -37,22 +37,26 @@ fn info(secret_phrase: &RawStr) -> Result<Json<TeamState>, Status>
     }
 }
 
-#[post("/game/<secret_phrase>/action", data="<action>")]
-fn action(secret_phrase: &RawStr, action: Json<NodeAction>) -> Status 
+#[post("/game/<secret_phrase>", data="<action>")]
+fn go(secret_phrase: &RawStr, action: Json<NodeAction>) -> Status 
 {
-    match action.action.as_str()
+    match game_controller::go_to_node(secret_phrase, &action.nodeId)
     {
-        "go" => 
-          match game_controller::go_to_node(secret_phrase, &action.nodeId)
-          {
-              Ok(_) => Status::Ok,
-              Err(r) => rocket::http::Status::from(r)
-          }, // check movement! error handling!
-        "discover"  | "requestChat"  | "requestVideo" => Status::Ok,
-        _ => Status::NotFound
+        Ok(_) => Status::Ok,
+        Err(r) => rocket::http::Status::from(r)
     }
 }
 
+#[get("/game/<secret_phrase>/discover")]
+fn discover(secret_phrase: &RawStr) -> Result<Json<NodeContents>,Status> 
+{
+    let info = game_controller::get_info(secret_phrase)?;
+    match game_controller::discover_node(secret_phrase, &info.position)
+    {
+        Ok(nc) => Ok(Json(nc)),
+        Err(_) => Err(Status::NotFound)
+    }
+}
 
 #[get("/game/<secret_phrase>/pois")]
 fn pois(secret_phrase: &RawStr) -> Result<Json<Pois>, Status>
@@ -74,7 +78,7 @@ fn grid(secret_phrase: &RawStr) -> Result<Json<Grid>, Status>
     }
 }
 
-
+#[allow(unused)]
 #[get("/game/<secret_phrase>")]
 fn team_index(secret_phrase: &RawStr) -> Template 
 {
@@ -93,7 +97,7 @@ fn main()
 {
     rocket::ignite()
         .mount("/static", StaticFiles::from(concat!(env!("CARGO_MANIFEST_DIR"), "/static")))
-        .mount("/", routes![index, info, action, pois, grid, team_index])
+        .mount("/", routes![index, info, go, discover, pois, grid, team_index])
         .attach(PhraseChecker)
         .attach(Template::fairing())
         .launch();

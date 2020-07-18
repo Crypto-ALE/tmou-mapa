@@ -8,6 +8,7 @@ use super::osm_models as osm;
 use super::osm_reader::read_osm_from_file;
 use super::osm_logic::*;
 use super::errors::*;
+use super::map_contents::*;
 
 const FILLOVA_X_BROZIKOVA_NODE_ID: &str = "3750367566";
 const ZOOM: i32 = 17;
@@ -55,7 +56,7 @@ pub fn get_info(phrase: &RawStr) -> TmouResult<api::TeamState>
 {
     let mut ctrl = get_memory_db_control()?;
     let t = get_team_or_default(& mut ctrl, phrase)?;
-    Ok(db_to_api(&t))
+    Ok(team_db_to_api(&t))
 }
 
 pub fn go_to_node(phrase: &RawStr, node_id: &String) -> TmouResult<()>
@@ -64,6 +65,13 @@ pub fn go_to_node(phrase: &RawStr, node_id: &String) -> TmouResult<()>
     let mut t = get_team_or_default(& mut ctrl, phrase)?;
     t.position = node_id.to_string(); // CHECK!!!
     ctrl.put_team(t)
+}
+
+#[allow(unused)]
+pub fn discover_node(phrase: &RawStr, node_id: &String) -> TmouResult<api::NodeContents>
+{
+    let nc = get_contents_of_node(node_id)?;
+    Ok(node_contents_db_to_api(&nc))
 }
 
 ////////////////////////////////////////////////////////////////////
@@ -95,7 +103,7 @@ fn get_default_team(phrase: &str) -> db::Team
     }
 }
 
-fn db_to_api(t: &db::Team)->api::TeamState
+fn team_db_to_api(t: &db::Team)->api::TeamState
 {
     api::TeamState{
         name: t.name.clone(), 
@@ -103,6 +111,14 @@ fn db_to_api(t: &db::Team)->api::TeamState
         ranking: 2, 
         leader:"Bazinga".to_string(), 
         timeBehind:"00:22:00".to_string() 
+    }
+}
+
+fn node_contents_db_to_api(nc: &db::NodeContents)->api::NodeContents
+{
+    api::NodeContents{
+        r#type: nc.r#type.clone(), 
+        data: nc.data.clone()
     }
 }
 
