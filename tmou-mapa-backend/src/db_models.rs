@@ -1,6 +1,5 @@
 
 use serde::{Serialize, Deserialize};
-use std::collections::{HashSet, HashMap};
 
 
 #[derive(Serialize, Deserialize)]
@@ -17,14 +16,14 @@ pub struct Way
 {
     pub name: String,
     pub closed: bool,
-    pub nodes: HashSet<String>
+    pub nodes: Vec<String>
 }
 
 #[derive(Serialize, Deserialize)]
 pub struct Poi
 {
-    pub nodes: HashMap<String, Node>,
-    pub ways: HashMap<String, Way>
+    pub nodes: Vec<Node>,
+    pub ways: Vec<Way>
 }
 
 #[derive(Serialize, Deserialize, Clone, Default)]

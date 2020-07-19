@@ -30,7 +30,6 @@ pub fn read_osm_from_string(xml: &str) -> TmouResult<Osm>
                 {
                     Some(n) => { osm.nodes.insert(n.0, n.1); ()},
                     None => { println!("Malformed node: {:?}", el); ()}
-
                 }
             },
             "way" => 
@@ -40,13 +39,52 @@ pub fn read_osm_from_string(xml: &str) -> TmouResult<Osm>
                 {
                     Some(n) => { osm.ways.insert(n.0, n.1); ()},
                     None => { println!("Malformed node: {:?}", el); () }
-
                 }
            },
             _ => ()
+        }
+    }
+    add_node_types(& mut osm);
+    Ok(osm)
+}
+
+fn add_node_types(osm:& mut Osm)
+{
+    let node_iter = osm.ways.iter().flat_map(|(_,w)| &w.nodes);
+    let mut nodes = node_iter.map(|n| n.clone()).collect::<Vec<String>>();
+    nodes.sort();
+    let mut m = HashMap::new();
+    let mut last_n= "".to_string();
+    let mut last_count = 0;
+    for n in nodes
+    {
+        if &n == &last_n
+        {
+            last_count = last_count + 1;
+        }
+        else
+        {
+            if &last_n != &"".to_string()
+            {
+                m.insert(last_n.clone(), last_count);
+            }
+            last_count = 1;
+            last_n = n;
+        }
+    }
+    if last_count != 0
+    {
+        m.insert(last_n, last_count);
+    }
+    for (_, mut n) in & mut osm.nodes
+    {
+        n.r#type = match m.get(&n.id)
+        {
+            Some(cnt) if cnt > &1 => "junction".to_string(),
+            _ => "ordinary".to_string()
         };
     }
-    Ok(osm)
+
 }
 
 
@@ -56,7 +94,7 @@ fn read_node(n: &roxmltree::Node) -> Option<(String, Node)>
     let lat = n.attribute("lat").and_then(|l| l.parse::<f32>().ok())?;
     let lon = n.attribute("lon").and_then(|l| l.parse::<f32>().ok())?;
     Some((id.to_string(), 
-      Node{id:id.to_string(), lat, lon}))
+      Node{id:id.to_string(), lat, lon, r#type:"ordinary".to_string()}))
 }
 
 fn read_way(n: &roxmltree::Node) -> Option<(String, Way)>
