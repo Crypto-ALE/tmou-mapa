@@ -1,36 +1,48 @@
+import {LatLngLiteral} from "leaflet";
 
-const nodes = [];
-const ways = [[]];
-
-export function getNodesAndWays() {
-  if (nodes.length === 0) {
-  const Connect = new XMLHttpRequest();
-  Connect.open("GET", "map.osm", false);
-  Connect.setRequestHeader("Content-Type", "text/xml");
-  Connect.send(null);
-  const txt = Connect.responseXML;
-  // @ts-ignore
-  for (const way: Element of txt.firstChild.getElementsByTagName('way')) {
-    for (const tag of way.getElementsByTagName('tag')) {
-      if (tag.getAttribute('k') === 'highway' && tag.getAttribute('v') === 'footway') {
-        for (const nd of way.getElementsByTagName('nd')) {
-            const refId = nd.getAttribute('ref');
-            const node = txt.getElementById(refId);
-            const nodeCoords = [node.getAttribute('lat'), node.getAttribute('lon')];
-            nodes.push(nodeCoords);
-            ways[ways.length - 1].push(nodeCoords);
-        }
-      }
-    }
-    ways.push([]);
-  }
+interface Info {
+  position: string;
+  ranking: number;
 }
 
-  return {nodes, ways};
+interface TeamState {
+  nodes: Map<string, LatLngLiteral>;
+  ways: LatLngLiteral[][];
+  state: Info;
 }
 
+export async function getNodesAndWays(secretPhrase: string): Promise<TeamState> {
+  const res = await fetch(`/game/${secretPhrase}`);
 
-export function getCurrentNode() {
-  const index = Math.random() * nodes.length;
-  return nodes[Math.floor(index)];
+  return parseJson(await res.json());
+}
+
+export async function updateNodesAndWays(secretPhrase: string, nodeId: string): Promise<TeamState> {
+  const res = await fetch(`/game/${secretPhrase}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json;charset=utf-8'
+      },
+      body: JSON.stringify({nodeId})
+    });
+
+    return parseJson(await res.json());
+}
+
+export async function discover(secretPhrase: string) {
+  const res = await fetch(`/game/${secretPhrase}/discover`);
+
+  return (await res.json());
+}
+
+function parseJson({pois, state}): TeamState {
+  console.log(state);
+  const nodes: Map<string, LatLngLiteral> = new Map(
+      pois.nodes
+          // .filter((node) => node.type === 'junction')
+          .map((node) => [node.id, {lat: node.y, lng: node.x}])
+  );
+  const ways = pois.ways.map((way) => way.nodes.map(nodeId => nodes.get(nodeId)));
+
+  return {nodes, ways, state};
 }
