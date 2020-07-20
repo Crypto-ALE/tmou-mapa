@@ -30,6 +30,8 @@ async function run() {
 
   mapInstance.setView(currentNodeCoords, 17);
   document.getElementById('ranking').textContent = state.ranking.toString(10);
+  document.getElementById('pos').textContent = currentNodeCoords.toString();
+  document.getElementById('nodeId').textContent = state.position;
   drawNodesAndWays(nodes, ways);
 
   function drawNodesAndWays(nodes, ways) {
@@ -59,6 +61,8 @@ async function run() {
     mapInstance.setView(node.getLatLng(), mapInstance.getZoom());
     currentNodeCoords = node.getLatLng();
     document.getElementById('pos').textContent = node.getLatLng().toString();
+    // @ts-ignore
+    document.getElementById('nodeId').textContent = node.getId();
     const {nodes, ways} = await updateNodesAndWays(secretPhase, nodeId);
     drawNodesAndWays(nodes, ways);
   }

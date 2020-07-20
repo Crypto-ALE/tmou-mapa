@@ -1,0 +1,36 @@
+body {
+    background: black;
+    color: whitesmoke;
+}
+
+.container {
+    display: grid;
+    grid-template-columns: 7fr 3fr;
+    grid-template-rows: 1fr;
+    grid-column-gap: 1vw;
+}
+
+.menu {
+    /*max-width: 20vw;*/
+    /*max-height: 90vh;*/
+    display: grid;
+    grid-template-rows: 1fr 1fr 1fr 1fr;
+}
+
+#map {
+    height: 98vh;
+    /*width: 70vw;*/
+}
+
+/*.overlay {*/
+/*    position: absolute;*/
+/*    width: 90vw;*/
+/*    height: 90vh;*/
+/*    transition: 2s ease;*/
+/*    top: 2.5vh;*/
+/*    left: 2.5vw;*/
+/*    background: grey;*/
+/*    z-index: 1000;*/
+/*    opacity: 90%;*/
+/*}*/
+
