@@ -38,7 +38,7 @@ pub fn read_osm_from_string(xml: &str) -> TmouResult<Osm>
                 match on 
                 {
                     Some(n) => { osm.ways.insert(n.0, n.1); ()},
-                    None => { println!("Malformed node: {:?}", el); () }
+                    None => { /* no log, some ways can be ignored */ () }
                 }
            },
             _ => ()
@@ -81,10 +81,11 @@ fn add_node_types(osm:& mut Osm)
         n.r#type = match m.get(&n.id)
         {
             Some(cnt) if cnt > &1 => "junction".to_string(),
-            _ => "ordinary".to_string()
+            Some(cnt) if cnt == &1  => "ordinary".to_string(),
+            _ => "pruned".to_string()
         };
     }
-
+    osm.nodes.retain(|_,n| n.r#type != "pruned".to_string());
 }
 
 
@@ -100,6 +101,14 @@ fn read_node(n: &roxmltree::Node) -> Option<(String, Node)>
 fn read_way(n: &roxmltree::Node) -> Option<(String, Way)>
 {
     let id = n.attribute("id")?;
+    if !n.children().any(|a| 
+                a.tag_name().name() == "tag" && 
+                a.has_attribute("k") && 
+                a.attribute("k").unwrap().to_string()=="highway")
+    {
+        return None;
+    }
+    
     let nodes = n
         .children()
         .filter(|a| a.tag_name().name() == "nd" && a.has_attribute("ref"))
