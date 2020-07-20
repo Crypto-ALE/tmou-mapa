@@ -11,14 +11,19 @@
 <!--            integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew=="-->
 <!--            crossorigin=""></script>-->
 </head>
-<body>
+<body data-secretPhrase="{{ secretPhrase }}">
 <div class="container">
     <div id="map"></div>
     <div class="menu" id="menu">
-        <div>Aktuální pozice: <span id="pos">xxx</span></div>
-        <div>Aktuální stanoviště: 0</div>
+        <div>Aktuální pozice:
+            <ul>
+                <li>LatLong: <span id="pos"><i>Loading</i></span></li>
+                <li>NodeId: <span id="nodeId"><i>Loading</i></span></li>
+            </ul>
+        </div>
+        <div>Aktuální stanoviště: <span id="ranking"></span></div>
         <div>Akce</div>
-        <button>Hledat šifru</button>
+        <button id="discover">Hledat šifru</button>
     </div>
 </div>
 <script src="/static/index.js"></script>
