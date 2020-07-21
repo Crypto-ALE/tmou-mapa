@@ -10,6 +10,7 @@ use super::osm_logic::*;
 use super::errors::*;
 use super::map_contents::*;
 
+
 const FILLOVA_X_BROZIKOVA_NODE_ID: &str = "3750367566";
 const ZOOM: i32 = 17;
 const CENTER_X: i32 = 71586;
@@ -21,7 +22,7 @@ const CENTER_Y: i32 = 44885;
 
 pub fn get_pois(phrase: &RawStr) -> TmouResult<api::Pois>
 {
-    let osm = get_osm()?;
+    let osm = get_osm();
     let team = get_team_state(&phrase)?;
     let osm_ways= get_reachable_ways_for_node_id(&osm, team.position.to_string());
     let osm_nodes = get_nodes_in_ways(&osm, &osm_ways);
@@ -164,10 +165,33 @@ fn get_memory_db_control() -> TmouResult<impl DbControl>
     Ok(ctrl)
 }
 
-fn get_osm() -> TmouResult<osm::Osm>
+
+pub fn initialize()
+{
+    get_osm();
+}
+
+fn get_osm() ->  &'static osm::Osm
+{
+    &OSM_STATIC
+}
+
+fn create_osm() -> TmouResult<osm::Osm>
 {
     println!("reading OSM File");
     let fname = concat!(env!("CARGO_MANIFEST_DIR"), r"/pubfiles/tiles/osmdata.xml");
     println!("OSM Filename: {}", fname);
-    read_osm_from_file(fname)
+    let osm = read_osm_from_file(fname);
+    println!("Finished reading");
+    osm
 }
+
+lazy_static! 
+{
+    static ref OSM_STATIC:osm::Osm = 
+    {
+        let value = create_osm().unwrap();
+        value
+    };
+}
+

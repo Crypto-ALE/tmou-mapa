@@ -1,6 +1,7 @@
 #![feature(proc_macro_hygiene, decl_macro)]
 
 #[macro_use] extern crate rocket;
+#[macro_use] extern crate lazy_static;
 
 use rocket::http::RawStr;
 use rocket::{Request, Data};
@@ -93,6 +94,7 @@ fn index() -> String
 
 fn main() 
 {
+    game_controller::initialize();
     rocket::ignite()
         .mount("/static", StaticFiles::from(concat!(env!("CARGO_MANIFEST_DIR"), "/static")))
         .mount("/", routes![index, info, go, discover, /*pois, grid, */ team_index])
