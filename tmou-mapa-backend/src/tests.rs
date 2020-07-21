@@ -36,14 +36,38 @@ fn osm_reader_when_sample_file_given_way1000_contains_nodes123()->TmouResult<()>
 #[test]
 fn osm_reader_node_is_correctly_parsed()->TmouResult<()> 
 {
-    let xml = r#"<osm><node id="1" lat="2.5" lon="3.5"/></osm>"#;
+    let xml = 
+    r#"<osm>
+         <node id="1" lat="2.5" lon="3.5"/>
+         <way id="1000">
+           <nd ref="1"/>
+           <tag k="highway" v="x"/>
+         </way>
+       </osm>"#;
     let osm = read_osm_from_string(xml)?;
+    assert_eq!(osm.nodes.len(), 1);
     let node = osm.nodes.get("1").unwrap();
     assert_eq!(node.lat, 2.5);
     assert_eq!(node.lon, 3.5);
     Ok(())
 }
 
+#[test]
+fn osm_reader_node_is_ignored_when_not_in_way()->TmouResult<()> 
+{
+    let xml = 
+    r#"<osm>
+        <node id="0" lat="2.5" lon="3.5"/>
+        <node id="1" lat="2.5" lon="3.5"/>
+         <way id="1000">
+           <nd ref="1"/>
+           <tag k="highway" v="x"/>
+         </way>
+       </osm>"#;
+    let osm = read_osm_from_string(xml)?;
+    assert_eq!(osm.nodes.len(),1);
+    Ok(())
+}
 
 #[test]
 fn osm_reader_when_malformed_node_supplied_reader_gracefully_continues()->TmouResult<()> 
@@ -52,6 +76,10 @@ fn osm_reader_when_malformed_node_supplied_reader_gracefully_continues()->TmouRe
     r#"<osm>
          <node malformed="blablabla"/>
          <node id="0" lat="0" lon="0"/>
+         <way id="1000">
+           <nd ref="0"/>
+           <tag k="highway" v="x"/>
+         </way>
        </osm>"#;
     let osm = read_osm_from_string(xml)?;
     assert_eq!(osm.nodes.len(),1);
@@ -68,14 +96,19 @@ fn osm_reader_when_malformed_way_supplied_reader_gracefully_continues()->TmouRes
          <way malformed="blablabla"/>
          <way id="1000">
            <nd reg="1"/>
+           <tag k="highway" v="x"/>
          </way>
          <way id="1001">
            <nd ref="1"/>
          </way>
+         <way id="1002">
+           <nd ref="1"/>
+           <tag k="highway" v="x"/>
+         </way>
        </osm>"#;
     let osm = read_osm_from_string(xml)?;
     assert_eq!(osm.ways.len(),2);
-    let way = osm.ways.get("1001").unwrap();
+    let way = osm.ways.get("1002").unwrap();
     assert_eq!(way.nodes, vec!["1".to_string()]);
     Ok(())
 }
@@ -112,23 +145,28 @@ fn osm_logic_get_ways_going_through_node_id_returns_correct_ways()->TmouResult<(
          <way id="01">
           <nd ref="0"/>
           <nd ref="1"/>
-         </way>
+          <tag k="highway" v="x"/>
+          </way>
          <way id="12">
            <nd ref="1"/>
            <nd ref="2"/>
+           <tag k="highway" v="x"/>
          </way>
          <way id="23">
            <nd ref="2"/>
            <nd ref="3"/>
+           <tag k="highway" v="x"/>
          </way>
          <way id="34">
            <nd ref="3"/>
            <nd ref="4"/>
+           <tag k="highway" v="x"/>
          </way>
          <way id="45">
            <nd ref="4"/>
            <nd ref="5"/>
-         </way>
+           <tag k="highway" v="x"/>
+        </way>
        </osm>"#;
     let osm = read_osm_from_string(xml)?;
     let ways: Vec<& osm::Way> = get_ways_going_through_node_id(&osm, "4".to_string());
@@ -156,18 +194,22 @@ fn osm_logic_get_reachable_ways_for_node_id_returns_correct_ways()->TmouResult<(
          <way id="12">
            <nd ref="1"/>
            <nd ref="2"/>
+           <tag k="highway" v="x"/>
          </way>
          <way id="23">
            <nd ref="2"/>
            <nd ref="3"/>
+           <tag k="highway" v="x"/>
          </way>
          <way id="34">
            <nd ref="3"/>
            <nd ref="4"/>
+           <tag k="highway" v="x"/>
          </way>
          <way id="45">
            <nd ref="4"/>
            <nd ref="5"/>
+           <tag k="highway" v="x"/>
          </way>
        </osm>"#;
     let osm = read_osm_from_string(xml)?;
