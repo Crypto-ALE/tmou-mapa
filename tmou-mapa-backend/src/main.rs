@@ -10,6 +10,7 @@ use rocket_contrib::serve::StaticFiles;
 use rocket_contrib::json::Json;
 use rocket_contrib::templates::Template;
 use rocket::http::Status;
+use std::env;
 
 mod errors;
 mod api_models;
@@ -94,9 +95,14 @@ fn index() -> String
 
 fn main() 
 {
+    let static_dir = match env::current_dir() {
+        Ok(x) => x.join("static"),
+        _ => panic!("Cannot access current directory")
+    };
+
     game_controller::initialize();
     rocket::ignite()
-        .mount("/static", StaticFiles::from(concat!(env!("CARGO_MANIFEST_DIR"), "/static")))
+        .mount("/static", StaticFiles::from(static_dir))
         .mount("/", routes![index, info, go, discover, /*pois, grid, */ team_index])
         .attach(PhraseChecker)
         .attach(Template::fairing())

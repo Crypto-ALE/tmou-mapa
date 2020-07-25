@@ -9,6 +9,7 @@ use super::osm_reader::read_osm_from_file;
 use super::osm_logic::*;
 use super::errors::*;
 use super::map_contents::*;
+use std::env;
 
 
 const FILLOVA_X_BROZIKOVA_NODE_ID: &str = "3750367566";
@@ -161,7 +162,8 @@ fn node_osm_to_api(n: &osm::Node)->api::Node
 fn get_memory_db_control() -> TmouResult<impl DbControl>
 {
     let mut ctrl = MemoryDbControl::new();
-    ctrl.init(concat!(env!("CARGO_MANIFEST_DIR"), r"/memory_db.json"))?;
+    let fname = env::current_dir()?.join("memory_db.json");
+    ctrl.init(fname.to_str().unwrap())?;
     Ok(ctrl)
 }
 
@@ -179,9 +181,9 @@ fn get_osm() ->  &'static osm::Osm
 fn create_osm() -> TmouResult<osm::Osm>
 {
     println!("reading OSM File");
-    let fname = concat!(env!("CARGO_MANIFEST_DIR"), r"/pubfiles/tiles/osmdata.xml");
-    println!("OSM Filename: {}", fname);
-    let osm = read_osm_from_file(fname);
+    let fname = env::current_dir()?.join("pubfiles/tiles/osmdata.xml");
+    println!("OSM Filename: {}", fname.display());
+    let osm = read_osm_from_file(fname.to_str().unwrap());
     println!("Finished reading");
     osm
 }
