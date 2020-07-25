@@ -1164,6 +1164,7 @@ name = "tmou-mapa-backend"
 version = "0.1.0"
 dependencies = [
  "itertools",
+ "lazy_static",
  "rocket",
  "rocket_contrib",
  "roxmltree",
