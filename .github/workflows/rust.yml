@@ -9,6 +9,11 @@ on:
 env:
   CARGO_TERM_COLOR: always
 
+
+defaults:
+  run:
+    working-directory: ./tmou-mapa-backend
+
 jobs:
   build:
 
