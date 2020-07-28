@@ -14,6 +14,7 @@ use std::env;
 /// Reader
 /////////////////////////////////////////////////////////////////////
 
+/* TEMPORARY COMMENTING OUT FOR PIPELINE TESTING
 #[test]
 fn osm_reader_when_sample_file_given_four_nodes_and_two_ways_emitted()->TmouResult<()>
 {
@@ -33,6 +34,7 @@ fn osm_reader_when_sample_file_given_way1000_contains_nodes123()->TmouResult<()>
     assert_eq!(way.nodes, vec!["1".to_string(),"2".to_string(),"3".to_string()]);
     Ok(())
 }
+*/
 
 
 #[test]
