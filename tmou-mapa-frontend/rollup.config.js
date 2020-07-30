@@ -1,16 +1,18 @@
 import typescript from '@rollup/plugin-typescript';
-import serve from 'rollup-plugin-serve';
 import nodeResolve from "@rollup/plugin-node-resolve";
 import commonjs from "@rollup/plugin-commonjs";
-import copy from 'rollup-plugin-copy'
+import copy from 'rollup-plugin-copy';
+import { terser } from 'rollup-plugin-terser';
 
 export default {
     input: 'src/index.ts',
+    external: [ 'leaflet' ],
     output: [
         {
             file: '../tmou-mapa-backend/static/index.js',
-            format: 'cjs',
-            sourcemap: true
+            format: 'iife',
+            sourcemap: true,
+            globals: { leaflet: 'L' },
         }],
     plugins: [
         copy({
@@ -22,6 +24,6 @@ export default {
         typescript(),
         nodeResolve({browser: true}),
         commonjs(),
-        serve('.'),
-    ]
+        terser(),
+    ],
 };
