@@ -2,6 +2,7 @@
 
 #[macro_use] extern crate rocket;
 #[macro_use] extern crate lazy_static;
+#[macro_use] extern crate diesel_migrations;
 
 use rocket::http::RawStr;
 use rocket::{Request, Data};
@@ -22,6 +23,7 @@ mod osm_reader;
 mod osm_logic;
 mod tests;
 mod map_contents;
+mod db;
 
 use api_models::{NodeAction, /*Pois, Grid, */NodeContents, TeamInfo};
 
@@ -88,17 +90,21 @@ fn team_index(secret_phrase: &RawStr) -> Template
 
 
 #[get("/")]
-fn index() -> String 
+fn index() -> String
 {
     format!("Become the legend!")
 }
 
-fn main() 
+
+fn main()
 {
     let static_dir = match env::current_dir() {
         Ok(x) => x.join("static"),
         _ => panic!("Cannot access current directory")
     };
+    println!("Starting DB migrations");
+    db::run_migrations();
+    println!("DB migrations finished");
 
     game_controller::initialize();
     rocket::ignite()
