@@ -1,0 +1,6 @@
+CREATE TABLE teams (
+  id SERIAL PRIMARY KEY,
+  team_id INT NOT NULL,
+  name VARCHAR NOT NULL,
+  url VARCHAR NOT NULL
+)

@@ -2,10 +2,14 @@
 
 #[macro_use] extern crate rocket;
 #[macro_use] extern crate lazy_static;
+#[macro_use] extern crate diesel_migrations;
 
+use rocket::Rocket;
 use rocket::http::RawStr;
 use rocket::{Request, Data};
-use rocket::fairing::{Fairing, Info, Kind};
+use rocket::fairing::{Fairing, Info, Kind, AdHoc};
+use rocket_contrib::database;
+use rocket_contrib::databases::diesel;
 use rocket_contrib::serve::StaticFiles;
 use rocket_contrib::json::Json;
 use rocket_contrib::templates::Template;
@@ -22,8 +26,15 @@ mod osm_reader;
 mod osm_logic;
 mod tests;
 mod map_contents;
+mod db;
 
 use api_models::{NodeAction, /*Pois, Grid, */NodeContents, TeamInfo};
+
+embed_migrations!("./migrations/");
+
+#[database("postgres")]
+pub struct PostgresDbConn(diesel::PgConnection);
+
 
 #[get("/game/<secret_phrase>")]
 fn info(secret_phrase: &RawStr) -> Result<Json<TeamInfo>, Status>
@@ -44,7 +55,7 @@ fn go(secret_phrase: &RawStr, action: Json<NodeAction>) -> Result<Json<TeamInfo>
 }
 
 #[get("/game/<secret_phrase>/discover")]
-fn discover(secret_phrase: &RawStr) -> Result<Json<NodeContents>,Status> 
+fn discover(secret_phrase: &RawStr) -> Result<Json<NodeContents>,Status>
 {
     let state = game_controller::get_team_state(secret_phrase)?;
     match game_controller::discover_node(secret_phrase, &state.position)
@@ -66,7 +77,7 @@ fn pois(secret_phrase: &RawStr) -> Result<Json<Pois>, Status>
 }
 
 #[get("/game/<secret_phrase>/grid")]
-fn grid(secret_phrase: &RawStr) -> Result<Json<Grid>, Status> 
+fn grid(secret_phrase: &RawStr) -> Result<Json<Grid>, Status>
 {
     match game_controller::get_grid(secret_phrase)
     {
@@ -79,7 +90,7 @@ fn grid(secret_phrase: &RawStr) -> Result<Json<Grid>, Status>
 
 #[allow(unused)]
 #[get("/<secret_phrase>")]
-fn team_index(secret_phrase: &RawStr) -> Template 
+fn team_index(secret_phrase: &RawStr) -> Template
 {
     let mut context = std::collections::HashMap::<String,String>::new();
     context.insert("secretPhrase".to_string(), secret_phrase.to_string());
@@ -88,30 +99,41 @@ fn team_index(secret_phrase: &RawStr) -> Template
 
 
 #[get("/")]
-fn index() -> String 
+fn index() -> String
 {
     format!("Become the legend!")
 }
 
-fn main() 
+
+fn run_migrations(rocket: Rocket) -> Result<Rocket, Rocket> {
+    let conn = PostgresDbConn::get_one(&rocket).expect("database connection");
+    match embedded_migrations::run_with_output(&*conn, &mut std::io::stdout()) {
+        Ok(()) => Ok(rocket),
+        Err(e) => {
+            panic!("Failed to run database migrations: {:?}", e);
+        }
+    }
+}
+
+fn main()
 {
     let static_dir = match env::current_dir() {
         Ok(x) => x.join("static"),
         _ => panic!("Cannot access current directory")
     };
-
     game_controller::initialize();
     rocket::ignite()
+        .attach(PostgresDbConn::fairing())
+        .attach(AdHoc::on_attach("Database Migrations", run_migrations))
+        .attach(Template::fairing())
         .mount("/static", StaticFiles::from(static_dir))
         .mount("/", routes![index, info, go, discover, /*pois, grid, */ team_index])
-        .attach(PhraseChecker)
-        .attach(Template::fairing())
         .launch();
 }
 
 struct PhraseChecker;
 
-impl Fairing for PhraseChecker 
+impl Fairing for PhraseChecker
 {
     fn  info(&self) -> Info {
         Info {
