@@ -8,15 +8,17 @@ use super::osm_logic::*;
 #[allow(unused_imports)]
 use super::errors::*;
 
+use std::env;
+
 /////////////////////////////////////////////////////////////////////
 /// Reader
 /////////////////////////////////////////////////////////////////////
 
 #[test]
-fn osm_reader_when_sample_file_given_four_nodes_and_two_ways_emitted()->TmouResult<()> 
+fn osm_reader_when_sample_file_given_four_nodes_and_two_ways_emitted()->TmouResult<()>
 {
-    let fname = concat!(env!("CARGO_MANIFEST_DIR"), r"\sample_osm_data.xml");
-    let osm = read_osm_from_file(fname)?;
+    let fname = env::current_dir()?.join("sample_osm_data.xml");
+    let osm = read_osm_from_file(fname.to_str().unwrap())?;
     assert_eq!((&osm.nodes).len(), 4);
     assert_eq!((&osm.ways).len(), 2);
     Ok(())
@@ -25,8 +27,8 @@ fn osm_reader_when_sample_file_given_four_nodes_and_two_ways_emitted()->TmouResu
 #[test]
 fn osm_reader_when_sample_file_given_way1000_contains_nodes123()->TmouResult<()> 
 {
-    let fname = concat!(env!("CARGO_MANIFEST_DIR"), r"\sample_osm_data.xml");
-    let osm = read_osm_from_file(fname)?;
+    let fname = env::current_dir()?.join("sample_osm_data.xml");
+    let osm = read_osm_from_file(fname.to_str().unwrap())?;
     let way = osm.ways.get("1000").unwrap();
     assert_eq!(way.nodes, vec!["1".to_string(),"2".to_string(),"3".to_string()]);
     Ok(())
