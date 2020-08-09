@@ -46,10 +46,10 @@ pub fn get_grid(phrase: &RawStr) -> TmouResult<api::Grid>
     }
     Ok(api::Grid
         {
-            columns:3, 
-            rows:3, 
-            columnWidth:256, 
-            rowHeight:256, 
+            columns:3,
+            rows:3,
+            columnWidth:256,
+            rowHeight:256,
             tiles
         })
 }
@@ -100,7 +100,7 @@ fn get_team_or_default(ctrl: & mut impl DbControl, phrase: &RawStr) -> TmouResul
             let t = get_default_team(phrase);
             ctrl.put_team(t.clone())?;
             Ok(t)
-        } 
+        }
     }
 
 }
@@ -109,8 +109,10 @@ fn get_team_or_default(ctrl: & mut impl DbControl, phrase: &RawStr) -> TmouResul
 fn get_default_team(phrase: &str) -> db::Team
 {
     db::Team{
-        phrase:phrase.to_string(), 
-        name: "Maštěné Ředkvičky".to_string(), 
+        id: 1,
+        team_id: 1,
+        phrase:phrase.to_string(),
+        name: "Maštěné Ředkvičky".to_string(),
         position: FILLOVA_X_BROZIKOVA_NODE_ID.to_string()
     }
 }
@@ -118,18 +120,18 @@ fn get_default_team(phrase: &str) -> db::Team
 fn team_db_to_api(t: &db::Team)->api::TeamState
 {
     api::TeamState{
-        name: t.name.clone(), 
-        position:t.position.clone(), 
-        ranking: 2, 
-        leader:"Bazinga".to_string(), 
-        timeBehind:"00:22:00".to_string() 
+        name: t.name.clone(),
+        position:t.position.clone(),
+        ranking: 2,
+        leader:"Bazinga".to_string(),
+        timeBehind:"00:22:00".to_string()
     }
 }
 
 fn node_contents_db_to_api(nc: &db::NodeContents)->api::NodeContents
 {
     api::NodeContents{
-        r#type: nc.r#type.clone(), 
+        r#type: nc.r#type.clone(),
         data: nc.data.clone()
     }
 }
@@ -139,7 +141,7 @@ fn node_contents_db_to_api(nc: &db::NodeContents)->api::NodeContents
 fn way_osm_to_api(w: &osm::Way)->api::Way
 {
     api::Way{
-        id: w.id.clone(), 
+        id: w.id.clone(),
         nodes:w.nodes.clone()
     }
 }
@@ -147,7 +149,7 @@ fn way_osm_to_api(w: &osm::Way)->api::Way
 fn node_osm_to_api(n: &osm::Node)->api::Node
 {
     api::Node{
-        id: n.id.clone(), 
+        id: n.id.clone(),
         y:n.lat.clone(),
         x:n.lon.clone(),
         r#type:n.r#type.clone(),
@@ -188,12 +190,11 @@ fn create_osm() -> TmouResult<osm::Osm>
     osm
 }
 
-lazy_static! 
+lazy_static!
 {
-    static ref OSM_STATIC:osm::Osm = 
+    static ref OSM_STATIC:osm::Osm =
     {
         let value = create_osm().unwrap();
         value
     };
 }
-
