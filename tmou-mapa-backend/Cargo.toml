@@ -7,8 +7,10 @@ edition = "2018"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+diesel = { version = "1.4.4", features = ["postgres"] }
+diesel_migrations = "1.4.0"
 rocket = "0.4.5"
-rocket_contrib = {version = "0.4.5", default_features = false, features= ["tera_templates", "serve", "json"]}
+rocket_contrib = {version = "0.4.5", default_features = false, features= ["tera_templates", "serve", "json", "diesel_postgres_pool"]}
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 serde_derive = "1.0"
