@@ -3,11 +3,11 @@ use super::db_models::*;
 
 
 
-pub fn get_contents_of_node(node_id: &String) -> TmouResult<NodeContents>
+pub fn get_contents_of_node(node_id: i64) -> TmouResult<NodeContents>
 {
-    match node_id.as_str()
+    match node_id
     {
-        "539563487" => Ok(puzzle("7-mysi_a_syr.pdf")),
+        539563487 => Ok(puzzle("7-mysi_a_syr.pdf")),
         _=> Ok(nothing())
     }
 }

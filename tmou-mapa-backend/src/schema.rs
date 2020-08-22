@@ -2,7 +2,7 @@ table! {
     items (id) {
         id -> Int4,
         #[sql_name = "type"]
-        type_ -> Item_type,
+        type_ -> Varchar,
         url -> Varchar,
         level -> Int2,
         label -> Nullable<Varchar>,
@@ -16,7 +16,7 @@ table! {
         lat -> Varchar,
         lon -> Varchar,
         #[sql_name = "type"]
-        type_ -> Node_type,
+        type_ -> Varchar,
     }
 }
 

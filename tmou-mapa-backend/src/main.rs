@@ -54,14 +54,14 @@ fn go(
     action: Json<NodeAction>,
     team: db_models::Team,
 ) -> Result<Json<TeamInfo>, Status> {
-    game_controller::go_to_node(secret_phrase, &action.nodeId)?;
+    game_controller::go_to_node(secret_phrase, action.nodeId)?;
     info(secret_phrase, team)
 }
 
 #[get("/game/<secret_phrase>/discover")]
 fn discover(secret_phrase: &RawStr) -> Result<Json<NodeContents>, Status> {
     let state = game_controller::get_team_state(secret_phrase)?;
-    match game_controller::discover_node(secret_phrase, &state.position) {
+    match game_controller::discover_node(secret_phrase, state.position) {
         Ok(nc) => Ok(Json(nc)),
         Err(_) => Err(Status::NotFound),
     }

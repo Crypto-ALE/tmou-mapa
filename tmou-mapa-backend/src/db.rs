@@ -33,7 +33,7 @@ pub fn insert_team(connection: &diesel::PgConnection, team_id_param: i32, name_p
         }
 }
 
-pub fn update_team_position(connection: &diesel::PgConnection, team: &Team, new_position: String) -> Option<Team>{
+pub fn update_team_position(connection: &diesel::PgConnection, team: &Team, new_position: i64) -> Option<Team>{
     let query = diesel::update(team).set(position.eq(new_position));
 
     match query.get_result(connection) {

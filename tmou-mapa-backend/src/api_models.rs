@@ -5,7 +5,7 @@ use serde::{Serialize, Deserialize};
 #[derive(Serialize, Deserialize)]
 pub struct NodeAction
 {
-   pub nodeId: String
+   pub nodeId: i64
 }
 
 #[derive(Serialize, Deserialize)]
@@ -66,7 +66,7 @@ pub struct TeamState
    pub ranking: i32,
    pub leader: String,
    pub timeBehind: String,
-   pub position: String
+   pub position: i64
 }
 
 #[derive(Serialize, Deserialize)]

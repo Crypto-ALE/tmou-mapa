@@ -12,7 +12,7 @@ use super::map_contents::*;
 use std::env;
 
 
-const FILLOVA_X_BROZIKOVA_NODE_ID: &str = "3750367566";
+const FILLOVA_X_BROZIKOVA_NODE_ID: i64 = 3750367566;
 const ZOOM: i32 = 17;
 const CENTER_X: i32 = 71586;
 const CENTER_Y: i32 = 44885;
@@ -71,16 +71,16 @@ pub fn get_team_state(phrase: &RawStr) -> TmouResult<api::TeamState>
     Ok(team_db_to_api(&t))
 }
 
-pub fn go_to_node(phrase: &RawStr, node_id: &String) -> TmouResult<()>
+pub fn go_to_node(phrase: &RawStr, node_id: i64) -> TmouResult<()>
 {
     let mut ctrl = get_memory_db_control()?;
     let mut t = get_team_or_default(& mut ctrl, phrase)?;
-    t.position = node_id.to_string(); // CHECK!!!
+    t.position = node_id; // CHECK!!!
     ctrl.put_team(t)
 }
 
 #[allow(unused)]
-pub fn discover_node(phrase: &RawStr, node_id: &String) -> TmouResult<api::NodeContents>
+pub fn discover_node(phrase: &RawStr, node_id: i64) -> TmouResult<api::NodeContents>
 {
     let nc = get_contents_of_node(node_id)?;
     Ok(node_contents_db_to_api(&nc))
@@ -113,7 +113,7 @@ fn get_default_team(phrase: &str) -> db::Team
         team_id: 1,
         phrase:phrase.to_string(),
         name: "Maštěné Ředkvičky".to_string(),
-        position: FILLOVA_X_BROZIKOVA_NODE_ID.to_string()
+        position: FILLOVA_X_BROZIKOVA_NODE_ID
     }
 }
 
@@ -121,7 +121,7 @@ fn team_db_to_api(t: &db::Team)->api::TeamState
 {
     api::TeamState{
         name: t.name.clone(),
-        position:t.position.clone(),
+        position:t.position,
         ranking: 2,
         leader:"Bazinga".to_string(),
         timeBehind:"00:22:00".to_string()

@@ -29,7 +29,7 @@ pub struct Team {
     pub team_id: i32,
     pub name: String,
     pub phrase: String,
-    pub position: String,
+    pub position: i64,
 }
 
 #[derive(Serialize, Deserialize, Clone, Default)]
