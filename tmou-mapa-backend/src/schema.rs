@@ -13,10 +13,10 @@ table! {
 table! {
     nodes (id) {
         id -> Int8,
-        lat -> Varchar,
-        lon -> Varchar,
         #[sql_name = "type"]
         type_ -> Varchar,
+        lat -> Float4,
+        lon -> Float4,
     }
 }
 
