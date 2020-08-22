@@ -18,12 +18,13 @@ use super::errors;
 
 pub trait DbControl
 {
-    fn get_team(&self, phrase: &str) -> Option<Team>;
+    fn get_team(&self, id: i32) -> Option<Team>;
     fn put_team(&mut self, team: Team) -> TmouResult<()>;
     fn update_team_position(&mut self, team: &Team, position: i64) -> TmouResult<()>;
     fn get_pois_for_team(&self, phrase: &str) -> Option<Vec<Poi>>;
     fn put_pois_for_team(&mut self, pois:Vec<Poi>) -> ();
 }
+/*
 
 #[derive(Serialize, Deserialize)]
 pub struct MemoryDbControl
@@ -80,7 +81,7 @@ impl MemoryDbControl
 
 impl DbControl for MemoryDbControl
 {
-    fn get_team(&self, phrase: &str) -> Option<Team>
+    fn get_team(&self, id: i32) -> Option<Team>
     {
         let t = self.teams.get(phrase)?;
         Some(t.clone())
@@ -106,3 +107,4 @@ impl DbControl for MemoryDbControl
     }
 fn update_team_position(&mut self, _: &db_models::Team, _: i64) -> std::result::Result<(), errors::TmouError> { todo!() }
 }
+*/

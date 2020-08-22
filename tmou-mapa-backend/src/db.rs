@@ -31,9 +31,9 @@ impl PostgresDbControl
 impl DbControl for PostgresDbControl
 {
 
-fn get_team(&self, phr: &str) -> std::option::Option<db_models::Team> 
+fn get_team(&self, id_param: i32) -> std::option::Option<db_models::Team> 
 { 
-    get_team_by_phrase(&self.conn, &phr.to_string())
+    get_team_by_id(&self.conn, id_param)
 }
 
 fn put_team(&mut self, team: db_models::Team) -> std::result::Result<(), errors::TmouError> 

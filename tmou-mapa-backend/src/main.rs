@@ -143,8 +143,7 @@ fn discover(
 ) -> Result<Json<Items>, Status> {
     println!("Debug team:{:?}", team);
     let db_ctrl = PostgresDbControl::new(conn);
-    let state = game_controller::get_team_state(db_ctrl, &team.phrase)?;
-    match game_controller::discover_node(state.position) {
+    match game_controller::discover_node(team.position) {
         Ok(nc) => Ok(Json(nc)),
         Err(_) => Err(Status::NotFound),
     }

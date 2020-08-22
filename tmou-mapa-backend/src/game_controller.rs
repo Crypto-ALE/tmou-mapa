@@ -3,7 +3,7 @@ use rocket::http::RawStr;
 use std::vec::Vec;
 use super::api_models as api;
 use super::db_models as db;
-use super::db_controller::{DbControl,MemoryDbControl};
+use super::db_controller::{DbControl};
 use super::osm_models as osm;
 use super::osm_reader::read_osm_from_file;
 use super::osm_logic::*;
@@ -31,7 +31,7 @@ pub fn get_pois(position: i64) -> TmouResult<api::Pois>
 
 pub fn get_info(conn: impl DbControl, team: db_models::Team) -> TmouResult<api::TeamInfo>
 {
-    let state = get_team_state(conn, &team.phrase)?;
+    let state = get_team_state(conn, team.id)?;
     let pois = get_pois(team.position)?;
     let items = api::Items{items:Vec::new()};
     Ok(api::TeamInfo{state: state, pois: pois, items: items})
@@ -39,11 +39,13 @@ pub fn get_info(conn: impl DbControl, team: db_models::Team) -> TmouResult<api::
 
 
 
-pub fn get_team_state(conn: impl DbControl, phrase: &String) -> TmouResult<api::TeamState>
+fn get_team_state(conn: impl DbControl, id: i32) -> TmouResult<api::TeamState>
 {
-    let mut ctrl = get_memory_db_control()?;
-    let t = get_team_or_default(& mut ctrl, phrase)?;
-    Ok(team_db_to_api(&t))
+    match conn.get_team(id)
+    {
+        Some(t) => Ok(team_db_to_api(&t)),
+        None => Err(TmouError{message:"Team does not exist".to_string(), response:404})
+    }
 }
 
 pub fn go_to_node(mut conn: impl DbControl, team: db_models::Team, pos: i64) -> TmouResult<api::TeamInfo>
@@ -63,21 +65,6 @@ pub fn discover_node(node_id: i64) -> TmouResult<api::Items>
 ////////////////////////////////////////////////////////////////////
 /// Implementation details
 ////////////////////////////////////////////////////////////////////
-
-fn get_team_or_default(ctrl: & mut impl DbControl, phrase: &String) -> TmouResult<db::Team>
-{
-    match ctrl.get_team(phrase)
-    {
-        Some(t) => Ok(t),
-        None =>
-        {
-            let t = get_default_team(phrase);
-            ctrl.put_team(t.clone())?;
-            Ok(t)
-        }
-    }
-
-}
 
 
 fn get_default_team(phrase: &str) -> db::Team
@@ -134,18 +121,6 @@ fn node_osm_to_api(n: &osm::Node)->api::Node
         r#type:n.r#type.clone(),
         data: "<none>".to_string()
     }
-}
-
-// temporary in-memory db
-
-//static mut g_db_ctrl: Option<Box<MemoryDbControl>> = None;
-
-fn get_memory_db_control() -> TmouResult<impl DbControl>
-{
-    let mut ctrl = MemoryDbControl::new();
-    let fname = env::current_dir()?.join("memory_db.json");
-    ctrl.init(fname.to_str().unwrap())?;
-    Ok(ctrl)
 }
 
 
