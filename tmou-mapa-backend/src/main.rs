@@ -58,7 +58,7 @@ fn info_phrase(
         Some(team) => info(team, conn),
         None => Err(Status::NotFound)
     }
-    
+   
 }
 
 
@@ -77,9 +77,32 @@ fn info(
     }
 }
 
+
+
+#[post("/game", data = "<action>")]
+fn go_cookie(
+    action: Json<NodeAction>,
+    team: db_models::Team,
+    conn: PostgresDbConn
+) -> Result<Json<TeamInfo>, Status> {
+    go(action, team, conn)
+}
+
 #[post("/game/<secret_phrase>", data = "<action>")]
-fn go(
+fn go_phrase(
     secret_phrase: &RawStr,
+    action: Json<NodeAction>,
+    conn: PostgresDbConn
+) -> Result<Json<TeamInfo>, Status> {
+    match db::get_team_by_phrase(&*conn, &secret_phrase.to_string())
+    {
+        Some(team) => go(action, team, conn),
+        None => Err(Status::NotFound)
+    }
+}
+
+//#[post("/game/<secret_phrase>", data = "<action>")]
+fn go(
     action: Json<NodeAction>,
     team: db_models::Team,
     conn: PostgresDbConn
@@ -91,16 +114,37 @@ fn go(
     }
 }
 
+#[get("/game/discover")]
+fn discover_cookie(
+    team: db_models::Team,
+    conn: PostgresDbConn
+) -> Result<Json<Items>, Status> {
+    discover(team, conn)
+}
+
 #[get("/game/<secret_phrase>/discover")]
-fn discover(
+fn discover_phrase(
     secret_phrase: &RawStr,
+    conn: PostgresDbConn
+) -> Result<Json<Items>, Status> {
+    match db::get_team_by_phrase(&*conn, &secret_phrase.to_string())
+    {
+        Some(team) => discover(team, conn),
+        None => Err(Status::NotFound)
+    }
+}
+
+
+
+//#[get("/game/<secret_phrase>/discover")]
+fn discover(
     team: db_models::Team,
     conn: PostgresDbConn
 ) -> Result<Json<Items>, Status> {
     println!("Debug team:{:?}", team);
     let db_ctrl = PostgresDbControl::new(conn);
     let state = game_controller::get_team_state(db_ctrl, &team.phrase)?;
-    match game_controller::discover_node(secret_phrase, state.position) {
+    match game_controller::discover_node(state.position) {
         Ok(nc) => Ok(Json(nc)),
         Err(_) => Err(Status::NotFound),
     }
@@ -134,7 +178,7 @@ fn main() {
         .mount("/static", StaticFiles::from(static_dir))
         .mount(
             "/",
-            routes![index, info_cookie, info_phrase, go, discover],
+            routes![index, info_cookie, info_phrase, go_cookie, go_phrase, discover_cookie, discover_phrase],
         )
         .launch();
 }

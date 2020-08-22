@@ -43,6 +43,11 @@ fn put_team(&mut self, team: db_models::Team) -> std::result::Result<(), errors:
 }
 fn get_pois_for_team(&self, _: &str) -> std::option::Option<std::vec::Vec<db_models::Poi>> { todo!() }
 fn put_pois_for_team(&mut self, _: std::vec::Vec<db_models::Poi>) { todo!() }
+fn update_team_position(&mut self, team: &db_models::Team, pos: i64) -> std::result::Result<(), errors::TmouError> 
+{
+    update_team_position(&self.conn, team, pos);
+    Ok(())
+}
 }
 
 
@@ -68,27 +73,17 @@ pub fn insert_team(connection: &diesel::PgConnection, team_id_param: i32, name_p
         }
 }
 
-pub fn update_team_position(connection: &diesel::PgConnection, team: &Team, new_position: i64) -> Option<Team>{
+pub fn update_team_position(connection: &diesel::PgConnection, team: &Team, new_position: i64) -> Team{
     let query = diesel::update(team).set(position.eq(new_position));
 
     match query.get_result(connection) {
-            Ok(result) => Some(result),
+            Ok(result) => result,
             Err(err) => panic!("Something very bad with DB happened: {}", err),
         }
 }
 
 pub fn get_team_by_phrase(connection: &diesel::PgConnection, phr:&String) -> Option<Team> {
     match teams.filter(phrase.eq(phr))
-        .limit(1)
-        .first::<Team>(connection) {
-            Ok(team) => Some(team),
-            Err(NotFound) => None,
-            Err(err) => panic!("Something very bad with DB happened: {}", err),
-        }
-}
-
-pub fn get_team_by_phrase2(connection: &diesel::PgConnection, phr: &String) -> Option<Team> {
-    match teams.filter(phrase.eq("redkvicky".to_string()))
         .limit(1)
         .first::<Team>(connection) {
             Ok(team) => Some(team),

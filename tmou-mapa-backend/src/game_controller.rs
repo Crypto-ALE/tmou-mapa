@@ -18,25 +18,21 @@ const FILLOVA_X_BROZIKOVA_NODE_ID: i64 = 3750367566;
 /// Interface
 ////////////////////////////////////////////////////////////////////
 
-pub fn get_pois(phrase: &String) -> TmouResult<api::Pois>
+pub fn get_pois(position: i64) -> TmouResult<api::Pois>
 {
-    todo!();
-    /*
     let osm = get_osm();
-    let team = get_team_state(&phrase)?;
-    let osm_ways= get_reachable_ways_for_node_id(&osm, team.position.to_string());
+    let osm_ways= get_reachable_ways_for_node_id(&osm, position.to_string());
     let osm_nodes = get_nodes_in_ways(&osm, &osm_ways);
     let nodes = osm_nodes.iter().map(|n| node_osm_to_api(n)).collect();
     let ways = osm_ways.iter().map(|w| way_osm_to_api(w)).collect();
     Ok(api::Pois{nodes,ways})
-    */
 }
 
 
 pub fn get_info(conn: impl DbControl, team: db_models::Team) -> TmouResult<api::TeamInfo>
 {
     let state = get_team_state(conn, &team.phrase)?;
-    let pois = get_pois(&team.phrase)?;
+    let pois = get_pois(team.position)?;
     let items = api::Items{items:Vec::new()};
     Ok(api::TeamInfo{state: state, pois: pois, items: items})
 }
@@ -50,13 +46,14 @@ pub fn get_team_state(conn: impl DbControl, phrase: &String) -> TmouResult<api::
     Ok(team_db_to_api(&t))
 }
 
-pub fn go_to_node(conn: impl DbControl, team: db_models::Team, node_id: i64) -> TmouResult<api::TeamInfo>
+pub fn go_to_node(mut conn: impl DbControl, team: db_models::Team, pos: i64) -> TmouResult<api::TeamInfo>
 {
+    conn.update_team_position(&team, pos);
     get_info(conn, team)
 }
 
 #[allow(unused)]
-pub fn discover_node(phrase: &RawStr, node_id: i64) -> TmouResult<api::Items>
+pub fn discover_node(node_id: i64) -> TmouResult<api::Items>
 {
     let db_items = get_contents_of_node(node_id)?;
     let items = db_items.into_iter().map(|i| i.into()).collect();
