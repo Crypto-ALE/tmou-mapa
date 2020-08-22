@@ -107,15 +107,15 @@ impl From<db::Item> for api::Item
 fn way_osm_to_api(w: &osm::Way)->api::Way
 {
     api::Way{
-        id: w.id.to_string(),
-        nodes:w.nodes.iter().map(|n| n.to_string()).collect()
+        id: w.id,
+        nodes:w.nodes.clone()
     }
 }
 
 fn node_osm_to_api(n: &osm::Node)->api::Node
 {
     api::Node{
-        id: n.id.to_string(),
+        id: n.id,
         y:n.lat.clone(),
         x:n.lon.clone(),
         r#type:n.r#type.clone(),

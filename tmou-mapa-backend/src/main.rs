@@ -4,6 +4,7 @@
 #[macro_use] extern crate lazy_static;
 #[macro_use] extern crate diesel;
 #[macro_use] extern crate diesel_migrations;
+#[macro_use] extern crate regex;
 
 use rocket::fairing::AdHoc;
 use rocket::http::RawStr;
@@ -154,6 +155,13 @@ fn index() -> String {
     format!("Become the legend!")
 }
 
+#[get("/<secret_phrase>")]
+fn team_index(secret_phrase: &RawStr) -> Template {
+    let mut context = std::collections::HashMap::<String, String>::new();
+    context.insert("secretPhrase".to_string(), secret_phrase.to_string());
+    Template::render("index", context)
+}
+
 fn run_migrations(rocket: Rocket) -> Result<Rocket, Rocket> {
     let conn = PostgresDbConn::get_one(&rocket).expect("database connection");
     match embedded_migrations::run_with_output(&*conn, &mut std::io::stdout()) {
@@ -177,7 +185,7 @@ fn main() {
         .mount("/static", StaticFiles::from(static_dir))
         .mount(
             "/",
-            routes![index, info_cookie, info_phrase, go_cookie, go_phrase, discover_cookie, discover_phrase],
+            routes![index, info_cookie, info_phrase, go_cookie, go_phrase, discover_cookie, discover_phrase, team_index],
         )
         .launch();
 }

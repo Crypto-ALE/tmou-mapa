@@ -59,5 +59,13 @@ impl From<diesel::result::Error> for TmouError
     }
 }
 
+impl From<std::env::VarError> for TmouError
+{
+    fn from(err:std::env::VarError) -> Self
+    {
+        TmouError{message: err.to_string(), response: 404}
+    }
+}
+
 
 pub type TmouResult<T> = Result<T, TmouError>;

@@ -6,9 +6,43 @@ use super::schema::*;
 #[table_name = "nodes"]
 pub struct Node {
     pub id: i64,
-    pub lat: String,
-    pub lon: String,
+    pub lat: f32,
+    pub lon: f32,
     pub type_: String
+}
+
+#[derive(Serialize, Deserialize, Queryable, Insertable)]
+#[table_name = "ways_nodes"]
+pub struct WaysToNodes {
+    pub way_id: i64,
+    pub node_id: i64
+}
+
+impl std::cmp::PartialEq for WaysToNodes // for unique()
+{
+    fn eq(&self, other: &Self) -> bool 
+    {
+        self.way_id == other.way_id && self.node_id == other.node_id
+    }
+}
+impl std::cmp::Eq for WaysToNodes {}
+
+impl std::cmp::Ord for WaysToNodes // for dedup
+{
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        match self.way_id.cmp(&other.way_id)
+        {
+            std::cmp::Ordering::Equal => self.node_id.cmp(&other.node_id),
+            o => o
+        }
+    }
+}
+
+impl std::cmp::PartialOrd for WaysToNodes // for dedup
+{
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        Some(self.cmp(&other))
+    }
 }
 
 #[derive(Serialize, Deserialize)]

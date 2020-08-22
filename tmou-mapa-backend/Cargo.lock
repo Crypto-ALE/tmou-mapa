@@ -1338,6 +1338,7 @@ dependencies = [
  "diesel_migrations",
  "itertools",
  "lazy_static",
+ "regex",
  "rocket",
  "rocket_contrib",
  "roxmltree",
