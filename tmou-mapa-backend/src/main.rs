@@ -31,20 +31,49 @@ mod osm_reader;
 mod tests;
 mod schema;
 
-use api_models::{NodeAction, /*Pois, Grid, */ NodeContents, TeamInfo};
+use api_models::{NodeAction, Items, TeamInfo};
+use db::PostgresDbControl;
 
 embed_migrations!("./migrations/");
 
 #[database("postgres")]
 pub struct PostgresDbConn(diesel::PgConnection);
 
+#[get("/game")]
+fn info_cookie(    
+    team: db_models::Team,
+    conn: PostgresDbConn
+) -> Result<Json<TeamInfo>, Status> {
+    info(team, conn)
+
+}
+
 #[get("/game/<secret_phrase>")]
-fn info(secret_phrase: &RawStr, team: db_models::Team) -> Result<Json<TeamInfo>, Status> {
+fn info_phrase(    
+    secret_phrase: &RawStr, 
+    conn: PostgresDbConn
+) -> Result<Json<TeamInfo>, Status> {
+    match db::get_team_by_phrase(&*conn, &secret_phrase.to_string())
+    {
+        Some(team) => info(team, conn),
+        None => Err(Status::NotFound)
+    }
+    
+}
+
+
+
+//#[get("/game/<secret_phrase>")]
+fn info(
+    team: db_models::Team,
+    conn: PostgresDbConn
+) -> Result<Json<TeamInfo>, Status> {
     // TODO: more concise way?
     println!("Debug team:{:?}", team);
-    match game_controller::get_info(secret_phrase) {
+    let db_ctrl = PostgresDbControl::new(conn);
+    match game_controller::get_info(db_ctrl, team) {
         Ok(info) => Ok(Json(info)),
-        Err(_) => Err(Status::NotFound),
+        Err(_) => Err(Status::NotFound)
     }
 }
 
@@ -53,49 +82,28 @@ fn go(
     secret_phrase: &RawStr,
     action: Json<NodeAction>,
     team: db_models::Team,
+    conn: PostgresDbConn
 ) -> Result<Json<TeamInfo>, Status> {
-    game_controller::go_to_node(secret_phrase, action.nodeId)?;
-    info(secret_phrase, team)
+    let db_ctrl = PostgresDbControl::new(conn);
+    match game_controller::go_to_node(db_ctrl, team, action.nodeId) {
+        Ok(info) => Ok(Json(info)),
+        Err(_) => Err(Status::NotFound)
+    }
 }
 
 #[get("/game/<secret_phrase>/discover")]
-fn discover(secret_phrase: &RawStr) -> Result<Json<NodeContents>, Status> {
-    let state = game_controller::get_team_state(secret_phrase)?;
+fn discover(
+    secret_phrase: &RawStr,
+    team: db_models::Team,
+    conn: PostgresDbConn
+) -> Result<Json<Items>, Status> {
+    println!("Debug team:{:?}", team);
+    let db_ctrl = PostgresDbControl::new(conn);
+    let state = game_controller::get_team_state(db_ctrl, &team.phrase)?;
     match game_controller::discover_node(secret_phrase, state.position) {
         Ok(nc) => Ok(Json(nc)),
         Err(_) => Err(Status::NotFound),
     }
-}
-
-/*
-#[get("/game/<secret_phrase>/pois")]
-fn pois(secret_phrase: &RawStr) -> Result<Json<Pois>, Status>
-{
-    match game_controller::get_pois(secret_phrase)
-    {
-        Ok(pois) => Ok(Json(pois)),
-        Err(_) => Err(Status::NotFound)
-    }
-}
-
-#[get("/game/<secret_phrase>/grid")]
-fn grid(secret_phrase: &RawStr) -> Result<Json<Grid>, Status>
-{
-    match game_controller::get_grid(secret_phrase)
-    {
-        Ok(grid) => Ok(Json(grid)),
-        Err(_) => Err(Status::NotFound)
-    }
-}
-
-*/
-
-#[allow(unused)]
-#[get("/<secret_phrase>")]
-fn team_index(secret_phrase: &RawStr) -> Template {
-    let mut context = std::collections::HashMap::<String, String>::new();
-    context.insert("secretPhrase".to_string(), secret_phrase.to_string());
-    Template::render("index", context)
 }
 
 #[get("/")]
@@ -126,7 +134,7 @@ fn main() {
         .mount("/static", StaticFiles::from(static_dir))
         .mount(
             "/",
-            routes![index, info, go, discover, /*pois, grid, */ team_index],
+            routes![index, info_cookie, info_phrase, go, discover],
         )
         .launch();
 }
@@ -156,12 +164,9 @@ impl<'a, 'r> FromRequest<'a, 'r> for db_models::Team {
                 let team_name = "Maštěné Ředkvičky".to_string();
                 let phrase = "MegaTajnáFráze".to_string();
                 db::get_team_by_id(&*conn, team_id)
-                    .or_else(|| db::insert_team(&*conn, team_id, team_name, phrase))
-            })
-            .or_else(|| {
-                println!("No cookie, trying phrase");
-                db::get_team_by_phrase(&*conn)
+                    .or_else(|| Some(db::insert_team(&*conn, team_id, team_name, phrase)))
             })
             .or_forward(())
     }
 }
+

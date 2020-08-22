@@ -16,8 +16,6 @@ use std::io::prelude::*;
 
 pub trait DbControl
 {
-    fn new() -> Self;
-    fn init(&mut self, conn: &str) -> TmouResult<()>;
     fn get_team(&self, phrase: &str) -> Option<Team>;
     fn put_team(&mut self, team: Team) -> TmouResult<()>;
     fn get_pois_for_team(&self, phrase: &str) -> Option<Vec<Poi>>;
@@ -29,11 +27,22 @@ pub struct MemoryDbControl
 {
     teams: HashMap<String, Team>,
     pois: HashMap<String, Vec<Poi>>,
-    filename: String
+    filename: String,
 }
 
 impl MemoryDbControl
 {
+    pub fn new() -> MemoryDbControl
+    {
+        MemoryDbControl{teams: HashMap::new(), pois: HashMap::new(), filename:"***".to_string()}
+    }
+
+    pub fn init(&mut self, conn: &str) -> TmouResult<()>
+    {
+        self.filename = conn.to_string();
+        self.load()?;
+        Ok(())
+    }
 
     fn load(&mut self)->TmouResult<()>
     {
@@ -68,17 +77,6 @@ impl MemoryDbControl
 
 impl DbControl for MemoryDbControl
 {
-    fn new() -> MemoryDbControl
-    {
-        MemoryDbControl{teams: HashMap::new(), pois: HashMap::new(), filename:"***".to_string()}
-    }
-
-    fn init(&mut self, conn: &str) -> TmouResult<()>
-    {
-        self.filename = conn.to_string();
-        self.load()?;
-        Ok(())
-    }
 
     fn get_team(&self, phrase: &str) -> Option<Team>
     {

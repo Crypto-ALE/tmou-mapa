@@ -19,11 +19,28 @@ pub struct Node
 }
 
 #[derive(Serialize, Deserialize)]
-pub struct NodeContents
+pub struct Item
 {
-   pub r#type: String,
-   pub data: String
+    pub r#type: String, // puzzles | badge | message
+    pub url: String,
+    pub level: i32,
+    pub label: String,
+    pub description: String,
 }
+
+
+#[derive(Serialize, Deserialize)]
+pub struct Items
+{
+    pub items: Vec<Item>
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct Phrase
+{
+    pub value: String
+}
+
 
 #[derive(Serialize, Deserialize)]
 pub struct Way
@@ -37,26 +54,6 @@ pub struct Pois
 {
    pub nodes: Vec<Node>,
    pub ways: Vec<Way>
-}
-
-
-#[derive(Serialize, Deserialize)]
-pub struct Tile
-{
-   pub url: String,
-   pub x: i32,
-   pub y: i32,
-   pub zoom: i32
-}
-
-#[derive(Serialize, Deserialize)]
-pub struct Grid
-{
-   pub columns: i32,
-   pub rows: i32,
-   pub columnWidth: i32,
-   pub rowHeight: i32,
-   pub tiles: Vec<Tile>
 }
 
 #[derive(Serialize, Deserialize)]
@@ -73,5 +70,6 @@ pub struct TeamState
 pub struct TeamInfo
 {
     pub state: TeamState,
-    pub pois: Pois
+    pub pois: Pois,
+    pub items: Items
 }
