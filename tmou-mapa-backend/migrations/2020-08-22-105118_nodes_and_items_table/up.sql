@@ -1,0 +1,15 @@
+CREATE TABLE nodes (
+  id BIGINT PRIMARY KEY,
+  lat VARCHAR NOT NULL,
+  lon VARCHAR NOT NULL,
+  "type" VARCHAR NOT NULL
+);
+
+CREATE TABLE items (
+  id SERIAL PRIMARY KEY,
+  "type" VARCHAR NOT NULL,
+  url VARCHAR NOT NULL,
+  "level" SMALLINT NOT NULL,
+  label VARCHAR,
+  description TEXT
+);
