@@ -3,56 +3,54 @@ body {
     color: whitesmoke;
     font-family: Kanit, sans-serif;
     font-weight:200;
-}
-
-.container0 {
-    display: grid;
-    grid-template-rows: 42px 1fr;
-    grid-column-gap: 0vw;   
-    height:100%;
     margin:0px;
+    font-size:14px;
 }
 
-.container1 {
+.container {
+    height: 100vh;
+    margin: 0px 10px;
+    
     display: grid;
-    grid-template-columns: 7fr 3fr;
-    grid-column-gap: 1vw;
-}
-
-
-#header{
-    border:0px solid lime; /*todo:*/
-    width:1fr;
+    grid-template:
+    [header-start] "header_left header_right" 42px [header-end]
+    [content-start] "map panel " 1fr [content-end]
+    / 7fr 3fr;
+    
+    column-gap: 1vw;
+    row-gap: 0;
     
 }
 
-#header h1{
-  margin: 5px 0px;
-  padding:0px;
-  font-size:20px;
-  line-height:32px;
-  border:0px solid pink;
-  display:block;
-  float:left;
-  font-weight:100;
+#header_left{
+    grid-area:header_left;
 }
 
-#header span#header_right{
-  margin:5px 15px;
-  padding:0px;
-  line-height:32px;
-  font-size:14px;
-  display:block;
-  float:right;
+#header_left h1{
+    margin: 5px 0px;
+    font-size:20px;
+    line-height:32px;
+    border:0px solid pink;
+    font-weight:100;
+}
+
+#header_right{
+    grid-area: header_right;
+    justify-self: right;
+
+    line-height:32px;
+    font-size:14px;
+    align-self:center; /*vertical align*/
 }
 
 #map {
-
+    grid-area: map;
 }
 
-
 #panel{
-
+  grid-area: panel;
+  display: flex; /*instead of floats?*/
+  flex-direction: column;
 }
 
 #panel a{
@@ -63,7 +61,7 @@ body {
 #panel h2{
   padding:0px;
   font-size:20px;
-  line-height:32px;
+  line-height:20px;
   border:0px solid pink;
   display:block;
   font-weight: 200;
@@ -78,23 +76,28 @@ body {
 
 #panel .section{
   border-bottom:1px solid #aaaaaa;
-  padding-bottom:15px;
+  padding-bottom:10px;
   margin-bottom:10px;
   overflow: hidden;
 }
 
 
+#panel #badges{
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  margin-bottom:-10px; /*cancel margin-bottom of last row of badges*/
+  
+}
+
 #panel #badges .badge{
   display:block;
-  float:left;
-  margin-right:1vw;
-  margin-bottom: 0.5vw;
+  margin:0px 15px 15px 0px;
   background-repeat: no-repeat;
   background-size:contain;
-  width:6vw;
-  height:7.32vw;
-  
-  
+  width:80px;
+  height:98px;
+
   }
   
 #panel #badges .badge.lvl1{ background-image: url("./img/badge1_yellow.png")}
@@ -109,7 +112,7 @@ body {
   color:black;
   font-weight:300;
   display:inline-block;
-  font-size:1vw;
+  font-size:16px;
 }
 
 .badge span.label{
@@ -117,19 +120,18 @@ body {
   text-align:center;
   color:black;
   /*font-size: 42px;*/
-  margin-top:0.5vw;
   font-weight:300;
   display:inline-block;
-  line-height:3vw;
-  font-size:3vw;
+  line-height:45px;
+  font-size:45px;
 }
 
 button#discover{
   width:50%;
   height:50px;
   border:2px solid white;
-  font-size:24px;
-  margin:15px 0px 10px 0px;
+  font-size:18px;
+  margin:0px 0px 0px 0px;
   background-color:#FFEC01;
 }
 
@@ -147,14 +149,3 @@ button#discover{
   right:0px;
   top:0px;
 }
-
-body {
-    background: black;
-    color: whitesmoke;
-    height:97vh;
-    width:96vw;
-    padding:0vh 1vw 2vh 1vw;
-    margin:0px;
-    font-size:14px;
-}
-
