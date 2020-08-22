@@ -1,36 +1,160 @@
 body {
     background: black;
     color: whitesmoke;
+    font-family: Kanit, sans-serif;
+    font-weight:200;
 }
 
-.container {
+.container0 {
+    display: grid;
+    grid-template-rows: 42px 1fr;
+    grid-column-gap: 0vw;   
+    height:100%;
+    margin:0px;
+}
+
+.container1 {
     display: grid;
     grid-template-columns: 7fr 3fr;
-    grid-template-rows: 1fr;
     grid-column-gap: 1vw;
 }
 
-.menu {
-    /*max-width: 20vw;*/
-    /*max-height: 90vh;*/
-    display: grid;
-    grid-template-rows: 1fr 1fr 1fr 1fr;
+
+#header{
+    border:0px solid lime; /*todo:*/
+    width:1fr;
+    
+}
+
+#header h1{
+  margin: 5px 0px;
+  padding:0px;
+  font-size:20px;
+  line-height:32px;
+  border:0px solid pink;
+  display:block;
+  float:left;
+  font-weight:100;
+}
+
+#header span#header_right{
+  margin:5px 15px;
+  padding:0px;
+  line-height:32px;
+  font-size:14px;
+  display:block;
+  float:right;
 }
 
 #map {
-    height: 98vh;
-    /*width: 70vw;*/
+
 }
 
-/*.overlay {*/
-/*    position: absolute;*/
-/*    width: 90vw;*/
-/*    height: 90vh;*/
-/*    transition: 2s ease;*/
-/*    top: 2.5vh;*/
-/*    left: 2.5vw;*/
-/*    background: grey;*/
-/*    z-index: 1000;*/
-/*    opacity: 90%;*/
-/*}*/
+
+#panel{
+
+}
+
+#panel a{
+  color: #FFEC01; /*tmou gold*/
+}
+
+
+#panel h2{
+  padding:0px;
+  font-size:20px;
+  line-height:32px;
+  border:0px solid pink;
+  display:block;
+  font-weight: 200;
+  margin-bottom:10px;
+  margin-top:0px;
+}
+
+#panel ul{
+  margin: 0px 0px;
+  padding-left:25px;
+}
+
+#panel .section{
+  border-bottom:1px solid #aaaaaa;
+  padding-bottom:15px;
+  margin-bottom:10px;
+  overflow: hidden;
+}
+
+
+#panel #badges .badge{
+  display:block;
+  float:left;
+  margin-right:1vw;
+  margin-bottom: 0.5vw;
+  background-repeat: no-repeat;
+  background-size:contain;
+  width:6vw;
+  height:7.32vw;
+  
+  
+  }
+  
+#panel #badges .badge.lvl1{ background-image: url("./img/badge1_yellow.png")}
+#panel #badges .badge.lvl2{ background-image: url("./img/badge2_green.png") }
+#panel #badges .badge.lvl3{ background-image: url("./img/badge3_blue.png") }
+#panel #badges .badge.lvl4{ background-image: url("./img/badge4_red.png") }
+#panel #badges .badge.lvl5{ background-image: url("./img/badge5_purple.png") }
+
+.badge span.time{
+  width:100%;
+  text-align:center;
+  color:black;
+  font-weight:300;
+  display:inline-block;
+  font-size:1vw;
+}
+
+.badge span.label{
+  width:100%;
+  text-align:center;
+  color:black;
+  /*font-size: 42px;*/
+  margin-top:0.5vw;
+  font-weight:300;
+  display:inline-block;
+  line-height:3vw;
+  font-size:3vw;
+}
+
+button#discover{
+  width:50%;
+  height:50px;
+  border:2px solid white;
+  font-size:24px;
+  margin:15px 0px 10px 0px;
+  background-color:#FFEC01;
+}
+
+#navigation{
+  position:relative;
+}
+
+.debug{
+  display:block; /*change to display:none in production*/
+}
+
+#navigation .debug{
+  width:50%;
+  position:absolute;
+  right:0px;
+  top:0px;
+}
+
+body {
+    background: black;
+    color: whitesmoke;
+    height:97vh;
+    width:96vw;
+    padding:0vh 1vw 2vh 1vw;
+    margin:0px;
+    font-size:14px;
+}
 
