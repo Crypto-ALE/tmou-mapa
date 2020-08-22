@@ -2,7 +2,7 @@ use diesel::{Queryable, Identifiable};
 use serde::{Deserialize, Serialize};
 use super::schema::*;
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Queryable)]
 pub struct Node {
     pub id: String,
     pub lat: f32,
@@ -32,8 +32,11 @@ pub struct Team {
     pub position: i64,
 }
 
-#[derive(Serialize, Deserialize, Clone, Default)]
-pub struct NodeContents {
-    pub r#type: String,
-    pub data: String,
+#[derive(Serialize, Deserialize, Clone, Default, Queryable)]
+pub struct Item {
+    pub r#type: String, // puzzles | badge | message
+    pub url: String,
+    pub level: i32,
+    pub label: String,
+    pub description: String,
 }

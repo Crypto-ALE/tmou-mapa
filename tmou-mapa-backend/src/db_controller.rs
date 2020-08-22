@@ -7,6 +7,8 @@ use serde::{Serialize, Deserialize};
 // for in-memory db
 use std::fs::{File, read_to_string};
 use std::io::prelude::*;
+use super::db_models;
+use super::errors;
 
 
 
@@ -16,24 +18,35 @@ use std::io::prelude::*;
 
 pub trait DbControl
 {
-    fn new() -> Self;
-    fn init(&mut self, conn: &str) -> TmouResult<()>;
-    fn get_team(&self, phrase: &str) -> Option<Team>;
+    fn get_team(&self, id: i32) -> Option<Team>;
     fn put_team(&mut self, team: Team) -> TmouResult<()>;
+    fn update_team_position(&mut self, team: &Team, position: i64) -> TmouResult<()>;
     fn get_pois_for_team(&self, phrase: &str) -> Option<Vec<Poi>>;
     fn put_pois_for_team(&mut self, pois:Vec<Poi>) -> ();
 }
+/*
 
 #[derive(Serialize, Deserialize)]
 pub struct MemoryDbControl
 {
     teams: HashMap<String, Team>,
     pois: HashMap<String, Vec<Poi>>,
-    filename: String
+    filename: String,
 }
 
 impl MemoryDbControl
 {
+    pub fn new() -> MemoryDbControl
+    {
+        MemoryDbControl{teams: HashMap::new(), pois: HashMap::new(), filename:"***".to_string()}
+    }
+
+    pub fn init(&mut self, conn: &str) -> TmouResult<()>
+    {
+        self.filename = conn.to_string();
+        self.load()?;
+        Ok(())
+    }
 
     fn load(&mut self)->TmouResult<()>
     {
@@ -68,19 +81,7 @@ impl MemoryDbControl
 
 impl DbControl for MemoryDbControl
 {
-    fn new() -> MemoryDbControl
-    {
-        MemoryDbControl{teams: HashMap::new(), pois: HashMap::new(), filename:"***".to_string()}
-    }
-
-    fn init(&mut self, conn: &str) -> TmouResult<()>
-    {
-        self.filename = conn.to_string();
-        self.load()?;
-        Ok(())
-    }
-
-    fn get_team(&self, phrase: &str) -> Option<Team>
+    fn get_team(&self, id: i32) -> Option<Team>
     {
         let t = self.teams.get(phrase)?;
         Some(t.clone())
@@ -104,4 +105,6 @@ impl DbControl for MemoryDbControl
     fn put_pois_for_team(&mut self, pois:Vec<Poi>) -> ()
     {
     }
+fn update_team_position(&mut self, _: &db_models::Team, _: i64) -> std::result::Result<(), errors::TmouError> { todo!() }
 }
+*/
