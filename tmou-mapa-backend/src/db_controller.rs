@@ -77,7 +77,6 @@ impl MemoryDbControl
 
 impl DbControl for MemoryDbControl
 {
-
     fn get_team(&self, phrase: &str) -> Option<Team>
     {
         let t = self.teams.get(phrase)?;

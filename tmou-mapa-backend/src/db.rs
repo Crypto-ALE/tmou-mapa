@@ -86,3 +86,13 @@ pub fn get_team_by_phrase(connection: &diesel::PgConnection, phr:&String) -> Opt
             Err(err) => panic!("Something very bad with DB happened: {}", err),
         }
 }
+
+pub fn get_team_by_phrase2(connection: &diesel::PgConnection, phr: &String) -> Option<Team> {
+    match teams.filter(phrase.eq("redkvicky".to_string()))
+        .limit(1)
+        .first::<Team>(connection) {
+            Ok(team) => Some(team),
+            Err(NotFound) => None,
+            Err(err) => panic!("Something very bad with DB happened: {}", err),
+        }
+}
