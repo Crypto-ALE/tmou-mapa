@@ -51,4 +51,13 @@ impl From<TmouError> for rocket::http::Status
     }
 }
 
+impl From<diesel::result::Error> for TmouError
+{
+    fn from(err:diesel::result::Error) -> Self
+    {
+        TmouError{message: err.to_string(), response: 404}
+    }
+}
+
+
 pub type TmouResult<T> = Result<T, TmouError>;

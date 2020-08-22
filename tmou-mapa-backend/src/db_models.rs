@@ -1,13 +1,14 @@
-use diesel::{Queryable, Identifiable};
+use diesel::{Queryable, Identifiable, Insertable};
 use serde::{Deserialize, Serialize};
 use super::schema::*;
 
-#[derive(Serialize, Deserialize, Queryable)]
+#[derive(Serialize, Deserialize, Queryable, Insertable)]
+#[table_name = "nodes"]
 pub struct Node {
-    pub id: String,
-    pub lat: f32,
-    pub lon: f32,
-    pub r#type: String,
+    pub id: i64,
+    pub lat: String,
+    pub lon: String,
+    pub type_: String
 }
 
 #[derive(Serialize, Deserialize)]

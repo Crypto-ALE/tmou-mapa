@@ -51,22 +51,22 @@ pub fn read_osm_from_string(xml: &str) -> TmouResult<Osm>
 fn add_node_types(osm:& mut Osm)
 {
     let node_iter = osm.ways.iter().flat_map(|(_,w)| &w.nodes);
-    let mut nodes = node_iter.map(|n| n.clone()).collect::<Vec<String>>();
+    let mut nodes = node_iter.map(|n| *n).collect::<Vec<i64>>();
     nodes.sort();
     let mut m = HashMap::new();
-    let mut last_n= "".to_string();
+    let mut last_n= 0;
     let mut last_count = 0;
     for n in nodes
     {
-        if &n == &last_n
+        if n == last_n
         {
             last_count = last_count + 1;
         }
         else
         {
-            if &last_n != &"".to_string()
+            if last_n != 0
             {
-                m.insert(last_n.clone(), last_count);
+                m.insert(last_n, last_count);
             }
             last_count = 1;
             last_n = n;
@@ -89,18 +89,18 @@ fn add_node_types(osm:& mut Osm)
 }
 
 
-fn read_node(n: &roxmltree::Node) -> Option<(String, Node)>
+fn read_node(n: &roxmltree::Node) -> Option<(i64, Node)>
 {
-    let id = n.attribute("id")?;
+    let id = n.attribute("id").and_then(|l| l.parse::<i64>().ok())?;
     let lat = n.attribute("lat").and_then(|l| l.parse::<f32>().ok())?;
     let lon = n.attribute("lon").and_then(|l| l.parse::<f32>().ok())?;
-    Some((id.to_string(), 
-      Node{id:id.to_string(), lat, lon, r#type:"ordinary".to_string()}))
+    Some((id, 
+      Node{id, lat, lon, r#type:"ordinary".to_string()}))
 }
 
-fn read_way(n: &roxmltree::Node) -> Option<(String, Way)>
+fn read_way(n: &roxmltree::Node) -> Option<(i64, Way)>
 {
-    let id = n.attribute("id")?;
+    let id = n.attribute("id").and_then(|i| i.parse::<i64>().ok())?;
     if !n.children().any(|a| 
                 a.tag_name().name() == "tag" && 
                 a.has_attribute("k") && 
@@ -113,6 +113,6 @@ fn read_way(n: &roxmltree::Node) -> Option<(String, Way)>
         .children()
         .filter(|a| a.tag_name().name() == "nd" && a.has_attribute("ref"))
         .map(|a| a.attribute("ref")
-        .unwrap().to_string()).collect();
-    Some((id.to_string(), Way{id:id.to_string(), nodes}))
+        .unwrap().parse::<i64>().unwrap()).collect();
+    Some((id, Way{id, nodes}))
 }

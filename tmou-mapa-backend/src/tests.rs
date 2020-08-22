@@ -29,8 +29,8 @@ fn osm_reader_when_sample_file_given_way1000_contains_nodes123()->TmouResult<()>
 {
     let fname = current_dir()?.join("sample_osm_data.xml");
     let osm = read_osm_from_file(fname.to_str().unwrap())?;
-    let way = osm.ways.get("1000").unwrap();
-    assert_eq!(way.nodes, vec!["1".to_string(),"2".to_string(),"3".to_string()]);
+    let way = osm.ways.get(&1000).unwrap();
+    assert_eq!(way.nodes, vec![1,2,3]);
     Ok(())
 }
 
@@ -48,7 +48,7 @@ fn osm_reader_node_is_correctly_parsed()->TmouResult<()>
        </osm>"#;
     let osm = read_osm_from_string(xml)?;
     assert_eq!(osm.nodes.len(), 1);
-    let node = osm.nodes.get("1").unwrap();
+    let node = osm.nodes.get(&1).unwrap();
     assert_eq!(node.lat, 2.5);
     assert_eq!(node.lon, 3.5);
     Ok(())
@@ -110,8 +110,8 @@ fn osm_reader_when_malformed_way_supplied_reader_gracefully_continues()->TmouRes
        </osm>"#;
     let osm = read_osm_from_string(xml)?;
     assert_eq!(osm.ways.len(),2);
-    let way = osm.ways.get("1002").unwrap();
-    assert_eq!(way.nodes, vec!["1".to_string()]);
+    let way = osm.ways.get(&1002).unwrap();
+    assert_eq!(way.nodes, vec![1]);
     Ok(())
 }
 
@@ -171,10 +171,10 @@ fn osm_logic_get_ways_going_through_node_id_returns_correct_ways()->TmouResult<(
         </way>
        </osm>"#;
     let osm = read_osm_from_string(xml)?;
-    let ways: Vec<& osm::Way> = get_ways_going_through_node_id(&osm, "4".to_string());
+    let ways: Vec<& osm::Way> = get_ways_going_through_node_id(&osm, 4);
     assert_eq!(ways.len(), 2);
-    assert_eq!(ways.iter().any(|w| w.id == "34"), true);
-    assert_eq!(ways.iter().any(|w| w.id == "45"), true);
+    assert_eq!(ways.iter().any(|w| w.id == 34), true);
+    assert_eq!(ways.iter().any(|w| w.id == 45), true);
     Ok(())
 }
 
@@ -215,12 +215,12 @@ fn osm_logic_get_reachable_ways_for_node_id_returns_correct_ways()->TmouResult<(
          </way>
        </osm>"#;
     let osm = read_osm_from_string(xml)?;
-    let ways: Vec<& osm::Way> = get_reachable_ways_for_node_id(&osm, "3".to_string());
+    let ways: Vec<& osm::Way> = get_reachable_ways_for_node_id(&osm, 3);
     assert_eq!(ways.len(), 4);
-    assert_eq!(ways.iter().any(|w| w.id == "12"), true);
-    assert_eq!(ways.iter().any(|w| w.id == "23"), true);
-    assert_eq!(ways.iter().any(|w| w.id == "34"), true);
-    assert_eq!(ways.iter().any(|w| w.id == "45"), true);
+    assert_eq!(ways.iter().any(|w| w.id == 12), true);
+    assert_eq!(ways.iter().any(|w| w.id == 23), true);
+    assert_eq!(ways.iter().any(|w| w.id == 34), true);
+    assert_eq!(ways.iter().any(|w| w.id == 45), true);
     Ok(())
 }
 
