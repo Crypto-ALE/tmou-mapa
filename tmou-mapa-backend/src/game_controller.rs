@@ -21,7 +21,7 @@ const FILLOVA_X_BROZIKOVA_NODE_ID: i64 = 3750367566;
 pub fn get_pois(position: i64) -> TmouResult<api::Pois>
 {
     let osm = get_osm();
-    let osm_ways= get_reachable_ways_for_node_id(&osm, position.to_string());
+    let osm_ways= get_reachable_ways_for_node_id(&osm, position);
     let osm_nodes = get_nodes_in_ways(&osm, &osm_ways);
     let nodes = osm_nodes.iter().map(|n| node_osm_to_api(n)).collect();
     let ways = osm_ways.iter().map(|w| way_osm_to_api(w)).collect();
@@ -107,7 +107,7 @@ impl From<db::Item> for api::Item
 fn way_osm_to_api(w: &osm::Way)->api::Way
 {
     api::Way{
-        id: w.id.clone(),
+        id: w.id,
         nodes:w.nodes.clone()
     }
 }
@@ -115,7 +115,7 @@ fn way_osm_to_api(w: &osm::Way)->api::Way
 fn node_osm_to_api(n: &osm::Node)->api::Node
 {
     api::Node{
-        id: n.id.clone(),
+        id: n.id,
         y:n.lat.clone(),
         x:n.lon.clone(),
         r#type:n.r#type.clone(),

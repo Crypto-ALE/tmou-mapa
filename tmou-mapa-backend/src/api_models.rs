@@ -11,7 +11,7 @@ pub struct NodeAction
 #[derive(Serialize, Deserialize)]
 pub struct Node
 {
-   pub id: String,
+   pub id: i64,
    pub x: f32,
    pub y: f32,
    pub r#type: String,
@@ -45,8 +45,8 @@ pub struct Phrase
 #[derive(Serialize, Deserialize)]
 pub struct Way
 {
-    pub id: String,
-    pub nodes: Vec<String>,
+    pub id: i64,
+    pub nodes: Vec<i64>,
 }
 
 #[derive(Serialize, Deserialize)]

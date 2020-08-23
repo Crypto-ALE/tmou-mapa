@@ -16,7 +16,7 @@
             "problemMatcher": [
                 "$rustc"
             ],
-            "label": "Rust: cargo run - tmou-mapa-backend",
+            "label": "Rust: cargo run - ???",
             "group": "build"
         },
         {
@@ -30,6 +30,18 @@
                 "isDefault": true
             },
             "label": "Rust: cargo test - tmou-mapa-backend"
+        },
+        {
+            "type": "shell",
+            "command": "cargo run --bin import-osm-data pubfiles/tiles/osmdata.xml",
+            "label": "Rust: cargo run - import-osm-data",
+            "group": "build"
+        },
+        {
+            "type": "shell",
+            "command": "cargo run --bin tmou-mapa-backend",
+            "label": "Rust: cargo run - tmou-mapa-backend",
+            "group": "build"
         }
     ]
 }
