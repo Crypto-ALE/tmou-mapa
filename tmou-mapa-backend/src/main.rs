@@ -1,10 +1,8 @@
 #![feature(proc_macro_hygiene, decl_macro)]
 
 #[macro_use] extern crate rocket;
-#[macro_use] extern crate lazy_static;
 #[macro_use] extern crate diesel;
 #[macro_use] extern crate diesel_migrations;
-#[macro_use] extern crate regex;
 
 use rocket::fairing::AdHoc;
 use rocket::http::RawStr;
@@ -72,7 +70,7 @@ fn info(
     // TODO: more concise way?
     println!("Debug team:{:?}", team);
     let db_ctrl = PostgresDbControl::new(conn);
-    match game_controller::get_info(db_ctrl, team) {
+    match game_controller::get_info(&db_ctrl, team) {
         Ok(info) => Ok(Json(info)),
         Err(_) => Err(Status::NotFound)
     }
@@ -108,8 +106,8 @@ fn go(
     team: db_models::Team,
     conn: PostgresDbConn
 ) -> Result<Json<TeamInfo>, Status> {
-    let db_ctrl = PostgresDbControl::new(conn);
-    match game_controller::go_to_node(db_ctrl, team, action.nodeId) {
+    let mut db_ctrl = PostgresDbControl::new(conn);
+    match game_controller::go_to_node(& mut db_ctrl, team, action.nodeId) {
         Ok(info) => Ok(Json(info)),
         Err(_) => Err(Status::NotFound)
     }
@@ -144,15 +142,16 @@ fn discover(
 ) -> Result<Json<Items>, Status> {
     println!("Debug team:{:?}", team);
     let db_ctrl = PostgresDbControl::new(conn);
-    match game_controller::discover_node(team.position) {
+    match game_controller::discover_node(&db_ctrl, team.position) {
         Ok(nc) => Ok(Json(nc)),
         Err(_) => Err(Status::NotFound),
     }
 }
 
 #[get("/")]
-fn index() -> String {
-    format!("Become the legend!")
+fn index() -> Template {
+    let context = std::collections::HashMap::<String, String>::new();
+    Template::render("index", context)
 }
 
 #[get("/<secret_phrase>")]
@@ -177,7 +176,6 @@ fn main() {
         Ok(x) => x.join("static"),
         _ => panic!("Cannot access current directory"),
     };
-    game_controller::initialize();
     rocket::ignite()
         .attach(PostgresDbConn::fairing())
         .attach(AdHoc::on_attach("Database Migrations", run_migrations))
@@ -195,14 +193,6 @@ impl<'a, 'r> FromRequest<'a, 'r> for db_models::Team {
 
     fn from_request(request: &'a Request<'r>) -> Outcome<db_models::Team, Self::Error> {
         let conn = request.guard::<PostgresDbConn>()?;
-        // FLOW:
-        // Is there a cookie?
-        //  No - go to phrase
-        //  Yes - is it valid?
-        //    No - go to phrase
-        //    Yes - extract id and name, search team by id
-        //    Team found - return it
-        //    Team not found - first-time access, create a new team
         request
             .cookies()
             .get("TMOU_SSO_JWT")
@@ -214,8 +204,15 @@ impl<'a, 'r> FromRequest<'a, 'r> for db_models::Team {
                 let team_id: i32 = 1;
                 let team_name = "Maštěné Ředkvičky".to_string();
                 let phrase = "MegaTajnáFráze".to_string();
-                db::get_team_by_id(&*conn, team_id)
-                    .or_else(|| Some(db::insert_team(&*conn, team_id, team_name, phrase)))
+                let mut db_ctrl= PostgresDbControl::new(conn);
+                let db: &mut dyn db_controller::DbControl = &mut db_ctrl;
+                db.get_team(team_id)
+                    .or_else(|| Some(db.put_team(db_models::Team {
+                        id: team_id, 
+                        name: team_name, 
+                        phrase: phrase, 
+                        team_id: 0, 
+                        position: 0}).unwrap()))
             })
             .or_forward(())
     }
