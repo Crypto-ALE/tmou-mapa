@@ -15,11 +15,11 @@ async function run() {
   const secretPhase = document.querySelector("body").dataset.secretphrase;
 
   document.getElementById('discover').onclick = async (e) => {
-    const nodeContent = await discover(secretPhase);
-    if (nodeContent.type === 'Puzzle') {
-      window.open(nodeContent.data, 'new');
+    const {items} = await discover(secretPhase);
+    if (items.length === 0) {
+      alert('Tady nic není!');
     } else {
-      alert(nodeContent.data);
+      alert(JSON.stringify(items, null, 2));
     }
   }
 
