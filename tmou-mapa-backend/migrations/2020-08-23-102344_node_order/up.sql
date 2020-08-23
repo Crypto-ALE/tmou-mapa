@@ -1,0 +1,1 @@
+ALTER TABLE ways_nodes ADD COLUMN node_order SMALLINT NOT NULL;
