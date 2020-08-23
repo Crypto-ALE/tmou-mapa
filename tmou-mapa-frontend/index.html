@@ -17,34 +17,34 @@
   <div id="header_left">
     <h1>KVALIFIKACE TMOU! 22</h1>
   </div>
-  
+
   <div id="header_right">
-      <span id="team">Přihlášený tým: Bazinga</span> | 
+      <span id="team">Přihlášený tým: Bazinga</span> |
       <a href="#">Logout</a>
   </div>
-    
-  
+
+
     <div id="map"></div>
-    
+
     <div id="panel">
-    
+
       <div class="message OK">
       <p> Toto je dobrá zpráva :-) </p>
       </div>
-      
+
       <div class="message WRONG">
       <p> Toto je špatná zpráva :-( </p>
       </div>
-      
+
       <div class="message INFO">
       <p> Toto je neutrální zpráva :-| </p>
       </div>
-    
+
       <div class="section" id="puzzles">
         <h2>Zadání šifer</h2>
         <p> Zadání se zde objeví až po startu hry </p>
         <ul>
-          <li> 
+          <li>
             <a href="#">Level 1</a>
           </li>
           <li>
@@ -61,7 +61,7 @@
           </li>
         </ul>
       </div>
-      
+
       <div class="section" id="navigation">
         <h2>Akce</h2>
         <button id="discover">Hledat šifru</button>
@@ -73,7 +73,7 @@
           </ul>
         </div>
       </div>
-    
+
       <div class="section">
         <h2>Získané odznáčky</h2>
         <div id="badges">
@@ -111,44 +111,43 @@
           </div>
         </div>
       </div>
-    
-      
- 
+
+
+
   </div>
-  
+
   <!-- ADD POPUP - CHANGE TO DISPLAY:NONE WHEN HIDDEN-->
-    <!--<div class="overlay"></div> 
+    <!--<div class="overlay"></div>
     <div class="popup">
       <div class="large_badge lvl5">
         <span class="time">21:10</span>
-        <span class="label">51</span>  
+        <span class="label">51</span>
       </div>
       <div class="popup_text">
         <h2>Gratulujeme!</h2>
         <p>Získali jste odznáček za&nbsp;šifru 51 (čas 21:10).</p>
         <button id="continue">Pokračovat</button>
-      </div> 
+      </div>
     </div>-->
-  <!-- END POPUP -->  
-  
+  <!-- END POPUP -->
+
   <!-- ADD POPUP - CHANGE TO DISPLAY:NONE WHEN HIDDEN-->
-    <div class="overlay"></div> 
-    <div class="popup">
+  <div class="overlay overlay__hidden" id="overlay"></div>
+    <div class="popup popup__hidden" id="popup">
       <div class="large_badge shrug">
         <span class="time">21:10</span>
-        <span class="label">51</span>  
+        <span class="label">51</span>
       </div>
       <div class="popup_text">
         <h2>Bohužel...</h2>
         <p>Na toto místo žádná šifra nevede, zkuste to jinde.</p>
         <button id="continue">Pokračovat</button>
-      </div> 
+      </div>
     </div>
-  <!-- END POPUP --> 
-  
-  
+  <!-- END POPUP -->
+
+
 </div>
 <script src="/static/index.js"></script>
-    <div class="overlay"> </div>
 </body>
 </html>

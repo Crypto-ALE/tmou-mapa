@@ -17,9 +17,14 @@ async function run() {
   document.getElementById('discover').onclick = async (e) => {
     const {items} = await discover(secretPhase);
     if (items.length === 0) {
-      alert('Tady nic není!');
+      showPopup('Bohužel...', 'Na toto místo žádná šifra nevede, zkuste to jinde.');
     } else {
-      alert(JSON.stringify(items, null, 2));
+      const itemsToShow = items.map((item) => {
+        if (item.type === 'Puzzle') {
+          return `Našli jste šifru! Podívejte se na ni <a href="${items[0].url}">zde</a>.`
+        }
+      });
+      showPopup('Hurá!', itemsToShow.join('<br />'));
     }
   }
 
@@ -33,6 +38,25 @@ async function run() {
   document.getElementById('pos').textContent = currentNodeCoords.toString();
   document.getElementById('nodeId').textContent = state.position;
   drawNodesAndWays(nodes, ways);
+
+  function showPopup(heading: string, text: string) {
+    document.querySelector('.popup_text>h2').textContent = heading;
+    document.querySelector('.popup_text>p').innerHTML = text;
+    document.getElementById('popup').classList.remove('popup__hidden');
+    document.getElementById('overlay').classList.remove('overlay__hidden');
+    document.getElementById('popup').classList.add('popup__visible');
+    document.getElementById('overlay').classList.add('overlay__visible');
+
+    document.querySelector('.popup #continue').addEventListener('click', hidePopup);
+
+    function hidePopup(e: Event) {
+      document.getElementById('popup').classList.remove('popup__visible');
+      document.getElementById('overlay').classList.remove('overlay__visible');
+      document.getElementById('popup').classList.add('popup__hidden');
+      document.getElementById('overlay').classList.add('overlay__hidden');
+      e.target.removeEventListener('click', hidePopup);
+    }
+  }
 
   function drawNodesAndWays(nodes, ways) {
     for (const [id, node] of nodes.entries()) {

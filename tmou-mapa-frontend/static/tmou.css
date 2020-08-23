@@ -14,16 +14,16 @@ button{
 .container {
     height: 100vh;
     margin: 0px 10px;
-    
+
     display: grid;
     grid-template:
     [header-start] "header_left header_right" 42px [header-end]
     [content-start] "map panel " 1fr [content-end]
     / 7fr 3fr;
-    
+
     column-gap: 1vw;
     row-gap: 0;
-    
+
 }
 
 #header_left{
@@ -140,7 +140,7 @@ button#discover{
   flex-direction: row;
   flex-wrap: wrap;
   margin-bottom:-10px; /*cancel margin-bottom of last row of badges*/
-  
+
 }
 
 #panel #badges .badge{
@@ -164,27 +164,27 @@ button#discover{
 
 
 
-.badge.lvl1, .large_badge.lvl1{ 
+.badge.lvl1, .large_badge.lvl1{
   background-image: url("./img/badge1_yellow.png")
   }
-.badge.lvl2, .large_badge.lvl2{ 
-  background-image: url("./img/badge2_green.png") 
+.badge.lvl2, .large_badge.lvl2{
+  background-image: url("./img/badge2_green.png")
   }
-.badge.lvl3, .large_badge.lvl3{ 
-  background-image: url("./img/badge3_blue.png") 
+.badge.lvl3, .large_badge.lvl3{
+  background-image: url("./img/badge3_blue.png")
   }
-.badge.lvl4, .large_badge.lvl4{ 
-  background-image: url("./img/badge4_red.png") 
+.badge.lvl4, .large_badge.lvl4{
+  background-image: url("./img/badge4_red.png")
   }
-.badge.lvl5, .large_badge.lvl5{ 
-  background-image: url("./img/badge5_purple.png") 
-  }
-  
-.large_badge.shrug{ 
-  background-image: url("./img/shrug.png") 
+.badge.lvl5, .large_badge.lvl5{
+  background-image: url("./img/badge5_purple.png")
   }
 
-  
+.large_badge.shrug{
+  background-image: url("./img/shrug.png")
+  }
+
+
 .badge span.time{
   width:100%;
   text-align:center;
@@ -233,8 +233,15 @@ button#discover{
   z-index:1000;
   background:black;
   opacity:0.5;
-  display:block; /*SET TO NONE TO HIDE POPUP*/
   z-index:1000;
+}
+
+.overlay__visible{
+  display:block; /*SET TO NONE TO HIDE POPUP*/
+}
+
+.overlay__hidden{
+  display: none;
 }
 
 .popup{
@@ -243,7 +250,6 @@ button#discover{
   align-self:center;
   width:400px;
   /*height:200px;*/
-  display:block; /*SET TO NONE TO HIDE POPUP*/
   border:2px solid black;
   border-radius:10px;
   background:#ffffff55;
@@ -264,6 +270,14 @@ button#discover{
   font-size:20px;
 }
 
+.popup__visible{
+  display: block;
+}
+
+.popup__hidden{
+  display: none;
+}
+
 button#continue{
   width:220px;
   line-height:30px;
@@ -271,4 +285,3 @@ button#continue{
   border: 2px solid #003300;
   background: #33FF33aa;
 }
-
