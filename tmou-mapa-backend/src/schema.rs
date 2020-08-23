@@ -49,6 +49,7 @@ table! {
     ways_nodes (way_id, node_id) {
         way_id -> Int8,
         node_id -> Int8,
+        node_order -> Int2,
     }
 }
 
