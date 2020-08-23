@@ -154,7 +154,7 @@ button#discover{
 
 .large_badge{
   display:block;
-  margin:0px 15px 15px 0px;
+  margin:0px 15px 0px 0px;
   background-repeat: no-repeat;
   background-size:contain;
   width:160px;
