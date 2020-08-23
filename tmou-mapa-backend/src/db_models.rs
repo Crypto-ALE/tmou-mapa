@@ -11,12 +11,13 @@ pub struct Node {
     pub type_: String
 }
 
-#[derive(Serialize, Deserialize, Queryable, Insertable)]
+#[derive(Serialize, Deserialize, Queryable, Insertable, Debug)]
 #[table_name = "ways_nodes"]
 pub struct WaysToNodes {
     pub way_id: i64,
     pub node_id: i64
 }
+
 
 impl std::cmp::PartialEq for WaysToNodes // for unique()
 {
@@ -46,16 +47,9 @@ impl std::cmp::PartialOrd for WaysToNodes // for dedup
 }
 
 #[derive(Serialize, Deserialize)]
-pub struct Way {
-    pub name: String,
-    pub closed: bool,
-    pub nodes: Vec<String>,
-}
-
-#[derive(Serialize, Deserialize)]
-pub struct Poi {
+pub struct Pois {
     pub nodes: Vec<Node>,
-    pub ways: Vec<Way>,
+    pub ways_to_nodes: Vec<WaysToNodes>,
 }
 
 #[derive(Serialize, Deserialize, Clone, Default, Queryable, Debug, Identifiable)]

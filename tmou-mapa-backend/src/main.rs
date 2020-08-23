@@ -72,7 +72,7 @@ fn info(
     // TODO: more concise way?
     println!("Debug team:{:?}", team);
     let db_ctrl = PostgresDbControl::new(conn);
-    match game_controller::get_info(db_ctrl, team) {
+    match game_controller::get_info(&db_ctrl, team) {
         Ok(info) => Ok(Json(info)),
         Err(_) => Err(Status::NotFound)
     }
@@ -108,8 +108,8 @@ fn go(
     team: db_models::Team,
     conn: PostgresDbConn
 ) -> Result<Json<TeamInfo>, Status> {
-    let db_ctrl = PostgresDbControl::new(conn);
-    match game_controller::go_to_node(db_ctrl, team, action.nodeId) {
+    let mut db_ctrl = PostgresDbControl::new(conn);
+    match game_controller::go_to_node(& mut db_ctrl, team, action.nodeId) {
         Ok(info) => Ok(Json(info)),
         Err(_) => Err(Status::NotFound)
     }
@@ -144,15 +144,16 @@ fn discover(
 ) -> Result<Json<Items>, Status> {
     println!("Debug team:{:?}", team);
     let db_ctrl = PostgresDbControl::new(conn);
-    match game_controller::discover_node(team.position) {
+    match game_controller::discover_node(&db_ctrl, team.position) {
         Ok(nc) => Ok(Json(nc)),
         Err(_) => Err(Status::NotFound),
     }
 }
 
 #[get("/")]
-fn index() -> String {
-    format!("Become the legend!")
+fn index() -> Template {
+    let context = std::collections::HashMap::<String, String>::new();
+    Template::render("index", context)
 }
 
 #[get("/<secret_phrase>")]
@@ -177,7 +178,7 @@ fn main() {
         Ok(x) => x.join("static"),
         _ => panic!("Cannot access current directory"),
     };
-    game_controller::initialize();
+    //game_controller::initialize();
     rocket::ignite()
         .attach(PostgresDbConn::fairing())
         .attach(AdHoc::on_attach("Database Migrations", run_migrations))
@@ -195,14 +196,6 @@ impl<'a, 'r> FromRequest<'a, 'r> for db_models::Team {
 
     fn from_request(request: &'a Request<'r>) -> Outcome<db_models::Team, Self::Error> {
         let conn = request.guard::<PostgresDbConn>()?;
-        // FLOW:
-        // Is there a cookie?
-        //  No - go to phrase
-        //  Yes - is it valid?
-        //    No - go to phrase
-        //    Yes - extract id and name, search team by id
-        //    Team found - return it
-        //    Team not found - first-time access, create a new team
         request
             .cookies()
             .get("TMOU_SSO_JWT")
