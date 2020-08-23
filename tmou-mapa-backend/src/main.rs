@@ -1,10 +1,8 @@
 #![feature(proc_macro_hygiene, decl_macro)]
 
 #[macro_use] extern crate rocket;
-#[macro_use] extern crate lazy_static;
 #[macro_use] extern crate diesel;
 #[macro_use] extern crate diesel_migrations;
-#[macro_use] extern crate regex;
 
 use rocket::fairing::AdHoc;
 use rocket::http::RawStr;
@@ -178,7 +176,6 @@ fn main() {
         Ok(x) => x.join("static"),
         _ => panic!("Cannot access current directory"),
     };
-    //game_controller::initialize();
     rocket::ignite()
         .attach(PostgresDbConn::fairing())
         .attach(AdHoc::on_attach("Database Migrations", run_migrations))
@@ -207,8 +204,15 @@ impl<'a, 'r> FromRequest<'a, 'r> for db_models::Team {
                 let team_id: i32 = 1;
                 let team_name = "Maštěné Ředkvičky".to_string();
                 let phrase = "MegaTajnáFráze".to_string();
-                db::get_team_by_id(&*conn, team_id)
-                    .or_else(|| Some(db::insert_team(&*conn, team_id, team_name, phrase)))
+                let mut db_ctrl= PostgresDbControl::new(conn);
+                let db: &mut dyn db_controller::DbControl = &mut db_ctrl;
+                db.get_team(team_id)
+                    .or_else(|| Some(db.put_team(db_models::Team {
+                        id: team_id, 
+                        name: team_name, 
+                        phrase: phrase, 
+                        team_id: 0, 
+                        position: 0}).unwrap()))
             })
             .or_forward(())
     }

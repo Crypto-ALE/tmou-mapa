@@ -8,14 +8,12 @@ mod schema;
 
 use diesel::prelude::*;
 use diesel::insert_into;
-use diesel::result::Error::NotFound;
 use std::env;
 use errors::*;
 use schema::nodes::dsl as nodes;
 use schema::ways_nodes::dsl as ways_nodes;
 
 use osm_reader::*;
-use osm_models as osm;
 use db_models as db;
 use regex::Regex;
 
@@ -23,7 +21,7 @@ fn import_osm(path: &String) -> TmouResult<()>
 {
     println!("Reading OSM data from {}", path);
     let osm = read_osm_from_file(path)?;
-    let db_nodes: Vec<db::Node> = osm.nodes.into_iter().map(|(k,n)| 
+    let db_nodes: Vec<db::Node> = osm.nodes.into_iter().map(|(_,n)| 
         db::Node{
             id: n.id, 
             lat: n.lat, 
@@ -38,14 +36,18 @@ fn import_osm(path: &String) -> TmouResult<()>
     let conn = PgConnection::establish(&url).unwrap();
 
     println!("Inserting {} nodes into db", db_nodes.len());
-    insert_into(nodes::nodes).values(db_nodes).execute(&conn)?;
+    match insert_into(nodes::nodes).values(db_nodes).execute(&conn)
+    {
+        Err(e) => println!("Failed with {}; continuing...", e.to_string()),
+        _ => ()
+    }
 
     let mut ways2nodes: Vec<db_models::WaysToNodes> = Vec::new();
     for (_,w) in osm.ways
     {
-        for n in w.nodes
+        for (i, n) in w.nodes.into_iter().enumerate()
         {
-            ways2nodes.push(db_models::WaysToNodes{way_id: w.id, node_id:n});
+            ways2nodes.push(db_models::WaysToNodes{way_id: w.id, node_id:n, node_order: i as i16});
         }
     }
 

@@ -8,6 +8,7 @@ use super::osm_logic::*;
 #[allow(unused_imports)]
 use super::errors::*;
 
+#[allow(unused)]
 use std::env::current_dir;
 
 /////////////////////////////////////////////////////////////////////

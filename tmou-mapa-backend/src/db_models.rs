@@ -15,7 +15,8 @@ pub struct Node {
 #[table_name = "ways_nodes"]
 pub struct WaysToNodes {
     pub way_id: i64,
-    pub node_id: i64
+    pub node_id: i64,
+    pub node_order: i16
 }
 
 
