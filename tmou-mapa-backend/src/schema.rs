@@ -5,7 +5,7 @@ table! {
         type_ -> Varchar,
         url -> Varchar,
         level -> Int2,
-        label -> Nullable<Varchar>,
+        name -> Varchar,
         description -> Nullable<Text>,
     }
 }

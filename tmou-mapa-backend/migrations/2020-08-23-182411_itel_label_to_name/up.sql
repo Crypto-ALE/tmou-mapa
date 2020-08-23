@@ -1,0 +1,3 @@
+ALTER TABLE items RENAME COLUMN label TO name;
+ALTER TABLE items ALTER COLUMN name SET NOT NULL;
+ALTER TABLE items ADD CONSTRAINT name_unique UNIQUE (name);
