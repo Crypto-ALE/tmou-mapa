@@ -15,10 +15,10 @@ pub fn get_contents_of_node(node_id: i64) -> TmouResult<Vec<Item>>
 fn puzzle(url: &str) -> Item
 {
     Item{
-        r#type:"Puzzle".to_string(), 
+        type_:"Puzzle".to_string(), 
         url:format!("/static/puzzles/{}",url.to_string()),
-        label:"puzzles-1".to_string(),
-        description:"šifry sady 1".to_string(),
+        name:"puzzles-1".to_string(),
+        description:Some("šifry sady 1".to_string()),
         level:1,
     }
 }

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<game name="Tmou XXII">
+  <items>
+    <item label="puzzles-1" type="puzzles" description="šifry sady 1" url="/static/puzzles/7-mysi_a_syr.pdf" level="1">
+	  <node id="539563487"/> <!--Antoninek-->
+	</item>
+    <item label="badge-1-1" type="badge" description="Od značek 11" url="badge11.png" level="1">
+	  <node id="600897437"/> <!--Brožíkova 24 vchod-->
+	  <node id="600897447"/> <!--Brožíkova 25 vchod-->
+	</item>
+    <item label="shop" type="shop" description="Směnárna" url="" level="0">
+	  <node id="298097758"/> <!--Zásilkovna Fillova 1 konec ulice-->
+	  <node id="7294928659"/> <!--Charlie's 4est západní roh-->
+	</item>
+  </items>
+</game>

@@ -7,6 +7,8 @@ use rocket_contrib::databases::diesel;
 use super::schema::teams::dsl as teams;
 use super::schema::nodes::dsl as nodes;
 use super::schema::ways_nodes::dsl as ways_nodes;
+use super::schema::nodes_items::dsl as nodes_items;
+use super::schema::items::dsl as items;
 use super::db_controller::DbControl;
 use super::db_models;
 use super::errors;
@@ -93,6 +95,15 @@ fn get_reachable_nodes(&self, seed: i64) -> std::result::Result<db_models::Pois,
     Ok(db_models::Pois{nodes: nodes, ways_to_nodes: w2n_level_1})
 }
 
+fn get_items_in_node(&self, node_id: i64) -> std::result::Result<std::vec::Vec<db_models::Item>, errors::TmouError> 
+{ 
+    let items: Vec<db_models::Item> = nodes_items::nodes_items
+        .filter(nodes_items::node_id.eq(node_id))
+        .inner_join(items::items)
+        .select((items::type_, items::url, items::level, items::name, items::description))
+        .load(&*self.conn)?;
+    Ok(items)
+}
 }
 
 pub fn get_team_by_phrase(connection: &diesel::PgConnection, phr:&String) -> Option<Team> {

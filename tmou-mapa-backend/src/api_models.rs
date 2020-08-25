@@ -23,7 +23,7 @@ pub struct Item
 {
     pub r#type: String, // puzzles | badge | message
     pub url: String,
-    pub level: i32,
+    pub level: i16,
     pub label: String,
     pub description: String,
 }

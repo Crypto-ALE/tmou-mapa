@@ -59,7 +59,8 @@ pub fn go_to_node(conn: & mut impl DbControl, team: db::Team, pos: i64) -> TmouR
 #[allow(unused)]
 pub fn discover_node(conn: &impl DbControl, node_id: i64) -> TmouResult<api::Items>
 {
-    let db_items = get_contents_of_node(node_id)?;
+    //   let db_items = get_contents_of_node(node_id)?;
+    let db_items = conn.get_items_in_node(node_id)?;
     let items = db_items.iter().map(|i| i.into()).collect();
     Ok(api::Items{items: items})
 }
@@ -84,11 +85,11 @@ impl From<&db::Item> for api::Item
     fn from(value: &db::Item) -> Self
     {
         api::Item{
-            r#type: value.r#type.clone(),
+            r#type: value.type_.clone(),
             url: value.url.clone(),
             level: value.level,
-            label: value.label.clone(),
-            description: value.description.clone()
+            label: value.name.clone(),
+            description: match &value.description { Some(d) => d.clone(), None => "".to_string()}
         }
     }
 }

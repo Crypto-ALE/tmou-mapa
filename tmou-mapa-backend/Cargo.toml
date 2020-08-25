@@ -22,3 +22,7 @@ regex = "1"
 [[bin]]
 name = "import-osm-data"
 path = "src/import_osm_data.rs"
+
+[[bin]]
+name = "import-game-data"
+path = "src/import_game_data.rs"
