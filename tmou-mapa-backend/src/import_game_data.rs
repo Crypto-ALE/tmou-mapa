@@ -41,7 +41,7 @@ fn parse_item<'a>(node: roxmltree::Node<'a,'a>) -> TmouResult<(db::Item, Vec<i64
     let type_= node.attribute("type").ok_or(err("type not found"))?.to_string();
     let url = node.attribute("url").ok_or(err("url not found"))?.to_string();
     let level = node.attribute("level").and_then(|a| a.parse::<i16>().ok()).ok_or(err("missing or malformed level"))?;
-    let label = node.attribute("label").ok_or(err("label not found"))?.to_string();
+    let name = node.attribute("name").ok_or(err("name not found"))?.to_string();
     let description = node.attribute("description").ok_or(err("description not found"))?.to_string();
     let mut nodes = Vec::new();
     for n in node.children().filter(|c| c.is_element() && c.has_tag_name("node"))
@@ -52,7 +52,7 @@ fn parse_item<'a>(node: roxmltree::Node<'a,'a>) -> TmouResult<(db::Item, Vec<i64
             _ => ()
         }
     }
-    Ok((db::Item{type_, url, level, name: label, description: Some(description)}, nodes))
+    Ok((db::Item{type_, url, level, name: name, description: Some(description)}, nodes))
 }
 
 fn import_game_data(path: &String) -> TmouResult<()>

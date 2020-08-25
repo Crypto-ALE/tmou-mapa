@@ -9,6 +9,7 @@ use super::schema::nodes::dsl as nodes;
 use super::schema::ways_nodes::dsl as ways_nodes;
 use super::schema::nodes_items::dsl as nodes_items;
 use super::schema::items::dsl as items;
+use super::schema::teams_items::dsl as teams_items;
 use super::db_controller::DbControl;
 use super::db_models;
 use super::errors;
@@ -104,6 +105,36 @@ fn get_items_in_node(&self, node_id: i64) -> std::result::Result<std::vec::Vec<d
         .load(&*self.conn)?;
     Ok(items)
 }
+
+fn get_team_items(&self, team_id: i32) -> std::result::Result<std::vec::Vec<db_models::Item>, errors::TmouError> 
+{ 
+    let items: Vec<db_models::Item> = teams_items::teams_items
+        .filter(teams_items::team_id.eq(team_id))
+        .inner_join(items::items)
+        .select((items::type_, items::url, items::level, items::name, items::description))
+        .load(&*self.conn)?;
+    Ok(items)
+}
+
+fn put_team_items(&mut self, team_id: i32, items: std::vec::Vec<db_models::Item>) -> std::result::Result<(), errors::TmouError> 
+{ 
+    let existing_records: Vec<String> = teams_items::teams_items
+        .filter(teams_items::team_id.eq(team_id))
+        .select(teams_items::item_name)
+        .load(&*self.conn)?;
+    let mut its = items.clone();
+    its.retain(|i| !existing_records.contains(&i.name));
+    let records: Vec<db_models::TeamToItem> = its.iter()
+        .map(|i| db_models::TeamToItem{team_id: team_id, item_name: i.name.clone(), timestamp: None})
+        .collect();
+    let query = insert_into(teams_items::teams_items).values(records);
+
+    match query.get_result::<db_models::TeamToItem>(&*self.conn) {
+            Ok(_) => Ok(()),
+            Err(err) => panic!("Something very bad with DB happened: {}", err),
+        }
+}
+
 }
 
 pub fn get_team_by_phrase(connection: &diesel::PgConnection, phr:&String) -> Option<Team> {

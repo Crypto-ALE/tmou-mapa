@@ -4,8 +4,8 @@ use super::api_models as api;
 use super::db_models as db;
 use super::db_controller::{DbControl};
 use super::errors::*;
-use super::map_contents::*;
 use itertools::*;
+use super::discovery as disc;
 
 // const FILLOVA_X_BROZIKOVA_NODE_ID: i64 = 3750367566;
 
@@ -41,11 +41,11 @@ pub fn get_info(conn: &impl DbControl, team: db::Team) -> TmouResult<api::TeamIn
 
 
 
-fn get_team_state(conn: &impl DbControl, id: i32) -> TmouResult<api::TeamState>
+fn get_team_state(conn: &impl DbControl, id: i32) -> TmouResult<api::Team>
 {
     match conn.get_team(id)
     {
-        Some(t) => Ok(team_db_to_api(&t)),
+        Some(t) => Ok((&t).into()),
         None => Err(TmouError{message:"Team does not exist".to_string(), response:404})
     }
 }
@@ -56,27 +56,34 @@ pub fn go_to_node(conn: & mut impl DbControl, team: db::Team, pos: i64) -> TmouR
     get_info(conn, team)
 }
 
-#[allow(unused)]
-pub fn discover_node(conn: &impl DbControl, node_id: i64) -> TmouResult<api::Items>
+pub fn discover_node(conn: & mut impl DbControl, team: db::Team) -> TmouResult<api::Items>
 {
-    //   let db_items = get_contents_of_node(node_id)?;
-    let db_items = conn.get_items_in_node(node_id)?;
-    let items = db_items.iter().map(|i| i.into()).collect();
-    Ok(api::Items{items: items})
+    let node_contents = conn.get_items_in_node(team.position)?;
+    let team_iti = conn.get_team_items(team.id)?;
+    match disc::discover_node(&team_iti, &node_contents)
+    {
+        Ok((new_iti, discovered)) =>
+        {
+            conn.put_team_items(team.id, new_iti)?;
+            let api_disc = discovered.iter().map(|i| i.into()).collect();
+            Ok(api::Items{items: api_disc})
+        },
+        Err(e) => Err(e)
+    }
 }
 
 ////////////////////////////////////////////////////////////////////
 /// Implementation details
 ////////////////////////////////////////////////////////////////////
 
-fn team_db_to_api(t: &db::Team)->api::TeamState
+impl From<&db::Team> for api::Team
 {
-    api::TeamState{
-        name: t.name.clone(),
-        position:t.position,
-        ranking: 2,
-        leader:"Bazinga".to_string(),
-        timeBehind:"00:22:00".to_string()
+    fn from(value: &db::Team) -> Self
+    {
+        api::Team{
+            name: value.name.clone(),
+            position:value.position
+        }
     }
 }
 
@@ -88,7 +95,7 @@ impl From<&db::Item> for api::Item
             r#type: value.type_.clone(),
             url: value.url.clone(),
             level: value.level,
-            label: value.name.clone(),
+            name: value.name.clone(),
             description: match &value.description { Some(d) => d.clone(), None => "".to_string()}
         }
     }

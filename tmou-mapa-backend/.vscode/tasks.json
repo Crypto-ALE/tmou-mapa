@@ -47,6 +47,13 @@
             "type": "shell",
             "command": "cargo run --bin tmou-mapa-backend",
             "label": "Rust: cargo run - tmou-mapa-backend",
+            "group": "build",
+            "problemMatcher": []
+        },
+        {
+            "type": "shell",
+            "command": "cargo test --no-run",
+            "label": "Rust: cargo build tests",
             "group": "build"
         }
     ]
