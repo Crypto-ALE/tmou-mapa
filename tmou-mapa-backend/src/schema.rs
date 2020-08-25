@@ -1,11 +1,10 @@
 table! {
-    items (id) {
-        id -> Int4,
+    items (name) {
         #[sql_name = "type"]
         type_ -> Varchar,
         url -> Varchar,
         level -> Int2,
-        label -> Nullable<Varchar>,
+        name -> Varchar,
         description -> Nullable<Text>,
     }
 }
@@ -21,9 +20,9 @@ table! {
 }
 
 table! {
-    nodes_items (node_id, item_id) {
+    nodes_items (node_id, item_name) {
         node_id -> Int8,
-        item_id -> Int4,
+        item_name -> Varchar,
     }
 }
 
@@ -38,9 +37,9 @@ table! {
 }
 
 table! {
-    teams_items (team_id, item_id) {
+    teams_items (team_id, item_name) {
         team_id -> Int4,
-        item_id -> Int4,
+        item_name -> Varchar,
         timestamp -> Nullable<Timestamptz>,
     }
 }
@@ -53,7 +52,9 @@ table! {
     }
 }
 
+joinable!(nodes_items -> items (item_name));
 joinable!(teams -> nodes (position));
+joinable!(teams_items -> items (item_name));
 joinable!(teams_items -> teams (team_id));
 
 allow_tables_to_appear_in_same_query!(
