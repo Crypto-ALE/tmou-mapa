@@ -73,7 +73,6 @@ pub fn discover_node(itinerary: &Items, node_contents: &Items) -> TmouResult<(It
     let mut discovered = Vec::new();
     for item in sorted_contents.iter()
     {
-        println!("-------[DEBUG]: processing: {}", item.name);
         if item.level > player_level 
         { 
             continue;

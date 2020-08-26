@@ -124,15 +124,22 @@ fn put_team_items(&mut self, team_id: i32, items: std::vec::Vec<db_models::Item>
         .load(&*self.conn)?;
     let mut its = items.clone();
     its.retain(|i| !existing_records.contains(&i.name));
-    let records: Vec<db_models::TeamToItem> = its.iter()
-        .map(|i| db_models::TeamToItem{team_id: team_id, item_name: i.name.clone(), timestamp: None})
-        .collect();
-    let query = insert_into(teams_items::teams_items).values(records);
-
-    match query.get_result::<db_models::TeamToItem>(&*self.conn) {
-            Ok(_) => Ok(()),
-            Err(err) => panic!("Something very bad with DB happened: {}", err),
+    match its.len()
+    {
+        0 => Ok(()),
+        _ =>
+        {
+            let records: Vec<db_models::TeamToItem> = its.iter()
+            .map(|i| db_models::TeamToItem{team_id: team_id, item_name: i.name.clone(), timestamp: None})
+            .collect();
+            let query = insert_into(teams_items::teams_items).values(records);
+            match query.get_result::<db_models::TeamToItem>(&*self.conn) {
+                Ok(_) => Ok(()),
+                Err(err) => panic!("Something very bad with DB happened: {}", err),
+            }
         }
+
+    }
 }
 
 }

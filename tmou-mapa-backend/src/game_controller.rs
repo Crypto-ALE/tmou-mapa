@@ -1,5 +1,4 @@
 
-use std::vec::Vec;
 use super::api_models as api;
 use super::db_models as db;
 use super::db_controller::{DbControl};
@@ -13,7 +12,7 @@ use super::discovery as disc;
 /// Interface
 ////////////////////////////////////////////////////////////////////
 
-pub fn get_pois(conn: &impl DbControl, position: i64) -> TmouResult<api::Pois>
+pub fn get_pois_for_team(conn: &impl DbControl, position: i64) -> TmouResult<api::Pois>
 {
     let db_pois = conn.get_reachable_nodes(position)?;
     let nodes = db_pois.nodes
@@ -30,17 +29,6 @@ pub fn get_pois(conn: &impl DbControl, position: i64) -> TmouResult<api::Pois>
     Ok(api::Pois{nodes,ways})
 }
 
-
-pub fn get_info(conn: &impl DbControl, team: db::Team) -> TmouResult<api::TeamInfo>
-{
-    let state = get_team_state(conn, team.id)?;
-    let pois = get_pois(conn, team.position)?;
-    let items = api::Items{items:Vec::new()};
-    Ok(api::TeamInfo{state: state, pois: pois, items: items})
-}
-
-
-
 fn get_team_state(conn: &impl DbControl, id: i32) -> TmouResult<api::Team>
 {
     match conn.get_team(id)
@@ -49,6 +37,25 @@ fn get_team_state(conn: &impl DbControl, id: i32) -> TmouResult<api::Team>
         None => Err(TmouError{message:"Team does not exist".to_string(), response:404})
     }
 }
+
+fn get_items_for_team(conn: &impl DbControl, id: i32) -> TmouResult<api::Items>
+{
+    let db_items = conn.get_team_items(id)?;
+    let items = db_items.iter().map(|i| i.into()).collect();
+    Ok(api::Items{items})
+}
+
+pub fn get_info(conn: &impl DbControl, team: db::Team) -> TmouResult<api::TeamInfo>
+{
+    let state = get_team_state(conn, team.id)?;
+    let pois = get_pois_for_team(conn, team.position)?;
+    let items = get_items_for_team(conn, team.id)?;
+    Ok(api::TeamInfo{state: state, pois: pois, items: items})
+}
+
+
+
+
 
 pub fn go_to_node(conn: & mut impl DbControl, team: db::Team, pos: i64) -> TmouResult<api::TeamInfo>
 {
