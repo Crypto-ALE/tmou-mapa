@@ -1,6 +1,7 @@
 use diesel::{Queryable, Identifiable, Insertable};
 use serde::{Deserialize, Serialize};
 use super::schema::*;
+use chrono;
 
 #[derive(Serialize, Deserialize, Queryable, Insertable)]
 #[table_name = "nodes"]
@@ -62,11 +63,27 @@ pub struct Team {
     pub position: i64,
 }
 
-#[derive(Serialize, Deserialize, Clone, Default, Queryable)]
+#[derive(Serialize, Deserialize, Clone, Default, Queryable, Insertable, Debug, PartialEq)]
+#[table_name = "items"]
 pub struct Item {
-    pub r#type: String, // puzzles | badge | message
+    pub type_: String, // puzzles | badge | message
     pub url: String,
-    pub level: i32,
-    pub label: String,
-    pub description: String,
+    pub level: i16,
+    pub name: String,
+    pub description: Option<String>,
+}
+
+#[derive(Serialize, Deserialize, Clone, Default, Queryable, Insertable)]
+#[table_name = "nodes_items"]
+pub struct NodeToItem {
+    pub node_id: i64,
+    pub item_name: String
+}
+
+#[derive(Clone, Default, Queryable, Insertable)]
+#[table_name = "teams_items"]
+pub struct TeamToItem {
+    pub team_id: i32,
+    pub item_name: String,
+    pub timestamp: Option<chrono::NaiveDateTime>
 }

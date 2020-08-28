@@ -8,7 +8,7 @@
                 "$rustc"
             ],
             "group": "build",
-            "label": "Rust: cargo build - tmou-mapa-backend"
+            "label": "Rust: cargo build"
         },
         {
             "type": "cargo",
@@ -29,7 +29,7 @@
                 "kind": "build",
                 "isDefault": true
             },
-            "label": "Rust: cargo test - tmou-mapa-backend"
+            "label": "Rust: cargo test"
         },
         {
             "type": "shell",
@@ -39,8 +39,21 @@
         },
         {
             "type": "shell",
+            "command": "cargo run --bin import-game-data sample_game_data.xml",
+            "label": "Rust: cargo run - import-game-data",
+            "group": "build"
+        },
+        {
+            "type": "shell",
             "command": "cargo run --bin tmou-mapa-backend",
             "label": "Rust: cargo run - tmou-mapa-backend",
+            "group": "build",
+            "problemMatcher": []
+        },
+        {
+            "type": "shell",
+            "command": "cargo test --no-run",
+            "label": "Rust: cargo build tests",
             "group": "build"
         }
     ]

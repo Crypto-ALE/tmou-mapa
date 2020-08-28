@@ -38,7 +38,7 @@ impl From<roxmltree::Error> for TmouError
 {
     fn from(err:roxmltree::Error) -> Self
     {
-        TmouError::new(&format!("Invalid OSM data {}", err), 404)
+        TmouError::new(&format!("Invalid XML data {}", err), 404)
     }
 }
 

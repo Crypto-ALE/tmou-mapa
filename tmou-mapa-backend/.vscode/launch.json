@@ -14,6 +14,18 @@
             "cwd": "${workspaceRoot}",
             "environment": [],
             "externalConsole": true
+        },
+        {
+            "name": "Debug unit tests",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}\\.vscode\\newest.cmd",
+            "args": ["${workspaceFolder}\\target\\debug\\deps"],
+            "stopAtEntry": false,
+            "cwd": "${workspaceRoot}",
+            "environment": [],
+            "externalConsole": true,
+            "preLaunchTask": "Rust: cargo build tests"
         }
     ]
 }

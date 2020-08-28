@@ -1,0 +1,1091 @@
+{
+	"info": {
+		"_postman_id": "26a893f1-8195-44f0-aaa2-11501232337e",
+		"name": "tmou_kvalifikace_walkthrough",
+		"description": "Walkthrough of qualification - prototype",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "info: sanity check if the team has empty inventory",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "8c638265-5ab7-4bd6-8e96-9140ed64f200",
+						"exec": [
+							"pm.test(\"Status Ok\", function () {\r",
+							"     pm.response.to.be.ok;\r",
+							"     pm.response.to.be.withBody;\r",
+							"     pm.response.to.be.json;\r",
+							"});\r",
+							"\r",
+							"pm.test(\"itinerary is empty\", function () {\r",
+							"    const res = pm.response.json();\r",
+							"    pm.expect(res.items.items.length).to.eql(0);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8000/game/redkvicky",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"game",
+						"redkvicky"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "go to Start",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "e3a8ba67-752b-4507-99fc-7bf2c047e4d0",
+						"exec": [
+							"pm.test(\"Status Ok\", function () {\r",
+							"     pm.response.to.be.ok;\r",
+							"     pm.response.to.be.withBody;\r",
+							"     pm.response.to.be.json;\r",
+							"});\r",
+							"\r",
+							"pm.test(\"team is on Fillova 5\", function () {\r",
+							"    const res = pm.response.json();\r",
+							"    pm.expect(res.state.position).to.eql(3750367566);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {}
+			},
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"nodeId\":3750367566\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8000/game/redkvicky",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"game",
+						"redkvicky"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "discover Start",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "f7c195a5-c99f-4690-99ba-a810cc521f10",
+						"exec": [
+							"pm.test(\"Status Ok\", function () {\r",
+							"     pm.response.to.be.ok;\r",
+							"     pm.response.to.be.withBody;\r",
+							"     pm.response.to.be.json;});\r",
+							"\r",
+							"pm.test(\"discover returns empty collection\", function () {\r",
+							"    const res = pm.response.json();\r",
+							"    pm.expect(res.items.length).to.eql(0);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {}
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8000/game/redkvicky/discover",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"game",
+						"redkvicky",
+						"discover"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "go to shop",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "5804d49a-72d5-4942-9e85-49862368b289",
+						"exec": [
+							"pm.test(\"Status Ok\", function () {\r",
+							"     pm.response.to.be.ok;\r",
+							"     pm.response.to.be.withBody;\r",
+							"     pm.response.to.be.json;\r",
+							"});\r",
+							"\r",
+							"pm.test(\"team is at Antoninek\", function () {\r",
+							"    const res = pm.response.json();\r",
+							"    pm.expect(res.state.position).to.eql(539563487);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {}
+			},
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"nodeId\":539563487\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8000/game/redkvicky",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"game",
+						"redkvicky"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "discover shop",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "fca0c48e-0bb0-483b-b3c9-ec269d30f411",
+						"exec": [
+							"pm.test(\"Status Ok\", function () {\r",
+							"     pm.response.to.be.ok;\r",
+							"     pm.response.to.be.withBody;\r",
+							"     pm.response.to.be.json;});\r",
+							"\r",
+							"pm.test(\"discover returns a shop level 0\", function () {\r",
+							"    const res = pm.response.json();\r",
+							"    pm.expect(res.items.length).to.eql(1);\r",
+							"    const shop = res.items[0];\r",
+							"    pm.expect(shop.level).to.eql(0);\r",
+							"    pm.expect(shop.type).to.eql(\"shop\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {}
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8000/game/redkvicky/discover",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"game",
+						"redkvicky",
+						"discover"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "info after shop",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "a52804a6-af40-45e6-99b5-6cfde0024f4b",
+						"exec": [
+							"pm.test(\"Status Ok\", function () {\r",
+							"     pm.response.to.be.ok;\r",
+							"     pm.response.to.be.withBody;\r",
+							"     pm.response.to.be.json;\r",
+							"});\r",
+							"\r",
+							"pm.test(\"itinerary contains puzzles level 1\", function () {\r",
+							"    const res = pm.response.json();\r",
+							"    pm.expect(res.items.items.length).to.eql(1);\r",
+							"    const puzzles = res.items.items[0];\r",
+							"    pm.expect(puzzles.type).to.eql(\"puzzles\");\r",
+							"    pm.expect(puzzles.level).to.eql(1);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8000/game/redkvicky",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"game",
+						"redkvicky"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "go to badge 11",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "7c059661-e88c-42c3-9b90-afc025d879e3",
+						"exec": [
+							"pm.test(\"Status Ok\", function () {\r",
+							"     pm.response.to.be.ok;\r",
+							"     pm.response.to.be.withBody;\r",
+							"     pm.response.to.be.json;\r",
+							"});\r",
+							"\r",
+							"pm.test(\"team is at badge-11\", function () {\r",
+							"    const res = pm.response.json();\r",
+							"    pm.expect(res.state.position).to.eql(600897437);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {}
+			},
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"nodeId\":600897437\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8000/game/redkvicky",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"game",
+						"redkvicky"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "discover badge 11",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "67ff4d2e-0616-412b-8461-5a6bd5fc7c65",
+						"exec": [
+							"pm.test(\"Status Ok\", function () {\r",
+							"     pm.response.to.be.ok;\r",
+							"     pm.response.to.be.withBody;\r",
+							"     pm.response.to.be.json;});\r",
+							"\r",
+							"pm.test(\"discover returns badge-1-1\", function () {\r",
+							"    const res = pm.response.json();\r",
+							"    pm.expect(res.items.length).to.eql(1);\r",
+							"    const badge = res.items[0];\r",
+							"    pm.expect(badge.level).to.eql(1);\r",
+							"    pm.expect(badge.type).to.eql(\"badge\");\r",
+							"    pm.expect(badge.name).to.eql(\"badge-1-1\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {}
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8000/game/redkvicky/discover",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"game",
+						"redkvicky",
+						"discover"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "info after badge 11",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "e94b3070-f812-46a7-9a48-27a1472f30fc",
+						"exec": [
+							"pm.test(\"Status Ok\", function () {\r",
+							"     pm.response.to.be.ok;\r",
+							"     pm.response.to.be.withBody;\r",
+							"     pm.response.to.be.json;\r",
+							"});\r",
+							"\r",
+							"pm.test(\"itinerary contains puzzles level 1\", function () {\r",
+							"    const res = pm.response.json();\r",
+							"    const badge = res.items.items.find(i => i.type === \"badge\");\r",
+							"    pm.expect(badge.level).to.eql(1);\r",
+							"    pm.expect(badge.name).to.eql(\"badge-1-1\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8000/game/redkvicky",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"game",
+						"redkvicky"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "go to badge 12",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "80e0b151-08e0-44eb-b074-20bef6409d7c",
+						"exec": [
+							"pm.test(\"Status Ok\", function () {\r",
+							"     pm.response.to.be.ok;\r",
+							"     pm.response.to.be.withBody;\r",
+							"     pm.response.to.be.json;\r",
+							"});\r",
+							"\r",
+							"pm.test(\"team is at badge-12\", function () {\r",
+							"    const res = pm.response.json();\r",
+							"    pm.expect(res.state.position).to.eql(600897447);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {}
+			},
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"nodeId\":600897447\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8000/game/redkvicky",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"game",
+						"redkvicky"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "discover badge 12",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "cc646889-5d3f-4c76-8d77-6fd5fa980584",
+						"exec": [
+							"pm.test(\"Status Ok\", function () {\r",
+							"     pm.response.to.be.ok;\r",
+							"     pm.response.to.be.withBody;\r",
+							"     pm.response.to.be.json;});\r",
+							"\r",
+							"pm.test(\"discover returns badge-1-2\", function () {\r",
+							"    const res = pm.response.json();\r",
+							"    pm.expect(res.items.length).to.eql(1);\r",
+							"    const badge = res.items[0];\r",
+							"    pm.expect(badge.level).to.eql(1);\r",
+							"    pm.expect(badge.type).to.eql(\"badge\");\r",
+							"    pm.expect(badge.name).to.eql(\"badge-1-2\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {}
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8000/game/redkvicky/discover",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"game",
+						"redkvicky",
+						"discover"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "info after badge 12",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "35225a51-5b0a-48fc-8dc2-60bab329eed2",
+						"exec": [
+							"pm.test(\"Status Ok\", function () {\r",
+							"     pm.response.to.be.ok;\r",
+							"     pm.response.to.be.withBody;\r",
+							"     pm.response.to.be.json;\r",
+							"});\r",
+							"\r",
+							"pm.test(\"itinerary contains badge 12\", function () {\r",
+							"    const res = pm.response.json();\r",
+							"    const badge = res.items.items.find(i => i.name === \"badge-1-2\");\r",
+							"    pm.expect(badge.level).to.eql(1);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8000/game/redkvicky",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"game",
+						"redkvicky"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "go to shop Copy",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "ddb57f7b-c855-4582-bdb6-79951516a536",
+						"exec": [
+							"pm.test(\"Status Ok\", function () {\r",
+							"     pm.response.to.be.ok;\r",
+							"     pm.response.to.be.withBody;\r",
+							"     pm.response.to.be.json;\r",
+							"});\r",
+							"\r",
+							"pm.test(\"team is at Antoninek\", function () {\r",
+							"    const res = pm.response.json();\r",
+							"    pm.expect(res.state.position).to.eql(539563487);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {}
+			},
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"nodeId\":539563487\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8000/game/redkvicky",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"game",
+						"redkvicky"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "discover shop Copy",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "b16b1074-5b87-4263-9584-6ea6dde8c3e6",
+						"exec": [
+							"pm.test(\"Status Ok\", function () {\r",
+							"     pm.response.to.be.ok;\r",
+							"     pm.response.to.be.withBody;\r",
+							"     pm.response.to.be.json;});\r",
+							"\r",
+							"pm.test(\"discover returns a shop level 0\", function () {\r",
+							"    const res = pm.response.json();\r",
+							"    pm.expect(res.items.length).to.eql(1);\r",
+							"    const shop = res.items[0];\r",
+							"    pm.expect(shop.level).to.eql(0);\r",
+							"    pm.expect(shop.type).to.eql(\"shop\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {}
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8000/game/redkvicky/discover",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"game",
+						"redkvicky",
+						"discover"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "info after shop Copy",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "90c416a0-84bc-4ddd-b386-556558db2cc7",
+						"exec": [
+							"pm.test(\"Status Ok\", function () {\r",
+							"     pm.response.to.be.ok;\r",
+							"     pm.response.to.be.withBody;\r",
+							"     pm.response.to.be.json;\r",
+							"});\r",
+							"\r",
+							"pm.test(\"itinerary does not contains puzzles level 2\", function () {\r",
+							"    const res = pm.response.json();\r",
+							"    const puzzles = res.items.items.find(i => i.level === 2);\r",
+							"    pm.expect(typeof puzzles === 'undefined');\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8000/game/redkvicky",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"game",
+						"redkvicky"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "go to badge 13",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "e45a1ffa-cb89-4ccd-aeb1-5bdf7c426a9e",
+						"exec": [
+							"pm.test(\"Status Ok\", function () {\r",
+							"     pm.response.to.be.ok;\r",
+							"     pm.response.to.be.withBody;\r",
+							"     pm.response.to.be.json;\r",
+							"});\r",
+							"\r",
+							"pm.test(\"team is at badge-11\", function () {\r",
+							"    const res = pm.response.json();\r",
+							"    pm.expect(res.state.position).to.eql(298097758);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {}
+			},
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"nodeId\":298097758\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8000/game/redkvicky",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"game",
+						"redkvicky"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "discover badge 13",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "7ec6e491-d086-4445-86c3-a802b9bbfaef",
+						"exec": [
+							"pm.test(\"Status Ok\", function () {\r",
+							"     pm.response.to.be.ok;\r",
+							"     pm.response.to.be.withBody;\r",
+							"     pm.response.to.be.json;});\r",
+							"\r",
+							"pm.test(\"discover returns badge-1-3\", function () {\r",
+							"    const res = pm.response.json();\r",
+							"    pm.expect(res.items.length).to.eql(1);\r",
+							"    const badge = res.items[0];\r",
+							"    pm.expect(badge.level).to.eql(1);\r",
+							"    pm.expect(badge.type).to.eql(\"badge\");\r",
+							"    pm.expect(badge.name).to.eql(\"badge-1-3\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {}
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8000/game/redkvicky/discover",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"game",
+						"redkvicky",
+						"discover"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "info after badge 13",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "93804f63-a2fc-4df1-b03e-dad5e6bd6f79",
+						"exec": [
+							"pm.test(\"Status Ok\", function () {\r",
+							"     pm.response.to.be.ok;\r",
+							"     pm.response.to.be.withBody;\r",
+							"     pm.response.to.be.json;\r",
+							"});\r",
+							"\r",
+							"pm.test(\"itinerary contains badge 13\", function () {\r",
+							"    const res = pm.response.json();\r",
+							"    const badge = res.items.items.find(i => i.name === \"badge-1-3\");\r",
+							"    pm.expect(badge.level).to.eql(1);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8000/game/redkvicky",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"game",
+						"redkvicky"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "go to shop Copy 2",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "38cf5953-f7c4-48bd-b18c-6c9ecacfb277",
+						"exec": [
+							"pm.test(\"Status Ok\", function () {\r",
+							"     pm.response.to.be.ok;\r",
+							"     pm.response.to.be.withBody;\r",
+							"     pm.response.to.be.json;\r",
+							"});\r",
+							"\r",
+							"pm.test(\"team is at Antoninek\", function () {\r",
+							"    const res = pm.response.json();\r",
+							"    pm.expect(res.state.position).to.eql(539563487);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {}
+			},
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"nodeId\":539563487\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8000/game/redkvicky",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"game",
+						"redkvicky"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "discover shop Copy 2",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "8165ba72-9eca-402d-9dd5-4af9b390857b",
+						"exec": [
+							"pm.test(\"Status Ok\", function () {\r",
+							"     pm.response.to.be.ok;\r",
+							"     pm.response.to.be.withBody;\r",
+							"     pm.response.to.be.json;});\r",
+							"\r",
+							"pm.test(\"discover returns a shop level 0\", function () {\r",
+							"    const res = pm.response.json();\r",
+							"    pm.expect(res.items.length).to.eql(1);\r",
+							"    const shop = res.items[0];\r",
+							"    pm.expect(shop.level).to.eql(0);\r",
+							"    pm.expect(shop.type).to.eql(\"shop\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {}
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8000/game/redkvicky/discover",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"game",
+						"redkvicky",
+						"discover"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "info after shop Copy 2",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "9fc6e549-4344-4b61-8aac-d11dd8f89623",
+						"exec": [
+							"pm.test(\"Status Ok\", function () {\r",
+							"     pm.response.to.be.ok;\r",
+							"     pm.response.to.be.withBody;\r",
+							"     pm.response.to.be.json;\r",
+							"});\r",
+							"\r",
+							"pm.test(\"inventory contains puzzles level 2\", function () {\r",
+							"    const res = pm.response.json();\r",
+							"    const puzzles = res.items.items.find(i => i.level === 2);\r",
+							"    pm.expect(puzzles.name === \"puzzles-2\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8000/game/redkvicky",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"game",
+						"redkvicky"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}

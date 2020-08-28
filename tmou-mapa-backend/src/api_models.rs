@@ -23,8 +23,8 @@ pub struct Item
 {
     pub r#type: String, // puzzles | badge | message
     pub url: String,
-    pub level: i32,
-    pub label: String,
+    pub level: i16,
+    pub name: String,
     pub description: String,
 }
 
@@ -57,19 +57,16 @@ pub struct Pois
 }
 
 #[derive(Serialize, Deserialize)]
-pub struct TeamState
+pub struct Team
 {
    pub name: String,
-   pub ranking: i32,
-   pub leader: String,
-   pub timeBehind: String,
    pub position: i64
 }
 
 #[derive(Serialize, Deserialize)]
 pub struct TeamInfo
 {
-    pub state: TeamState,
+    pub state: Team,
     pub pois: Pois,
     pub items: Items
 }

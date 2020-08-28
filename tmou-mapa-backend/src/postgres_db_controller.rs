@@ -1,12 +1,14 @@
 use super::db_models::Team;
 use diesel::prelude::*;
 use diesel::insert_into;
-use diesel::result::Error::NotFound;
 use rocket_contrib::databases::diesel;
 
 use super::schema::teams::dsl as teams;
 use super::schema::nodes::dsl as nodes;
 use super::schema::ways_nodes::dsl as ways_nodes;
+use super::schema::nodes_items::dsl as nodes_items;
+use super::schema::items::dsl as items;
+use super::schema::teams_items::dsl as teams_items;
 use super::db_controller::DbControl;
 use super::db_models;
 use super::errors;
@@ -19,7 +21,7 @@ use super::errors;
 
 pub struct PostgresDbControl
 {
-    pub conn: super::PostgresDbConn,
+    pub conn: super::PostgresDbConn
 }
 
 impl PostgresDbControl
@@ -39,8 +41,7 @@ fn get_team(&self, id: i32) -> std::option::Option<db_models::Team>
         .limit(1)
         .first::<Team>(&*self.conn) {
             Ok(team) => Some(team),
-            Err(NotFound) => None,
-            Err(err) => panic!("Something very bad with DB happened: {}", err),
+            Err(_) => None
         }
 }
 
@@ -51,7 +52,7 @@ fn put_team(&mut self, team: db_models::Team) -> std::result::Result<Team, error
 
     match query.get_result::<Team>(&*self.conn) {
             Ok(team) => Ok(team),
-            Err(err) => panic!("Something very bad with DB happened: {}", err),
+            Err(err) => Err(err.into())
         }
 }
 
@@ -61,7 +62,7 @@ fn update_team_position(&mut self, team: &db_models::Team, pos: i64) -> std::res
 
     match query.get_result::<Team>(&*self.conn) {
             Ok(_) => Ok(()),
-            Err(err) => panic!("Something very bad with DB happened: {}", err),
+            Err(err) => Err(err.into())
         }
 }
 
@@ -93,6 +94,52 @@ fn get_reachable_nodes(&self, seed: i64) -> std::result::Result<db_models::Pois,
     Ok(db_models::Pois{nodes: nodes, ways_to_nodes: w2n_level_1})
 }
 
+fn get_items_in_node(&self, node_id: i64) -> std::result::Result<std::vec::Vec<db_models::Item>, errors::TmouError> 
+{ 
+    let items: Vec<db_models::Item> = nodes_items::nodes_items
+        .filter(nodes_items::node_id.eq(node_id))
+        .inner_join(items::items)
+        .select((items::type_, items::url, items::level, items::name, items::description))
+        .load(&*self.conn)?;
+    Ok(items)
+}
+
+fn get_team_items(&self, team_id: i32) -> std::result::Result<std::vec::Vec<db_models::Item>, errors::TmouError> 
+{ 
+    let items: Vec<db_models::Item> = teams_items::teams_items
+        .filter(teams_items::team_id.eq(team_id))
+        .inner_join(items::items)
+        .select((items::type_, items::url, items::level, items::name, items::description))
+        .load(&*self.conn)?;
+    Ok(items)
+}
+
+fn put_team_items(&mut self, team_id: i32, items: std::vec::Vec<db_models::Item>) -> std::result::Result<(), errors::TmouError> 
+{
+    let existing_records: Vec<String> = teams_items::teams_items
+        .filter(teams_items::team_id.eq(team_id))
+        .select(teams_items::item_name)
+        .load(&*self.conn)?;
+    let mut its = items.clone();
+    its.retain(|i| !existing_records.contains(&i.name));
+    match its.len()
+    {
+        0 => Ok(()),
+        _ =>
+        {
+            let records: Vec<db_models::TeamToItem> = its.iter()
+            .map(|i| db_models::TeamToItem{team_id: team_id, item_name: i.name.clone(), timestamp: None})
+            .collect();
+            let query = insert_into(teams_items::teams_items).values(records);
+            match query.get_result::<db_models::TeamToItem>(&*self.conn) {
+                Ok(_) => Ok(()),
+                Err(err) => Err(err.into()),
+            }
+        }
+
+    }
+}
+
 }
 
 pub fn get_team_by_phrase(connection: &diesel::PgConnection, phr:&String) -> Option<Team> {
@@ -100,7 +147,6 @@ pub fn get_team_by_phrase(connection: &diesel::PgConnection, phr:&String) -> Opt
         .limit(1)
         .first::<Team>(connection) {
             Ok(team) => Some(team),
-            Err(NotFound) => None,
-            Err(err) => panic!("Something very bad with DB happened: {}", err),
+            Err(_) => None
         }
 }

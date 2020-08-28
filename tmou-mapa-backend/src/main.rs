@@ -18,20 +18,19 @@ use rocket_contrib::templates::Template;
 use std::env;
 
 mod api_models;
-mod db;
+mod postgres_db_controller;
 mod db_controller;
 mod db_models;
 mod errors;
 mod game_controller;
-mod map_contents;
-mod osm_logic;
 mod osm_models;
 mod osm_reader;
 mod tests;
 mod schema;
+mod discovery;
 
 use api_models::{NodeAction, Items, TeamInfo};
-use db::PostgresDbControl;
+use postgres_db_controller::PostgresDbControl;
 
 embed_migrations!("./migrations/");
 
@@ -52,7 +51,7 @@ fn info_phrase(
     secret_phrase: &RawStr, 
     conn: PostgresDbConn
 ) -> Result<Json<TeamInfo>, Status> {
-    match db::get_team_by_phrase(&*conn, &secret_phrase.to_string())
+    match postgres_db_controller::get_team_by_phrase(&*conn, &secret_phrase.to_string())
     {
         Some(team) => info(team, conn),
         None => Err(Status::NotFound)
@@ -93,7 +92,7 @@ fn go_phrase(
     action: Json<NodeAction>,
     conn: PostgresDbConn
 ) -> Result<Json<TeamInfo>, Status> {
-    match db::get_team_by_phrase(&*conn, &secret_phrase.to_string())
+    match postgres_db_controller::get_team_by_phrase(&*conn, &secret_phrase.to_string())
     {
         Some(team) => go(action, team, conn),
         None => Err(Status::NotFound)
@@ -126,7 +125,7 @@ fn discover_phrase(
     secret_phrase: &RawStr,
     conn: PostgresDbConn
 ) -> Result<Json<Items>, Status> {
-    match db::get_team_by_phrase(&*conn, &secret_phrase.to_string())
+    match postgres_db_controller::get_team_by_phrase(&*conn, &secret_phrase.to_string())
     {
         Some(team) => discover(team, conn),
         None => Err(Status::NotFound)
@@ -141,8 +140,8 @@ fn discover(
     conn: PostgresDbConn
 ) -> Result<Json<Items>, Status> {
     println!("Debug team:{:?}", team);
-    let db_ctrl = PostgresDbControl::new(conn);
-    match game_controller::discover_node(&db_ctrl, team.position) {
+    let mut db_ctrl = PostgresDbControl::new(conn);
+    match game_controller::discover_node(& mut db_ctrl, team) {
         Ok(nc) => Ok(Json(nc)),
         Err(_) => Err(Status::NotFound),
     }
