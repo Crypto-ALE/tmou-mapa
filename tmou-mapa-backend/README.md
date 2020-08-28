@@ -48,17 +48,17 @@ Postup:
 legenda:
 * Bxy - badge levelu x číslo y
 * Px - puzzles levelu x
-* S - shop (levelu 0, kde jsou většinou všechny sady šifer)
+* C - checkpoint (levelu 0, kde jsou většinou všechny sady šifer)
 
 inventář | obsah uzlu | nový inventář | objevené věci vrácené discoverem | pozn.
 ---|---|---|---|---
 cokoliv | nic | beze změn | nic | ani smrt nebere...
-nic | S, P1, P2,... | P1 | S | jsem v obchodě, začínám hru, dostávám šifry sady 1
+nic | C, P1, P2,... | P1 | C | jsem na kontrole, začínám hru, dostávám šifry sady 1
 P1, B11 | B11 | beze změn | B11 | už mám, ale můžu ho vidět znova
 P1, B11 | B21 | beze změn | nic | nevidím level 2
 P1, B11 | B12 | P1, B11, B12 | B12 | našel jsem nový
 P1, B11, B12, B13 | B14 | beze změn | B14 | čtvrtý už nepotřebuju
-P1, B11, B12 | S, P1, P2,... | beze změn | S | jsem v obchodě, ale nemám na nový level
-P1, B11, B12, B13 | S, P1 | beze změn | S | jsem v obchodě, kde nemají moji sadu, nic nedostávám
-P1, B11, B12, B13 | S, P2,... | P1, B11, B12, B13, P2 | S | jsem v obchodě, dostal jsem novou sadu
+P1, B11, B12 | C, P1, P2,... | beze změn | C | jsem na kontrole, ale nemám na nový level
+P1, B11, B12, B13 | C, P1 | beze změn | C | jsem na kontrole, kde nemají moji sadu, nic nedostávám
+P1, B11, B12, B13 | C, P2,... | P1, B11, B12, B13, P2 | C | jsem na kontrole, dostal jsem novou sadu
 
