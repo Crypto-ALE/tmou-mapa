@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <game name="Kvalifikace Tmou XXII">
   <items>
- <!-- all puzzles are in one shop -->
+ <!-- all puzzles are in one checkpoint -->
     <item name="puzzles-1" type="puzzles" description="šifry sady 1" url="/static/puzzles/7-mysi_a_syr.pdf" level="1">
 	  <node id="539563487"/> <!--Antoninek-->
 	</item>
@@ -17,7 +17,7 @@
     <item name="puzzles-5" type="puzzles" description="šifry sady 2" url="/static/puzzles/7-mysi_a_syr.pdf" level="2">
 	  <node id="539563487"/> <!--Antoninek-->
 	</item>
-    <item name="shop" type="shop" description="Obchod" url="" level="0">
+    <item name="checkpoint" type="checkpoint" description="Kontrola" url="" level="0">
 	  <node id="539563487"/> <!--Antoninek-->
 	</item>
 

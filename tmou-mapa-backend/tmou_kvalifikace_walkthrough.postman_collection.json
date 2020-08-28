@@ -112,12 +112,13 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "f7c195a5-c99f-4690-99ba-a810cc521f10",
+						"id": "200c0848-75e1-4a6b-8a5b-ff8a3a540f73",
 						"exec": [
 							"pm.test(\"Status Ok\", function () {\r",
 							"     pm.response.to.be.ok;\r",
 							"     pm.response.to.be.withBody;\r",
-							"     pm.response.to.be.json;});\r",
+							"     pm.response.to.be.json;\r",
+							"});\r",
 							"\r",
 							"pm.test(\"discover returns empty collection\", function () {\r",
 							"    const res = pm.response.json();\r",
@@ -157,12 +158,12 @@
 			"response": []
 		},
 		{
-			"name": "go to shop",
+			"name": "go to checkpoint",
 			"event": [
 				{
 					"listen": "test",
 					"script": {
-						"id": "5804d49a-72d5-4942-9e85-49862368b289",
+						"id": "b23650e3-e63f-4a2f-8c27-3b0999edcdd8",
 						"exec": [
 							"pm.test(\"Status Ok\", function () {\r",
 							"     pm.response.to.be.ok;\r",
@@ -170,7 +171,7 @@
 							"     pm.response.to.be.json;\r",
 							"});\r",
 							"\r",
-							"pm.test(\"team is at Antoninek\", function () {\r",
+							"pm.test(\"team is in shop\", function () {\r",
 							"    const res = pm.response.json();\r",
 							"    pm.expect(res.state.position).to.eql(539563487);\r",
 							"});"
@@ -216,7 +217,7 @@
 			"response": []
 		},
 		{
-			"name": "discover shop",
+			"name": "discover checkpoint",
 			"event": [
 				{
 					"listen": "test",
@@ -228,12 +229,12 @@
 							"     pm.response.to.be.withBody;\r",
 							"     pm.response.to.be.json;});\r",
 							"\r",
-							"pm.test(\"discover returns a shop level 0\", function () {\r",
+							"pm.test(\"discover returns a checkpoint level 0\", function () {\r",
 							"    const res = pm.response.json();\r",
 							"    pm.expect(res.items.length).to.eql(1);\r",
 							"    const shop = res.items[0];\r",
 							"    pm.expect(shop.level).to.eql(0);\r",
-							"    pm.expect(shop.type).to.eql(\"shop\");\r",
+							"    pm.expect(shop.type).to.eql(\"checkpoint\");\r",
 							"});"
 						],
 						"type": "text/javascript"
@@ -269,7 +270,7 @@
 			"response": []
 		},
 		{
-			"name": "info after shop",
+			"name": "info after checkpoint",
 			"event": [
 				{
 					"listen": "test",
@@ -431,7 +432,7 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "e94b3070-f812-46a7-9a48-27a1472f30fc",
+						"id": "d4a7984a-a28a-4481-bd0f-3c0e132bc226",
 						"exec": [
 							"pm.test(\"Status Ok\", function () {\r",
 							"     pm.response.to.be.ok;\r",
@@ -439,7 +440,7 @@
 							"     pm.response.to.be.json;\r",
 							"});\r",
 							"\r",
-							"pm.test(\"itinerary contains puzzles level 1\", function () {\r",
+							"pm.test(\"itinerary contains badge 11\", function () {\r",
 							"    const res = pm.response.json();\r",
 							"    const badge = res.items.items.find(i => i.type === \"badge\");\r",
 							"    pm.expect(badge.level).to.eql(1);\r",
@@ -624,12 +625,12 @@
 			"response": []
 		},
 		{
-			"name": "go to shop Copy",
+			"name": "go to checkpoint",
 			"event": [
 				{
 					"listen": "test",
 					"script": {
-						"id": "ddb57f7b-c855-4582-bdb6-79951516a536",
+						"id": "558a1174-a177-490a-b254-43814b02d001",
 						"exec": [
 							"pm.test(\"Status Ok\", function () {\r",
 							"     pm.response.to.be.ok;\r",
@@ -637,7 +638,7 @@
 							"     pm.response.to.be.json;\r",
 							"});\r",
 							"\r",
-							"pm.test(\"team is at Antoninek\", function () {\r",
+							"pm.test(\"team is in shop\", function () {\r",
 							"    const res = pm.response.json();\r",
 							"    pm.expect(res.state.position).to.eql(539563487);\r",
 							"});"
@@ -683,7 +684,7 @@
 			"response": []
 		},
 		{
-			"name": "discover shop Copy",
+			"name": "discover checkpoint",
 			"event": [
 				{
 					"listen": "test",
@@ -695,12 +696,12 @@
 							"     pm.response.to.be.withBody;\r",
 							"     pm.response.to.be.json;});\r",
 							"\r",
-							"pm.test(\"discover returns a shop level 0\", function () {\r",
+							"pm.test(\"discover returns a checkpoint level 0\", function () {\r",
 							"    const res = pm.response.json();\r",
 							"    pm.expect(res.items.length).to.eql(1);\r",
 							"    const shop = res.items[0];\r",
 							"    pm.expect(shop.level).to.eql(0);\r",
-							"    pm.expect(shop.type).to.eql(\"shop\");\r",
+							"    pm.expect(shop.type).to.eql(\"checkpoint\");\r",
 							"});"
 						],
 						"type": "text/javascript"
@@ -736,7 +737,7 @@
 			"response": []
 		},
 		{
-			"name": "info after shop Copy",
+			"name": "info after checkpoint",
 			"event": [
 				{
 					"listen": "test",
@@ -933,12 +934,12 @@
 			"response": []
 		},
 		{
-			"name": "go to shop Copy 2",
+			"name": "go to checkpoint",
 			"event": [
 				{
 					"listen": "test",
 					"script": {
-						"id": "38cf5953-f7c4-48bd-b18c-6c9ecacfb277",
+						"id": "53249344-17c9-43cc-89da-6a84d9632be2",
 						"exec": [
 							"pm.test(\"Status Ok\", function () {\r",
 							"     pm.response.to.be.ok;\r",
@@ -946,7 +947,7 @@
 							"     pm.response.to.be.json;\r",
 							"});\r",
 							"\r",
-							"pm.test(\"team is at Antoninek\", function () {\r",
+							"pm.test(\"team is in shop\", function () {\r",
 							"    const res = pm.response.json();\r",
 							"    pm.expect(res.state.position).to.eql(539563487);\r",
 							"});"
@@ -992,7 +993,7 @@
 			"response": []
 		},
 		{
-			"name": "discover shop Copy 2",
+			"name": "discover checkpoint",
 			"event": [
 				{
 					"listen": "test",
@@ -1004,12 +1005,12 @@
 							"     pm.response.to.be.withBody;\r",
 							"     pm.response.to.be.json;});\r",
 							"\r",
-							"pm.test(\"discover returns a shop level 0\", function () {\r",
+							"pm.test(\"discover returns a checkpoint level 0\", function () {\r",
 							"    const res = pm.response.json();\r",
 							"    pm.expect(res.items.length).to.eql(1);\r",
 							"    const shop = res.items[0];\r",
 							"    pm.expect(shop.level).to.eql(0);\r",
-							"    pm.expect(shop.type).to.eql(\"shop\");\r",
+							"    pm.expect(shop.type).to.eql(\"checkpoint\");\r",
 							"});"
 						],
 						"type": "text/javascript"
@@ -1045,7 +1046,7 @@
 			"response": []
 		},
 		{
-			"name": "info after shop Copy 2",
+			"name": "info after checkpoint",
 			"event": [
 				{
 					"listen": "test",

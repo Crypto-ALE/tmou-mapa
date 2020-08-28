@@ -165,7 +165,7 @@ fn discovery_returns_unchanged_inventory_when_nothing_found()->TmouResult<()>
 }
 
 #[test]
-fn discovery_returns_level_2_puzzles_when_3_badges_level_1_presented_in_shop()->TmouResult<()> 
+fn discovery_returns_level_2_puzzles_when_3_badges_level_1_presented_in_checkpoint()->TmouResult<()> 
 {
     // ready for picking level 2:
     let inventory = vec![
@@ -174,9 +174,9 @@ fn discovery_returns_level_2_puzzles_when_3_badges_level_1_presented_in_shop()->
         item("badge", 1, "badge-1-2"),
         item("badge", 1, "badge-1-3")];
 
-    // shop with puzzles
+    // checkpoint with puzzles
     let node_contents = vec![
-        item("shop",0,"shop"),
+        item("checkpoint",0,"checkpoint"),
         item("puzzles", 1, "puzzles-1"),
         item("puzzles", 2, "puzzles-2"),
         item("puzzles", 3, "puzzles-3"),
@@ -192,12 +192,12 @@ fn discovery_returns_level_2_puzzles_when_3_badges_level_1_presented_in_shop()->
 
     let (new_inventory,items) = dis::discover_node(&inventory, &node_contents)?;
     assert_eq!(new_inventory, expected_inventory);
-    assert_eq!(items, vec![item("shop",0,"shop")]);
+    assert_eq!(items, vec![item("checkpoint",0,"checkpoint")]);
     Ok(())
 }
 
 #[test]
-fn discovery_returns_level_3_puzzles_when_2_badges_level_2_presented_in_shop()->TmouResult<()> 
+fn discovery_returns_level_3_puzzles_when_2_badges_level_2_presented_in_checkpoint()->TmouResult<()> 
 {
     // ready for picking level 2:
     let inventory = vec![
@@ -205,9 +205,9 @@ fn discovery_returns_level_3_puzzles_when_2_badges_level_2_presented_in_shop()->
         item("badge", 2, "badge-2-1"),
         item("badge", 2, "badge-2-2")];
 
-    // shop with puzzles
+    // checkpoint with puzzles
     let node_contents = vec![
-        item("shop",0,"shop"),
+        item("checkpoint",0,"checkpoint"),
         item("puzzles", 1, "puzzles-1"),
         item("puzzles", 2, "puzzles-2"),
         item("puzzles", 3, "puzzles-3"),
@@ -222,22 +222,22 @@ fn discovery_returns_level_3_puzzles_when_2_badges_level_2_presented_in_shop()->
 
     let (new_inventory,items) = dis::discover_node(&inventory, &node_contents)?;
     assert_eq!(new_inventory, expected_inventory);
-    assert_eq!(items, vec![item("shop",0,"shop")]);
+    assert_eq!(items, vec![item("checkpoint",0,"checkpoint")]);
     Ok(())
 }
 
 
 #[test]
-fn discovery_returns_level_4_puzzles_when_1_badge_level_3_presented_in_shop()->TmouResult<()> 
+fn discovery_returns_level_4_puzzles_when_1_badge_level_3_presented_in_checkpoint()->TmouResult<()> 
 {
     // ready for picking level 2:
     let inventory = vec![
         item("puzzles", 3, "puzzles-3"),
         item("badge", 3, "badge-3-2")];
 
-    // shop with puzzles
+    // checkpoint with puzzles
     let node_contents = vec![
-        item("shop",0,"shop"),
+        item("checkpoint",0,"checkpoint"),
         item("puzzles", 1, "puzzles-1"),
         item("puzzles", 2, "puzzles-2"),
         item("puzzles", 3, "puzzles-3"),
@@ -251,22 +251,22 @@ fn discovery_returns_level_4_puzzles_when_1_badge_level_3_presented_in_shop()->T
 
     let (new_inventory,items) = dis::discover_node(&inventory, &node_contents)?;
     assert_eq!(new_inventory, expected_inventory);
-    assert_eq!(items, vec![item("shop",0,"shop")]);
+    assert_eq!(items, vec![item("checkpoint",0,"checkpoint")]);
     Ok(())
 }
 
 
 #[test]
-fn discovery_returns_level_5_puzzles_when_1_badge_level_4_presented_in_shop()->TmouResult<()> 
+fn discovery_returns_level_5_puzzles_when_1_badge_level_4_presented_in_checkpoint()->TmouResult<()> 
 {
     // ready for picking level 2:
     let inventory = vec![
         item("puzzles", 4, "puzzles-4"),
         item("badge", 4, "badge-4-1")];
 
-    // shop with puzzles
+    // checkpoint with puzzles
     let node_contents = vec![
-        item("shop",0,"shop"),
+        item("checkpoint",0,"checkpoint"),
         item("puzzles", 1, "puzzles-1"),
         item("puzzles", 2, "puzzles-2"),
         item("puzzles", 3, "puzzles-3"),
@@ -280,7 +280,7 @@ fn discovery_returns_level_5_puzzles_when_1_badge_level_4_presented_in_shop()->T
 
     let (new_inventory,items) = dis::discover_node(&inventory, &node_contents)?;
     assert_eq!(new_inventory, expected_inventory);
-    assert_eq!(items, vec![item("shop",0,"shop")]);
+    assert_eq!(items, vec![item("checkpoint",0,"checkpoint")]);
     Ok(())
 }
 
@@ -293,9 +293,9 @@ fn discovery_does_nothing_when_too_few_badges()->TmouResult<()>
         item("badge", 1, "badge-1-1"),
         item("badge", 1, "badge-1-3")];
 
-    // shop with puzzles
+    // checkpoint with puzzles
     let node_contents = vec![
-        item("shop",0,"shop"),
+        item("checkpoint",0,"checkpoint"),
         item("puzzles", 1, "puzzles-1"),
         item("puzzles", 2, "puzzles-2"),
         item("puzzles", 3, "puzzles-3"),
@@ -305,7 +305,7 @@ fn discovery_does_nothing_when_too_few_badges()->TmouResult<()>
 
     let (new_inventory,items) = dis::discover_node(&inventory, &node_contents)?;
     assert_eq!(new_inventory, inventory);
-    assert_eq!(items, vec![item("shop",0,"shop")]);
+    assert_eq!(items, vec![item("checkpoint",0,"checkpoint")]);
     Ok(())
 }
 
@@ -318,9 +318,9 @@ fn discovery_does_nothing_when_badges_from_wrong_level()->TmouResult<()>
         item("badge", 2, "badge-2-1"),
         item("badge", 1, "badge-1-2")];
 
-    // shop with puzzles
+    // checkpoint with puzzles
     let node_contents = vec![
-        item("shop",0,"shop"),
+        item("checkpoint",0,"checkpoint"),
         item("puzzles", 1, "puzzles-1"),
         item("puzzles", 2, "puzzles-2"),
         item("puzzles", 3, "puzzles-3"),
@@ -330,13 +330,13 @@ fn discovery_does_nothing_when_badges_from_wrong_level()->TmouResult<()>
 
     let (new_inventory,items) = dis::discover_node(&inventory, &node_contents)?;
     assert_eq!(new_inventory, inventory);
-    assert_eq!(items, vec![item("shop",0,"shop")]);
+    assert_eq!(items, vec![item("checkpoint",0,"checkpoint")]);
     Ok(())
 }
 
 
 #[test]
-fn discovery_does_nothing_when_puzzles_not_in_shop()->TmouResult<()> 
+fn discovery_does_nothing_when_puzzles_not_in_checkpoint()->TmouResult<()> 
 {
     // ready for picking level 2:
     let inventory = vec![
@@ -345,9 +345,9 @@ fn discovery_does_nothing_when_puzzles_not_in_shop()->TmouResult<()>
         item("badge", 1, "badge-1-2"),
         item("badge", 1, "badge-1-3")];
 
-    // shop with puzzles
+    // checkpoint with puzzles
     let node_contents = vec![
-        item("shop",0,"shop"),
+        item("checkpoint",0,"checkpoint"),
         item("puzzles", 1, "puzzles-1"),
         item("puzzles", 3, "puzzles-3"),
         item("puzzles", 4, "puzzles-4"),
@@ -356,7 +356,7 @@ fn discovery_does_nothing_when_puzzles_not_in_shop()->TmouResult<()>
 
     let (new_inventory,items) = dis::discover_node(&inventory, &node_contents)?;
     assert_eq!(new_inventory, inventory);
-    assert_eq!(items, vec![item("shop",0,"shop")]);
+    assert_eq!(items, vec![item("checkpoint",0,"checkpoint")]);
     Ok(())
 }
 
