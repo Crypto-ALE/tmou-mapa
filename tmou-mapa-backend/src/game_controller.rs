@@ -12,9 +12,9 @@ use super::discovery as disc;
 /// Interface
 ////////////////////////////////////////////////////////////////////
 
-pub fn get_pois_for_team(conn: &impl DbControl, position: i64) -> TmouResult<api::Pois>
+pub fn get_pois_for_team(db_control: &impl DbControl, position: i64) -> TmouResult<api::Pois>
 {
-    let db_pois = conn.get_reachable_nodes(position)?;
+    let db_pois = db_control.get_reachable_nodes(position)?;
     let nodes = db_pois.nodes
         .iter()
         .map(|n| n.into())
@@ -29,27 +29,27 @@ pub fn get_pois_for_team(conn: &impl DbControl, position: i64) -> TmouResult<api
     Ok(api::Pois{nodes,ways})
 }
 
-fn get_team_state(conn: &impl DbControl, id: i32) -> TmouResult<api::Team>
+fn get_team_state(db_control: &impl DbControl, id: i32) -> TmouResult<api::Team>
 {
-    match conn.get_team(id)
+    match db_control.get_team(id)
     {
         Some(t) => Ok((&t).into()),
         None => Err(TmouError{message:"Team does not exist".to_string(), response:404})
     }
 }
 
-fn get_items_for_team(conn: &impl DbControl, id: i32) -> TmouResult<api::Items>
+fn get_items_for_team(db_control: &impl DbControl, id: i32) -> TmouResult<api::Items>
 {
-    let db_items = conn.get_team_items(id)?;
+    let db_items = db_control.get_team_items(id)?;
     let items = db_items.iter().map(|i| i.into()).collect();
     Ok(api::Items{items})
 }
 
-pub fn get_info(conn: &impl DbControl, team: db::Team) -> TmouResult<api::TeamInfo>
+pub fn get_info(db_control: &impl DbControl, team: db::Team) -> TmouResult<api::TeamInfo>
 {
-    let state = get_team_state(conn, team.id)?;
-    let pois = get_pois_for_team(conn, team.position)?;
-    let items = get_items_for_team(conn, team.id)?;
+    let state = get_team_state(db_control, team.id)?;
+    let pois = get_pois_for_team(db_control, team.position)?;
+    let items = get_items_for_team(db_control, team.id)?;
     Ok(api::TeamInfo{state: state, pois: pois, items: items})
 }
 
@@ -57,23 +57,23 @@ pub fn get_info(conn: &impl DbControl, team: db::Team) -> TmouResult<api::TeamIn
 
 
 
-pub fn go_to_node(conn: & mut impl DbControl, team: db::Team, pos: i64) -> TmouResult<api::TeamInfo>
+pub fn go_to_node(db_control: & mut impl DbControl, team: db::Team, pos: i64) -> TmouResult<api::TeamInfo>
 {
-    conn.update_team_position(&team, pos)?;
-    get_info(conn, team)
+    db_control.update_team_position(&team, pos)?;
+    get_info(db_control, team)
 }
 
-pub fn discover_node(conn: & mut impl DbControl, team: db::Team) -> TmouResult<api::Items>
+pub fn discover_node(db_control: & mut impl DbControl, team: db::Team) -> TmouResult<api::Items>
 {
-    let node_contents = conn.get_items_in_node(team.position)?;
-    let team_iti = conn.get_team_items(team.id)?;
-    match disc::discover_node(&team_iti, &node_contents)
+    let node_contents = db_control.get_items_in_node(team.position)?;
+    let team_inventory = db_control.get_team_items(team.id)?;
+    match disc::discover_node(&team_inventory, &node_contents)
     {
-        Ok((new_iti, discovered)) =>
+        Ok((new_inv, discovered)) =>
         {
-            conn.put_team_items(team.id, new_iti)?;
-            let api_disc = discovered.iter().map(|i| i.into()).collect();
-            Ok(api::Items{items: api_disc})
+            db_control.put_team_items(team.id, new_inv)?;
+            let disc_as_api_items = discovered.iter().map(|i| i.into()).collect();
+            Ok(api::Items{items: disc_as_api_items})
         },
         Err(e) => Err(e)
     }

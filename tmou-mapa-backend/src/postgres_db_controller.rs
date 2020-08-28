@@ -1,7 +1,6 @@
 use super::db_models::Team;
 use diesel::prelude::*;
 use diesel::insert_into;
-use diesel::result::Error::NotFound;
 use rocket_contrib::databases::diesel;
 
 use super::schema::teams::dsl as teams;
@@ -22,7 +21,7 @@ use super::errors;
 
 pub struct PostgresDbControl
 {
-    pub conn: super::PostgresDbConn,
+    pub conn: super::PostgresDbConn
 }
 
 impl PostgresDbControl
@@ -42,8 +41,7 @@ fn get_team(&self, id: i32) -> std::option::Option<db_models::Team>
         .limit(1)
         .first::<Team>(&*self.conn) {
             Ok(team) => Some(team),
-            Err(NotFound) => None,
-            Err(err) => panic!("Something very bad with DB happened: {}", err),
+            Err(_) => None
         }
 }
 
@@ -54,7 +52,7 @@ fn put_team(&mut self, team: db_models::Team) -> std::result::Result<Team, error
 
     match query.get_result::<Team>(&*self.conn) {
             Ok(team) => Ok(team),
-            Err(err) => panic!("Something very bad with DB happened: {}", err),
+            Err(err) => Err(err.into())
         }
 }
 
@@ -64,7 +62,7 @@ fn update_team_position(&mut self, team: &db_models::Team, pos: i64) -> std::res
 
     match query.get_result::<Team>(&*self.conn) {
             Ok(_) => Ok(()),
-            Err(err) => panic!("Something very bad with DB happened: {}", err),
+            Err(err) => Err(err.into())
         }
 }
 
@@ -117,7 +115,7 @@ fn get_team_items(&self, team_id: i32) -> std::result::Result<std::vec::Vec<db_m
 }
 
 fn put_team_items(&mut self, team_id: i32, items: std::vec::Vec<db_models::Item>) -> std::result::Result<(), errors::TmouError> 
-{ 
+{
     let existing_records: Vec<String> = teams_items::teams_items
         .filter(teams_items::team_id.eq(team_id))
         .select(teams_items::item_name)
@@ -135,7 +133,7 @@ fn put_team_items(&mut self, team_id: i32, items: std::vec::Vec<db_models::Item>
             let query = insert_into(teams_items::teams_items).values(records);
             match query.get_result::<db_models::TeamToItem>(&*self.conn) {
                 Ok(_) => Ok(()),
-                Err(err) => panic!("Something very bad with DB happened: {}", err),
+                Err(err) => Err(err.into()),
             }
         }
 
@@ -149,7 +147,6 @@ pub fn get_team_by_phrase(connection: &diesel::PgConnection, phr:&String) -> Opt
         .limit(1)
         .first::<Team>(connection) {
             Ok(team) => Some(team),
-            Err(NotFound) => None,
-            Err(err) => panic!("Something very bad with DB happened: {}", err),
+            Err(_) => None
         }
 }
