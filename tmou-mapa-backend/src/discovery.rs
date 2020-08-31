@@ -4,13 +4,13 @@ use super::db_models as db;
 type Items = Vec<db::Item>;
 
 // order of discovery when multiple items found on place
-// Badges before shops so that when a badge is found it can be redeemed in shop
+// Badges before checkpoints so that when a badge is found it can be redeemed in checkpoint
 fn item_type_order(item: &db::Item) -> i32
 {
     match item.type_.as_ref()
     {
         "badge" => 0,
-        "shop" => 1,
+        "checkpoint" => 1,
         "puzzles" => 2,
         _ => 1000
     }
@@ -36,10 +36,10 @@ fn badges_count(its: &Items, level: i16) -> usize
 
 // returns new inventory 
 // either the same when conditions for redeeming badges for new set of puzzles not met, or with added puzzles
-fn get_puzzles(level: i16, inventory: Items, shop: &Items) -> Items
+fn get_puzzles(level: i16, inventory: Items, checkpoint: &Items) -> Items
 {
     let eligible_for_new_puzzles = badges_count(&inventory, level) == max_badges_in_level(level);
-    let new_puzzles = shop.iter().find(|i| (i.level == level+1) && (i.type_ == "puzzles".to_string()));
+    let new_puzzles = checkpoint.iter().find(|i| (i.level == level+1) && (i.type_ == "puzzles".to_string()));
     match eligible_for_new_puzzles && new_puzzles.is_some()
     {
         true => 
@@ -75,7 +75,7 @@ pub fn discover_node(inventory: &Items, node_contents: &Items) -> TmouResult<(It
     let player_level = inventory.iter().map(|item| item.level).max().or(Some(0)).unwrap();
     // sort node contents so that:
     // 1. evaluation is deterministic
-    // 2. badges are discovered before shops (see fn item_type_order) to allow redeeming badge in shop instantly
+    // 2. badges are discovered before checkpoints (see fn item_type_order) to allow redeeming badge in checkpoint instantly
     let mut sorted_contents = node_contents.clone();
     sorted_contents.sort_by(|a, b| item_type_order(&a).partial_cmp(&item_type_order(&b)).unwrap());
     let mut new_inv = inventory[..].to_vec();
@@ -88,11 +88,11 @@ pub fn discover_node(inventory: &Items, node_contents: &Items) -> TmouResult<(It
         }
         let mut was_discovered = false;
 
-        // shops and badges can alter inventory and are discoverable
+        // checkpoints and badges can alter inventory and are discoverable
         // others (puzzles) are unseen to player
         new_inv = match item.type_.as_ref()
         {
-            "shop" => 
+            "checkpoint" => 
             { 
                 was_discovered = true; 
                 get_puzzles(player_level, new_inv, &sorted_contents)
