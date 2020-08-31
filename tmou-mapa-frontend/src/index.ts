@@ -34,7 +34,6 @@ async function run() {
   let currentNodeCoords: LatLng = new LatLng(latLng.lat, latLng.lng);
 
   mapInstance.setView(currentNodeCoords, 17);
-  document.getElementById('ranking').textContent = state.ranking.toString(10);
   document.getElementById('pos').textContent = currentNodeCoords.toString();
   document.getElementById('nodeId').textContent = state.position;
   drawNodesAndWays(nodes, ways);

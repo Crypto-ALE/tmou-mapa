@@ -15,11 +15,11 @@ use super::discovery as disc;
 pub fn get_pois_for_team(db_control: &impl DbControl, position: i64) -> TmouResult<api::Pois>
 {
     let db_pois = db_control.get_reachable_nodes(position)?;
-    let nodes = db_pois.nodes
+    let nodes: Vec<api::Node> = db_pois.nodes
         .iter()
         .map(|n| n.into())
         .collect();
-    let ways = db_pois.ways_to_nodes
+    let ways: Vec<api::Way> = db_pois.ways_to_nodes
         .into_iter()
         .map(|w2n| (w2n.way_id, w2n.node_id))
         .into_group_map()
@@ -59,8 +59,8 @@ pub fn get_info(db_control: &impl DbControl, team: db::Team) -> TmouResult<api::
 
 pub fn go_to_node(db_control: & mut impl DbControl, team: db::Team, pos: i64) -> TmouResult<api::TeamInfo>
 {
-    db_control.update_team_position(&team, pos)?;
-    get_info(db_control, team)
+    let updated_team = db_control.update_team_position(&team, pos)?;
+    get_info(db_control, updated_team)
 }
 
 pub fn discover_node(db_control: & mut impl DbControl, team: db::Team) -> TmouResult<api::Items>
