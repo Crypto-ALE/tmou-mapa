@@ -59,8 +59,8 @@ pub fn get_info(db_control: &impl DbControl, team: db::Team) -> TmouResult<api::
 
 pub fn go_to_node(db_control: & mut impl DbControl, team: db::Team, pos: i64) -> TmouResult<api::TeamInfo>
 {
-    let upadted_team = db_control.update_team_position(&team, pos)?;
-    get_info(db_control, upadted_team)
+    let updated_team = db_control.update_team_position(&team, pos)?;
+    get_info(db_control, updated_team)
 }
 
 pub fn discover_node(db_control: & mut impl DbControl, team: db::Team) -> TmouResult<api::Items>
