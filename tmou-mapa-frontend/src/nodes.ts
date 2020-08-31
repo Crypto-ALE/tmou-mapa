@@ -5,19 +5,38 @@ interface Info {
   ranking: number;
 }
 
-interface TeamState {
-  nodes: Map<string, LatLngLiteral>;
-  ways: LatLngLiteral[][];
-  state: Info;
+interface Item {
+  type: "puzzles" | "badge" | "message",
+  url: String,
+  level: number,
+  name: String,
+  description: String,
 }
 
-export async function getNodesAndWays(secretPhrase: string): Promise<TeamState> {
+interface Items {
+  items: Item[],
+}
+
+interface Node {
+  latLng: LatLngLiteral,
+  type: "ordinary" | "junction",
+  data?: String,
+}
+
+interface TeamState {
+  nodes: Map<string, Node>;
+  ways: LatLngLiteral[][];
+  state: Info;
+  items: Items;
+}
+
+export async function getTeamState(secretPhrase: string): Promise<TeamState> {
   const res = await fetch(`/game/${secretPhrase}`);
 
   return parseJson(await res.json());
 }
 
-export async function updateNodesAndWays(secretPhrase: string, nodeId: string): Promise<TeamState> {
+export async function moveTeam(secretPhrase: string, nodeId: string): Promise<TeamState> {
   const res = await fetch(`/game/${secretPhrase}`, {
       method: 'POST',
       headers: {
@@ -35,14 +54,14 @@ export async function discover(secretPhrase: string) {
   return (await res.json());
 }
 
-function parseJson({pois, state}): TeamState {
-  console.log(state);
-  const nodes: Map<string, LatLngLiteral> = new Map(
+function parseJson(res): TeamState {
+  const {pois, state, items} = res;
+  const nodes: Map<string, Node> = new Map(
       pois.nodes
           // .filter((node) => node.type === 'junction')
-          .map((node) => [node.id, {lat: node.y, lng: node.x}])
+          .map((node) => [node.id, {latLng:{lat: node.y, lng: node.x}, type: node.type, data: node.data}])
   );
-  const ways = pois.ways.map((way) => way.nodes.map(nodeId => nodes.get(nodeId)));
+  const ways = pois.ways.map((way) => way.nodes.map(nodeId => nodes.get(nodeId)!.latLng));
 
-  return {nodes, ways, state};
+  return {nodes, ways, state, items};
 }

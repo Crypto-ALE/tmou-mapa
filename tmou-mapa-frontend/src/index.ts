@@ -7,14 +7,14 @@ import {
   LeafletMouseEvent,
   Polyline
 } from "leaflet";
-import {discover, getNodesAndWays, updateNodesAndWays} from './nodes';
+import {discover, getTeamState, moveTeam} from './nodes';
 
 const mapInstance = getMap('map', [49.195, 16.609], 15);
 
 async function run() {
   const secretPhase = document.querySelector("body").dataset.secretphrase;
 
-  document.getElementById('discover').onclick = async (e) => {
+  document.getElementById('discover').onclick = async () => {
     const {items} = await discover(secretPhase);
     if (items.length === 0) {
       showPopup('Bohužel...', 'Na toto místo žádná šifra nevede, zkuste to jinde.');
@@ -28,9 +28,9 @@ async function run() {
     }
   }
 
-  let {nodes, ways, state} = await getNodesAndWays(secretPhase);
+  let {nodes, ways, state} = await getTeamState(secretPhase);
   const lines: Polyline[] = [];
-  const latLng: LatLngLiteral = nodes.get(state.position);
+  const latLng: LatLngLiteral = nodes.get(state.position)!.latLng;
   let currentNodeCoords: LatLng = new LatLng(latLng.lat, latLng.lng);
 
   mapInstance.setView(currentNodeCoords, 17);
@@ -57,10 +57,23 @@ async function run() {
     }
   }
 
+  function showBadge(level: number) {
+    document.getElementById('badges').innerHTML += `
+          <div class="badge lvl${level}">
+            <span class="time">17:08</span>
+            <span class="label">11</span>
+          </div>
+          `;
+  }
+
+  function showPuzzle(level: number, url: String) {
+    document.querySelector('#puzzles>ul').innerHTML = `<li><a href="${url}">Level ${level}</a>`
+  }
+
   function drawNodesAndWays(nodes, ways) {
-    for (const [id, node] of nodes.entries()) {
+    for (const [id, nodeInfo] of nodes.entries()) {
+      const node = nodeInfo.latLng;
       const clickHandler = async function (e: LeafletMouseEvent) {
-        console.log("clicked on", id);
         await handleNodeClick(e.target, id);
       }
       const c = circleFactory(node, id, "blue", 2, clickHandler);
@@ -86,7 +99,19 @@ async function run() {
     document.getElementById('pos').textContent = node.getLatLng().toString();
     // @ts-ignore
     document.getElementById('nodeId').textContent = node.getId();
-    const {nodes, ways} = await updateNodesAndWays(secretPhase, nodeId);
+    const {nodes, ways, items} = await moveTeam(secretPhase, nodeId);
+    for (const item of items.items) {
+      switch (item.type) {
+        case "puzzles": {
+          showPuzzle(item.level, item.url);
+          break;
+        }
+        case "badge": {
+          showBadge(item.level);
+          break;
+        }
+      }
+    }
     drawNodesAndWays(nodes, ways);
   }
 }
