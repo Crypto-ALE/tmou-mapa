@@ -56,12 +56,12 @@ fn put_team(&mut self, team: db_models::Team) -> std::result::Result<Team, error
         }
 }
 
-fn update_team_position(&mut self, team: &db_models::Team, pos: i64) -> std::result::Result<(), errors::TmouError> 
+fn update_team_position(&mut self, team: &db_models::Team, pos: i64) -> std::result::Result<Team, errors::TmouError> 
 {
     let query = diesel::update(team).set(teams::position.eq(pos));
 
     match query.get_result::<Team>(&*self.conn) {
-            Ok(_) => Ok(()),
+            Ok(team) => Ok(team),
             Err(err) => Err(err.into())
         }
 }

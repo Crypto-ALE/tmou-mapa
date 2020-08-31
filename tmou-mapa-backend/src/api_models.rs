@@ -8,7 +8,7 @@ pub struct NodeAction
    pub nodeId: i64
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 pub struct Node
 {
    pub id: i64,
@@ -42,7 +42,7 @@ pub struct Phrase
 }
 
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 pub struct Way
 {
     pub id: i64,
