@@ -1,34 +1,4 @@
-import {LatLngLiteral} from "leaflet";
-
-interface Info {
-  position: string;
-  ranking: number;
-}
-
-interface Item {
-  type: "puzzles" | "badge" | "message",
-  url: String,
-  level: number,
-  name: String,
-  description: String,
-}
-
-interface Items {
-  items: Item[],
-}
-
-interface Node {
-  latLng: LatLngLiteral,
-  type: "ordinary" | "junction",
-  data?: String,
-}
-
-interface TeamState {
-  nodes: Map<string, Node>;
-  ways: LatLngLiteral[][];
-  state: Info;
-  items: Items;
-}
+import {TeamState, Node} from './types';
 
 export async function getTeamState(secretPhrase: string): Promise<TeamState> {
   const res = await fetch(`/game/${secretPhrase}`);
@@ -54,14 +24,14 @@ export async function discover(secretPhrase: string) {
   return (await res.json());
 }
 
-function parseJson(res): TeamState {
+function parseJson(res: any): TeamState {
   const {pois, state, items} = res;
   const nodes: Map<string, Node> = new Map(
       pois.nodes
           // .filter((node) => node.type === 'junction')
-          .map((node) => [node.id, {latLng:{lat: node.y, lng: node.x}, type: node.type, data: node.data}])
+          .map((node: any) => [node.id, {latLng:{lat: node.y, lng: node.x}, type: node.type, data: node.data}])
   );
-  const ways = pois.ways.map((way) => way.nodes.map(nodeId => nodes.get(nodeId)!.latLng));
+  const ways = pois.ways.map((way: any) => way.nodes.map(nodeId => nodes.get(nodeId)!.latLng));
 
   return {nodes, ways, state, items};
 }
