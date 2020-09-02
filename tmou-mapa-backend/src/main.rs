@@ -29,7 +29,7 @@ mod tests;
 mod schema;
 mod discovery;
 
-use api_models::{NodeAction, Items, TeamInfo};
+use api_models::{NodeAction, TeamInfo, DiscoveryEvent};
 use postgres_db_controller::PostgresDbControl;
 
 embed_migrations!("./migrations/");
@@ -38,7 +38,7 @@ embed_migrations!("./migrations/");
 pub struct PostgresDbConn(diesel::PgConnection);
 
 #[get("/game")]
-fn info_cookie(    
+fn info_cookie(
     team: db_models::Team,
     conn: PostgresDbConn
 ) -> Result<Json<TeamInfo>, Status> {
@@ -47,8 +47,8 @@ fn info_cookie(
 }
 
 #[get("/game/<secret_phrase>")]
-fn info_phrase(    
-    secret_phrase: &RawStr, 
+fn info_phrase(
+    secret_phrase: &RawStr,
     conn: PostgresDbConn
 ) -> Result<Json<TeamInfo>, Status> {
     match postgres_db_controller::get_team_by_phrase(&*conn, &secret_phrase.to_string())
@@ -56,7 +56,7 @@ fn info_phrase(
         Some(team) => info(team, conn),
         None => Err(Status::NotFound)
     }
-   
+
 }
 
 
@@ -116,7 +116,7 @@ fn go(
 fn discover_cookie(
     team: db_models::Team,
     conn: PostgresDbConn
-) -> Result<Json<Items>, Status> {
+) -> Result<Json<DiscoveryEvent>, Status> {
     discover(team, conn)
 }
 
@@ -124,7 +124,7 @@ fn discover_cookie(
 fn discover_phrase(
     secret_phrase: &RawStr,
     conn: PostgresDbConn
-) -> Result<Json<Items>, Status> {
+) -> Result<Json<DiscoveryEvent>, Status> {
     match postgres_db_controller::get_team_by_phrase(&*conn, &secret_phrase.to_string())
     {
         Some(team) => discover(team, conn),
@@ -138,7 +138,7 @@ fn discover_phrase(
 fn discover(
     team: db_models::Team,
     conn: PostgresDbConn
-) -> Result<Json<Items>, Status> {
+) -> Result<Json<DiscoveryEvent>, Status> {
     println!("Debug team:{:?}", team);
     let mut db_ctrl = PostgresDbControl::new(conn);
     match game_controller::discover_node(& mut db_ctrl, team) {
@@ -207,13 +207,12 @@ impl<'a, 'r> FromRequest<'a, 'r> for db_models::Team {
                 let db: &mut dyn db_controller::DbControl = &mut db_ctrl;
                 db.get_team(team_id)
                     .or_else(|| Some(db.put_team(db_models::Team {
-                        id: team_id, 
-                        name: team_name, 
-                        phrase: phrase, 
-                        team_id: 0, 
+                        id: team_id,
+                        name: team_name,
+                        phrase: phrase,
+                        team_id: 0,
                         position: 0}).unwrap()))
             })
             .or_forward(())
     }
 }
-
