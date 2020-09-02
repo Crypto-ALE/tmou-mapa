@@ -16,25 +16,29 @@ async function run() {
   const secretPhase = document.querySelector("body").dataset.secretphrase;
 
   document.getElementById('discover').onclick = async () => {
-    const {items} = await discover(secretPhase);
-    console.debug('items:', items);
-    if (items.length === 0) {
-      showPopup('Bohužel...', 'Na toto místo žádná šifra nevede, zkuste to jinde.');
-    } else {
-      const itemsToShow = items.map((item) => {
-        switch (item.type) {
-          case 'Puzzle': {
-            return `Našli jste šifru! Podívejte se na ni <a href="${items[0].url}">zde</a>.`
-          }
-          case 'badge': {
-            return 'Řešení je správně, získali jste za něj odznáček.';
-          }
+    const {event, newItems} = await discover(secretPhase);
+    console.debug('items:', newItems);
+    switch (event) {
+      case "nothing": {
+        showPopup('Bohužel...', 'Na toto místo žádná šifra nevede, zkuste to jinde.');
+        break;
+      }
+      case "badge-found": {
+        showPopup('Hurá!', 'Řešení je správně, získali jste za něj odznáček.');
+        break;
+      }
+      case "checkpoint-visited": {
+        const items = newItems.filter((item) => item.type != "checkpoint");
+        if (items.length) {
+          showPopup('Hurá!', 'Organizátoři vám dali nové šifry.');
+        } else {
+          showPopup('Bohužel...', 'Tentokrát jste nic nedostali.');
         }
-      });
-      showPopup('Hurá!', itemsToShow.join('<br />'), Math.max(items.map(item => item.level)));
+        break;
+      }
     }
-    const newTeamState = await getTeamState(secretPhase);
-    drawInventory(newTeamState.items.items);
+    let {items} = await getTeamState(secretPhase);
+    drawInventory(items.items);
   }
 
   let {nodes, ways, state, items} = await getTeamState(secretPhase);
