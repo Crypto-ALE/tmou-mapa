@@ -1,4 +1,4 @@
-import {TeamState, Node} from './types';
+import {TeamState, Node, DiscoveryEvent} from './types';
 
 export async function getTeamState(secretPhrase: string): Promise<TeamState> {
   const res = await fetch(`/game/${secretPhrase}`);
@@ -18,7 +18,7 @@ export async function moveTeam(secretPhrase: string, nodeId: string): Promise<Te
     return parseJson(await res.json());
 }
 
-export async function discover(secretPhrase: string) {
+export async function discover(secretPhrase: string): Promise<DiscoveryEvent> {
   const res = await fetch(`/game/${secretPhrase}/discover`);
 
   return (await res.json());

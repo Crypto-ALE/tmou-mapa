@@ -28,6 +28,13 @@ pub struct Item
     pub description: String,
 }
 
+#[derive(Serialize, Deserialize)]
+pub struct DiscoveryEvent
+{
+    pub event: String, // checkpoint-visited | badge-found | nothing
+    pub newItems: Vec<Item>
+}
+
 
 #[derive(Serialize, Deserialize)]
 pub struct Items

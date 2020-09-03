@@ -29,3 +29,8 @@ export interface TeamState {
   state: Info;
   items: Items;
 }
+
+export interface DiscoveryEvent {
+  event: "badge-found" | "checkpoint-visited" | "nothing";
+  newItems: Item[];
+}

@@ -34,7 +34,7 @@ fn badges_count(its: &Items, level: i16) -> usize
     its.iter().filter(|i| i.type_ == "badge".to_string() && i.level == level).count()
 }
 
-// returns new inventory 
+// returns new inventory
 // either the same when conditions for redeeming badges for new set of puzzles not met, or with added puzzles
 fn get_puzzles(level: i16, inventory: Items, checkpoint: &Items) -> Items
 {
@@ -42,7 +42,7 @@ fn get_puzzles(level: i16, inventory: Items, checkpoint: &Items) -> Items
     let new_puzzles = checkpoint.iter().find(|i| (i.level == level+1) && (i.type_ == "puzzles".to_string()));
     match eligible_for_new_puzzles && new_puzzles.is_some()
     {
-        true => 
+        true =>
         {
             let mut res = inventory.clone();
             res.push(new_puzzles.unwrap().clone());
@@ -52,7 +52,7 @@ fn get_puzzles(level: i16, inventory: Items, checkpoint: &Items) -> Items
     }
 }
 
-// returns new inventory 
+// returns new inventory
 // either the same when conditions for discovering not met, or with added badge
 fn add_badge(level: i16, inventory: Items, it: &db::Item) -> Items
 {
@@ -67,7 +67,7 @@ fn add_badge(level: i16, inventory: Items, it: &db::Item) -> Items
         },
         false => inventory
     }
-}    
+}
 
 
 pub fn discover_node(inventory: &Items, node_contents: &Items) -> TmouResult<(Items, Items)>
@@ -82,8 +82,8 @@ pub fn discover_node(inventory: &Items, node_contents: &Items) -> TmouResult<(It
     let mut discovered = Vec::new();
     for item in sorted_contents.iter()
     {
-        if item.level > player_level 
-        { 
+        if item.level > player_level
+        {
             continue;
         }
         let mut was_discovered = false;
@@ -92,12 +92,12 @@ pub fn discover_node(inventory: &Items, node_contents: &Items) -> TmouResult<(It
         // others (puzzles) are unseen to player
         new_inv = match item.type_.as_ref()
         {
-            "checkpoint" => 
-            { 
-                was_discovered = true; 
+            "checkpoint" =>
+            {
+                was_discovered = true;
                 get_puzzles(player_level, new_inv, &sorted_contents)
             },
-            "badge" => 
+            "badge" =>
             {
                 was_discovered = true;
                 add_badge(player_level, new_inv, &item)

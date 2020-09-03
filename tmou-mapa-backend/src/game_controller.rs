@@ -63,7 +63,7 @@ pub fn go_to_node(db_control: & mut impl DbControl, team: db::Team, pos: i64) ->
     get_info(db_control, updated_team)
 }
 
-pub fn discover_node(db_control: & mut impl DbControl, team: db::Team) -> TmouResult<api::Items>
+pub fn discover_node(db_control: & mut impl DbControl, team: db::Team) -> TmouResult<api::DiscoveryEvent>
 {
     let node_contents = db_control.get_items_in_node(team.position)?;
     let team_inventory = db_control.get_team_items(team.id)?;
@@ -73,7 +73,23 @@ pub fn discover_node(db_control: & mut impl DbControl, team: db::Team) -> TmouRe
         {
             db_control.put_team_items(team.id, new_inv)?;
             let disc_as_api_items = discovered.iter().map(|i| i.into()).collect();
-            Ok(api::Items{items: disc_as_api_items})
+            let mut event = "nothing".to_string();
+            for i in discovered.iter() {
+                if i.type_.eq("checkpoint") {
+                    // whenever there is a checkpoint, everything else comes from it
+                    event = "checkpoint-visited".to_string();
+                    //TODO need to push last added puzzle, but have no idea how
+                    break;
+                } else if i.type_.eq("badge") {
+                    event = "badge-found".to_string();
+                }
+            }
+            let disc_event = api::DiscoveryEvent {
+                event,
+                newItems: disc_as_api_items,
+            };
+
+            Ok(disc_event)
         },
         Err(e) => Err(e)
     }
@@ -117,7 +133,7 @@ impl From<&db::Node> for api::Node
             y:value.lat.clone(),
             x:value.lon.clone(),
             r#type:value.type_.clone(),
-            data: "<none>".to_string() 
+            data: "<none>".to_string()
         }
     }
 }
