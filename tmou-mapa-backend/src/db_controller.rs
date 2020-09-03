@@ -14,5 +14,6 @@ pub trait DbControl
     fn get_reachable_nodes(&self, seed: i64) -> TmouResult<Pois>;
     fn get_items_in_node(&self, node_id: i64) -> TmouResult<Vec<Item>>;
     fn get_team_items(&self, team_id: i32) -> TmouResult<Vec<Item>>;
+    fn get_team_items_with_timestamps(&self, team_id: i32) -> TmouResult<Vec<TeamItem>>;
     fn put_team_items(&mut self, team_id: i32, items: Vec<Item>) -> TmouResult<()>;
 }

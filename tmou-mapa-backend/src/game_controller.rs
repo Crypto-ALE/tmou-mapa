@@ -40,7 +40,7 @@ fn get_team_state(db_control: &impl DbControl, id: i32) -> TmouResult<api::Team>
 
 fn get_items_for_team(db_control: &impl DbControl, id: i32) -> TmouResult<api::Items>
 {
-    let db_items = db_control.get_team_items(id)?;
+    let db_items = db_control.get_team_items_with_timestamps(id)?;
     let items = db_items.iter().map(|i| i.into()).collect();
     Ok(api::Items{items})
 }
@@ -63,36 +63,30 @@ pub fn go_to_node(db_control: & mut impl DbControl, team: db::Team, pos: i64) ->
     get_info(db_control, updated_team)
 }
 
+fn items_to_api_items(items: &disc::Items) -> Vec<api::Item>
+{
+    items.iter().map(|i| i.into()).collect()
+}
+
+fn event_to_api_event(event: &disc::EventType) -> String
+{
+    match event
+    {
+        disc::EventType::CheckpointVisited => "checkpoint-visited".to_string(),
+        disc::EventType::BadgeFound => "badge-found".to_string(),
+        disc::EventType::Nothing => "nothing".to_string()
+    }
+}
+
 pub fn discover_node(db_control: & mut impl DbControl, team: db::Team) -> TmouResult<api::DiscoveryEvent>
 {
     let node_contents = db_control.get_items_in_node(team.position)?;
     let team_inventory = db_control.get_team_items(team.id)?;
-    match disc::discover_node(&team_inventory, &node_contents)
-    {
-        Ok((new_inv, discovered)) =>
-        {
-            db_control.put_team_items(team.id, new_inv)?;
-            let disc_as_api_items = discovered.iter().map(|i| i.into()).collect();
-            let mut event = "nothing".to_string();
-            for i in discovered.iter() {
-                if i.type_.eq("checkpoint") {
-                    // whenever there is a checkpoint, everything else comes from it
-                    event = "checkpoint-visited".to_string();
-                    //TODO need to push last added puzzle, but have no idea how
-                    break;
-                } else if i.type_.eq("badge") {
-                    event = "badge-found".to_string();
-                }
-            }
-            let disc_event = api::DiscoveryEvent {
-                event,
-                newItems: disc_as_api_items,
-            };
-
-            Ok(disc_event)
-        },
-        Err(e) => Err(e)
-    }
+    let evt = disc::discover_node(&team_inventory, &node_contents)?;
+    db_control.put_team_items(team.id, evt.updated_inventory)?;
+    let api_event = event_to_api_event(&evt.event);
+    let api_newly_discovered_items = items_to_api_items(&evt.newly_discovered_items) ;
+    Ok(api::DiscoveryEvent{event: api_event, newItems: api_newly_discovered_items})
 }
 
 ////////////////////////////////////////////////////////////////////
@@ -119,7 +113,23 @@ impl From<&db::Item> for api::Item
             url: value.url.clone(),
             level: value.level,
             name: value.name.clone(),
-            description: match &value.description { Some(d) => d.clone(), None => "".to_string()}
+            description: match &value.description { Some(d) => d.clone(), None => "".to_string()},
+            timestamp:None
+        }
+    }
+}
+
+impl From<&db::TeamItem> for api::Item
+{
+    fn from(value: &db::TeamItem) -> Self
+    {
+        api::Item{
+            r#type: value.type_.clone(),
+            url: value.url.clone(),
+            level: value.level,
+            name: value.name.clone(),
+            description: match &value.description { Some(d) => d.clone(), None => "".to_string()},
+            timestamp: value.timestamp
         }
     }
 }
