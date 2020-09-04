@@ -76,6 +76,9 @@ async function run() {
     document.addEventListener('keyup', hidePopup);
 
     function hidePopup(e: Event) {
+      if ((e as KeyboardEvent).keyCode && (e as KeyboardEvent).keyCode !== 27) {
+        return;
+      }
       document.getElementById('popup').classList.remove('popup__visible');
       document.getElementById('overlay').classList.remove('overlay__visible');
       document.getElementById('popup').classList.add('popup__hidden');
