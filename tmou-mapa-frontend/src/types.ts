@@ -1,8 +1,8 @@
 import {LatLngLiteral} from "leaflet";
 
 export interface Info {
+  name: string;
   position: string;
-  ranking: number;
 }
 
 export interface Item {
@@ -11,7 +11,10 @@ export interface Item {
   level: number,
   name: String,
   description: String,
+  timestamp: unix_timestamp,
 }
+
+type unix_timestamp = number;
 
 export interface Items {
   items: Item[],
@@ -27,7 +30,7 @@ export interface TeamState {
   nodes: Map<string, Node>;
   ways: LatLngLiteral[][];
   state: Info;
-  items: Items;
+  items: Item[];
 }
 
 export interface DiscoveryEvent {

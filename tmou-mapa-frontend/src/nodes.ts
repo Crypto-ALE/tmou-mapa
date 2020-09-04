@@ -32,6 +32,9 @@ function parseJson(res: any): TeamState {
           .map((node: any) => [node.id, {latLng:{lat: node.y, lng: node.x}, type: node.type, data: node.data}])
   );
   const ways = pois.ways.map((way: any) => way.nodes.map(nodeId => nodes.get(nodeId)!.latLng));
+  const parsed_items = items.items.map((item: any) => {
+    return {...item, timestamp: Date.parse(item.timestamp)}
+  });
 
-  return {nodes, ways, state, items};
+  return {nodes, ways, state, items: parsed_items};
 }

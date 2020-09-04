@@ -17,14 +17,18 @@ async function run() {
 
   document.getElementById('discover').onclick = async () => {
     const {event, newItems} = await discover(secretPhase);
-    console.debug('items:', newItems);
     switch (event) {
       case "nothing": {
         showPopup('Bohužel...', 'Na toto místo žádná šifra nevede, zkuste to jinde.');
         break;
       }
       case "badge-found": {
-        showPopup('Hurá!', 'Řešení je správně, získali jste za něj odznáček.');
+        if (newItems.length) {
+          const {level, description} = newItems[0];
+          showBadgePopup(level.toString(), description.slice(-2));
+        } else {
+          showPopup('No...', 'Jste tu správně, ale buď jste tu už byli nebo už jste v jiném levelu, takže nic nedostanete.');
+        }
         break;
       }
       case "checkpoint-visited": {
@@ -32,13 +36,13 @@ async function run() {
         if (items.length) {
           showPopup('Hurá!', 'Organizátoři vám dali nové šifry.');
         } else {
-          showPopup('Bohužel...', 'Tentokrát jste nic nedostali.');
+          showPopup('Bohužel...', 'Tentokrát jste od organizátorů nic nedostali.');
         }
         break;
       }
     }
     let {items} = await getTeamState(secretPhase);
-    drawInventory(items.items);
+    drawInventory(items);
   }
 
   let {nodes, ways, state, items} = await getTeamState(secretPhase);
@@ -46,16 +50,22 @@ async function run() {
   const latLng: LatLngLiteral = nodes.get(state.position)!.latLng;
   let currentNodeCoords: LatLng = new LatLng(latLng.lat, latLng.lng);
 
+  document.getElementById('teamName').innerText = state.name;
   mapInstance.setView(currentNodeCoords, 17);
-  document.getElementById('pos').textContent = currentNodeCoords.toString();
-  document.getElementById('nodeId').textContent = state.position;
-  drawInventory(items.items);
+  console.debug(`Aktuální pozice: ${currentNodeCoords.toString()}`, `Aktuální nodeId: ${state.position}`);
+  drawInventory(items);
   drawNodesAndWays(nodes, ways);
 
-  function showPopup(heading: string, text: string, lvl=null) {
+  function showBadgePopup(lvl: string, label: string) {
+    const badgeClass = lvl ? `lvl${lvl}` : 'shrug';
+    document.querySelector('#popup .large_badge > .label').innerHTML = label;
+    const message = lvl === '5' ? 'Gratulujeme k dokončení kvalifikace a budeme se na vás (nejspíš) těšit na startu TMOU.' : 'Řešení je správně, získali jste za něj odznáček.';
+    showPopup('Hurá!', message, badgeClass);
+  }
+
+  function showPopup(heading: string, text: string, badgeClass='shrug') {
     document.querySelector('.popup_text>h2').textContent = heading;
     document.querySelector('.popup_text>p').innerHTML = text;
-    const badgeClass = lvl ? `lvl${lvl}` : 'shrug';
     document.querySelector('#popup .large_badge').classList.add(badgeClass);
     document.getElementById('popup').classList.remove('popup__hidden');
     document.getElementById('overlay').classList.remove('overlay__hidden');
@@ -63,27 +73,17 @@ async function run() {
     document.getElementById('overlay').classList.add('overlay__visible');
 
     document.querySelector('.popup #continue').addEventListener('click', hidePopup);
+    document.addEventListener('keyup', hidePopup);
 
     function hidePopup(e: Event) {
       document.getElementById('popup').classList.remove('popup__visible');
       document.getElementById('overlay').classList.remove('overlay__visible');
       document.getElementById('popup').classList.add('popup__hidden');
       document.getElementById('overlay').classList.add('overlay__hidden');
+      document.querySelector('#popup .large_badge').classList.value = 'large_badge';
       e.target.removeEventListener('click', hidePopup);
+      document.removeEventListener('keyup', hidePopup);
     }
-  }
-
-  function showBadge(level: number, label: String) {
-    document.getElementById('badges').innerHTML += `
-          <div class="badge lvl${level}">
-            <span class="time">17:08</span>
-            <span class="label">${label}</span>
-          </div>
-          `;
-  }
-
-  function showPuzzle(level: number, url: String) {
-    document.querySelector('#puzzles>ul').innerHTML += `<li><a href="${url}">Level ${level}</a>`
   }
 
   function drawNodesAndWays(nodes, ways) {
@@ -106,35 +106,42 @@ async function run() {
       l.bringToBack();
       l.addTo(mapInstance);
     }
-
   }
 
   async function handleNodeClick(node: Circle, nodeId) {
     mapInstance.setView(node.getLatLng(), mapInstance.getZoom());
     currentNodeCoords = node.getLatLng();
-    document.getElementById('pos').textContent = node.getLatLng().toString();
-    // @ts-ignore
-    document.getElementById('nodeId').textContent = node.getId();
+    console.debug(`Aktuální pozice: ${currentNodeCoords.toString()}`, `Aktuální nodeId: ${state.position}`);
     const {nodes, ways, items} = await moveTeam(secretPhase, nodeId);
-    drawInventory(items.items);
+    drawInventory(items);
     drawNodesAndWays(nodes, ways);
   }
 
+  function formatTimestamp(timestamp: number) {
+        const date = new Date(timestamp);
+        const hours = date.getHours();
+        const mins = date.getMinutes();
+
+        return `${hours < 10 ? '0' : ''}${hours}:${mins < 10 ? '0' : ''}${mins}`;
+  }
+
   function drawInventory(items: Item[]) {
-    document.getElementById('badges').innerHTML = '';
-    document.querySelector('#puzzles>ul').innerHTML = '';
-    for (const item of items) {
-      switch (item.type) {
-        case "puzzles": {
-          showPuzzle(item.level, item.url);
-          break;
-        }
-        case "badge": {
-          showBadge(item.level, item.description.slice(-2));
-          break;
-        }
-      }
+    const puzzles = items.filter((item) => item.type === "puzzles").sort((a, b) => a.level - b.level).map(({url, level}) => `<li><a href="${url}">Level ${level}</a>`);
+    const badges = items
+      .filter((item) => item.type === "badge")
+      .sort((a, b) => a.timestamp - b.timestamp)
+      .map(({level, description, timestamp}) => {
+        return `<div class="badge lvl${level}">
+            <span class="time">${formatTimestamp(timestamp)}</span>
+            <span class="label">${description.slice(-2)}</span>
+          </div>`
+      })
+      .join('');
+    document.getElementById('badges').innerHTML = badges;
+    if (puzzles.length) {
+      document.querySelector('#puzzles>#puzzles-list').innerHTML = `<ul>${puzzles.join('')}</ul>`;
     }
+
   }
 
 }

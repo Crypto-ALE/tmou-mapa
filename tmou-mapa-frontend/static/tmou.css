@@ -61,7 +61,7 @@ button{
 
 
 
-#panel a{
+a{
   color: #FFEC01; /*tmou gold*/
 }
 
@@ -80,6 +80,11 @@ button{
 #panel ul{
   margin: 0px 0px;
   padding-left:25px;
+}
+
+#panel ul li {
+  line-height: 1.5;
+  font-size: larger;
 }
 
 .message{
@@ -192,6 +197,7 @@ button#discover{
   font-weight:300;
   display:inline-block;
   font-size:16px;
+  margin-top: 5px;
 }
 
 .badge span.label{
@@ -201,7 +207,7 @@ button#discover{
   /*font-size: 42px;*/
   font-weight:300;
   display:inline-block;
-  line-height:45px;
+  line-height:55px;
   font-size:45px;
 }
 
@@ -252,7 +258,7 @@ button#discover{
   /*height:200px;*/
   border:2px solid black;
   border-radius:10px;
-  background:#ffffff55;
+  background:#ffffffe2;
   color:black;
   z-index:2000;
   padding:15px;

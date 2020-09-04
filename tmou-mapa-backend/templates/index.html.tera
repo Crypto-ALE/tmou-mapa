@@ -19,7 +19,7 @@
   </div>
 
   <div id="header_right">
-      <span id="team">Přihlášený tým: Bazinga</span> |
+    <span id="team">Přihlášený tým: <span id="teamName">teamName</span></span> |
       <a href="#">Logout</a>
   </div>
 
@@ -27,36 +27,33 @@
     <div id="map"></div>
 
     <div id="panel">
+      <div class="section">
+        <div>
+          <p>Tady se můžou objevit zprávy od organizátorů.</p>
+        </div>
+        <!-- <div class="message OK">
+        <p> Toto je dobrá zpráva :-) </p>
+        </div>
 
-      <div class="message OK">
-      <p> Toto je dobrá zpráva :-) </p>
+        <div class="message WRONG">
+        <p> Toto je špatná zpráva :-( </p>
+        </div>
+
+        <div class="message INFO">
+        <p> Toto je neutrální zpráva :-| </p>
+        </div>
+        -->
       </div>
-
-      <div class="message WRONG">
-      <p> Toto je špatná zpráva :-( </p>
-      </div>
-
-      <div class="message INFO">
-      <p> Toto je neutrální zpráva :-| </p>
-      </div>
-
       <div class="section" id="puzzles">
         <h2>Zadání šifer</h2>
+        <div id="puzzles-list">
         <p> Zadání se zde objeví až po startu hry </p>
-        <ul>
-        </ul>
+        </div>
       </div>
 
       <div class="section" id="navigation">
         <h2>Akce</h2>
-        <button id="discover">Hledat šifru</button>
-        <div class="debug">
-          <ul>
-            <li>LatLong: <span id="pos"><i>Loading</i></span></li>
-            <li>NodeId: <span id="nodeId"><i>Loading</i></span></li>
-            <li>Aktuální stanoviště: <span id="ranking"></span></li>
-          </ul>
-        </div>
+        <button id="discover">Zkusit štěstí</button>
       </div>
 
       <div class="section">
@@ -70,26 +67,11 @@
   </div>
 
   <!-- ADD POPUP - CHANGE TO DISPLAY:NONE WHEN HIDDEN-->
-    <!--<div class="overlay"></div>
-    <div class="popup">
-      <div class="large_badge lvl5">
-        <span class="time">21:10</span>
-        <span class="label">51</span>
-      </div>
-      <div class="popup_text">
-        <h2>Gratulujeme!</h2>
-        <p>Získali jste odznáček za&nbsp;šifru 51 (čas 21:10).</p>
-        <button id="continue">Pokračovat</button>
-      </div>
-    </div>-->
-  <!-- END POPUP -->
-
-  <!-- ADD POPUP - CHANGE TO DISPLAY:NONE WHEN HIDDEN-->
   <div class="overlay overlay__hidden" id="overlay"></div>
     <div class="popup popup__hidden" id="popup">
       <div class="large_badge">
-        <span class="time">00:00</span>
-        <span class="label">xx</span>
+        <!-- <span class="time">00:00</span> -->
+        <span class="label"></span>
       </div>
       <div class="popup_text">
         <h2>Bohužel...</h2>
