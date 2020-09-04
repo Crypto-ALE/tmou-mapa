@@ -106,12 +106,25 @@ fn get_items_in_node(&self, node_id: i64) -> std::result::Result<std::vec::Vec<d
 
 fn get_team_items(&self, team_id: i32) -> std::result::Result<std::vec::Vec<db_models::Item>, errors::TmouError>
 {
-    let items: Vec<db_models::Item> = teams_items::teams_items
+    let items = teams_items::teams_items
         .filter(teams_items::team_id.eq(team_id))
         .inner_join(items::items)
         .select((items::type_, items::url, items::level, items::name, items::description))
         .load(&*self.conn)?;
     Ok(items)
+}
+
+fn get_team_items_with_timestamps(&self, team_id: i32) -> std::result::Result<std::vec::Vec<db_models::TeamItem>, errors::TmouError>
+{
+    type Tuple = (String,String,i16,String,Option<String>,Option<chrono::NaiveDateTime>);
+    let items:Vec<Tuple> = teams_items::teams_items
+        .filter(teams_items::team_id.eq(team_id))
+        .inner_join(items::items)
+        .select((items::type_, items::url, items::level, items::name, items::description, teams_items::timestamp))
+        .load(&*self.conn)?;
+    let from_tuple = |t: Tuple| db_models::TeamItem {type_:t.0, url:t.1, level:t.2, name:t.3, description:t.4, timestamp:t.5};
+    let team_items:Vec<db_models::TeamItem> = items.into_iter().map(from_tuple).collect();
+    Ok(team_items)
 }
 
 fn put_team_items(&mut self, team_id: i32, items: std::vec::Vec<db_models::Item>) -> std::result::Result<(), errors::TmouError>

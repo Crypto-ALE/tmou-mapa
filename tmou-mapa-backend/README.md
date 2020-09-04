@@ -50,15 +50,17 @@ legenda:
 * Px - puzzles levelu x
 * C - checkpoint (levelu 0, kde jsou většinou všechny sady šifer)
 
-inventář | obsah uzlu | nový inventář | objevené věci vrácené discoverem | pozn.
+Discovery vždy vrátí název eventu a nově získané objekty. Sloupec nový inventář v následující tabulce obsahuje starý inventář plus nově získané objekty. Celý nový inventář je pak vrácen při následném volání info.
+
+inventář | obsah uzlu | nový inventář | event | pozn.
 ---|---|---|---|---
-cokoliv | nic | beze změn | nic | ani smrt nebere...
-nic | C, P1, P2,... | P1 | C | jsem na kontrole, začínám hru, dostávám šifry sady 1
-P1, B11 | B11 | beze změn | B11 | už mám, ale můžu ho vidět znova
+cokoliv | nic | beze změn | nothing | ani smrt nebere...
+nic | C, P1, P2,... | P1 | checkpoint-discovered | jsem na kontrole, začínám hru, dostávám šifry sady 1
+P1, B11 | B11 | beze změn | badge-found | už mám, ale bylo to tady
 P1, B11 | B21 | beze změn | nic | nevidím level 2
-P1, B11 | B12 | P1, B11, B12 | B12 | našel jsem nový
-P1, B11, B12, B13 | B14 | beze změn | B14 | čtvrtý už nepotřebuju
-P1, B11, B12 | C, P1, P2,... | beze změn | C | jsem na kontrole, ale nemám na nový level
-P1, B11, B12, B13 | C, P1 | beze změn | C | jsem na kontrole, kde nemají moji sadu, nic nedostávám
-P1, B11, B12, B13 | C, P2,... | P1, B11, B12, B13, P2 | C | jsem na kontrole, dostal jsem novou sadu
+P1, B11 | B12 | P1, B11, B12 | badge-found | našel jsem nový
+P1, B11, B12, B13 | B14 | beze změn | badge-found | čtvrtý už nepotřebuju, ale je tady
+P1, B11, B12 | C, P1, P2,... | beze změn | checkpoint-discovered | jsem na kontrole, ale nemám na nový level
+P1, B11, B12, B13 | C, P1 | beze změn | checkpoint-discovered | jsem na kontrole, kde nemají moji sadu, nic nedostávám
+P1, B11, B12, B13 | C, P2,... | P1, B11, B12, B13, P2 | checkpoint-discovered | jsem na kontrole, dostal jsem novou sadu
 

@@ -158,9 +158,10 @@ fn discovery_returns_unchanged_inventory_when_nothing_found()->TmouResult<()>
     // empty node
     let node_contents = Vec::new();
 
-    let (new_inventory,items) = dis::discover_node(&inventory, &node_contents)?;
-    assert_eq!(new_inventory, inventory);
-    assert_eq!(items, Vec::new());
+    let evt = dis::discover_node(&inventory, &node_contents)?;
+    assert_eq!(evt.event, dis::EventType::Nothing);
+    assert_eq!(evt.updated_inventory, inventory);
+    assert_eq!(evt.newly_discovered_items, Vec::new());
     Ok(())
 }
 
@@ -190,9 +191,10 @@ fn discovery_returns_level_2_puzzles_when_3_badges_level_1_presented_in_checkpoi
         item("badge", 1, "badge-1-3"),
         item("puzzles", 2, "puzzles-2")];
 
-    let (new_inventory,items) = dis::discover_node(&inventory, &node_contents)?;
-    assert_eq!(new_inventory, expected_inventory);
-    assert_eq!(items, vec![item("checkpoint",0,"checkpoint")]);
+    let evt = dis::discover_node(&inventory, &node_contents)?;
+    assert_eq!(evt.event, dis::EventType::CheckpointVisited);
+    assert_eq!(evt.updated_inventory, expected_inventory);
+    assert_eq!(evt.newly_discovered_items, vec![item("puzzles", 2, "puzzles-2")]);
     Ok(())
 }
 
@@ -220,9 +222,10 @@ fn discovery_returns_level_3_puzzles_when_2_badges_level_2_presented_in_checkpoi
         item("badge", 2, "badge-2-2"),
         item("puzzles", 3, "puzzles-3")];
 
-    let (new_inventory,items) = dis::discover_node(&inventory, &node_contents)?;
-    assert_eq!(new_inventory, expected_inventory);
-    assert_eq!(items, vec![item("checkpoint",0,"checkpoint")]);
+    let evt = dis::discover_node(&inventory, &node_contents)?;
+    assert_eq!(evt.event, dis::EventType::CheckpointVisited);
+    assert_eq!(evt.updated_inventory, expected_inventory);
+    assert_eq!(evt.newly_discovered_items, vec![item("puzzles", 3, "puzzles-3")]);
     Ok(())
 }
 
@@ -249,9 +252,10 @@ fn discovery_returns_level_4_puzzles_when_1_badge_level_3_presented_in_checkpoin
         item("badge", 3, "badge-3-2"),
         item("puzzles", 4, "puzzles-4")];
 
-    let (new_inventory,items) = dis::discover_node(&inventory, &node_contents)?;
-    assert_eq!(new_inventory, expected_inventory);
-    assert_eq!(items, vec![item("checkpoint",0,"checkpoint")]);
+    let evt = dis::discover_node(&inventory, &node_contents)?;
+    assert_eq!(evt.event, dis::EventType::CheckpointVisited);
+    assert_eq!(evt.updated_inventory, expected_inventory);
+    assert_eq!(evt.newly_discovered_items, vec![item("puzzles", 4, "puzzles-4")]);
     Ok(())
 }
 
@@ -278,9 +282,10 @@ fn discovery_returns_level_5_puzzles_when_1_badge_level_4_presented_in_checkpoin
         item("badge", 4, "badge-4-1"),
         item("puzzles", 5, "puzzles-5")];
 
-    let (new_inventory,items) = dis::discover_node(&inventory, &node_contents)?;
-    assert_eq!(new_inventory, expected_inventory);
-    assert_eq!(items, vec![item("checkpoint",0,"checkpoint")]);
+    let evt = dis::discover_node(&inventory, &node_contents)?;
+    assert_eq!(evt.event, dis::EventType::CheckpointVisited);
+    assert_eq!(evt.updated_inventory, expected_inventory);
+    assert_eq!(evt.newly_discovered_items, vec![item("puzzles", 5, "puzzles-5")]);
     Ok(())
 }
 
@@ -303,9 +308,10 @@ fn discovery_does_nothing_when_too_few_badges()->TmouResult<()>
         item("puzzles", 5, "puzzles-5")];
 
 
-    let (new_inventory,items) = dis::discover_node(&inventory, &node_contents)?;
-    assert_eq!(new_inventory, inventory);
-    assert_eq!(items, vec![item("checkpoint",0,"checkpoint")]);
+    let evt = dis::discover_node(&inventory, &node_contents)?;
+    assert_eq!(evt.event, dis::EventType::CheckpointVisited);
+    assert_eq!(evt.updated_inventory, inventory);
+    assert_eq!(evt.newly_discovered_items, Vec::new());
     Ok(())
 }
 
@@ -328,9 +334,10 @@ fn discovery_does_nothing_when_badges_from_wrong_level()->TmouResult<()>
         item("puzzles", 5, "puzzles-5")];
 
 
-    let (new_inventory,items) = dis::discover_node(&inventory, &node_contents)?;
-    assert_eq!(new_inventory, inventory);
-    assert_eq!(items, vec![item("checkpoint",0,"checkpoint")]);
+    let evt = dis::discover_node(&inventory, &node_contents)?;
+    assert_eq!(evt.event, dis::EventType::CheckpointVisited);
+    assert_eq!(evt.updated_inventory, inventory);
+    assert_eq!(evt.newly_discovered_items, Vec::new());
     Ok(())
 }
 
@@ -354,9 +361,10 @@ fn discovery_does_nothing_when_puzzles_not_in_checkpoint()->TmouResult<()>
         item("puzzles", 5, "puzzles-5")];
 
 
-    let (new_inventory,items) = dis::discover_node(&inventory, &node_contents)?;
-    assert_eq!(new_inventory, inventory);
-    assert_eq!(items, vec![item("checkpoint",0,"checkpoint")]);
+    let evt = dis::discover_node(&inventory, &node_contents)?;
+    assert_eq!(evt.event, dis::EventType::CheckpointVisited);
+    assert_eq!(evt.updated_inventory, inventory);
+    assert_eq!(evt.newly_discovered_items, Vec::new());
     Ok(())
 }
 
@@ -372,18 +380,105 @@ fn discovery_adds_badge_level_1_when_player_in_level_1_and_not_on_max()->TmouRes
     // new badge
     let node_contents = vec![item("badge", 1, "badge-1-3")];
 
-    // expected: level 2 puzzles and nothing more
     let expected_inventory = vec![
         item("puzzles", 1, "puzzles-1"),
         item("badge", 1, "badge-1-1"),
         item("badge", 1, "badge-1-2"),
         item("badge", 1, "badge-1-3")];
 
-    let (new_inventory,items) = dis::discover_node(&inventory, &node_contents)?;
-    assert_eq!(new_inventory, expected_inventory);
-    assert_eq!(items, node_contents);
+    let evt = dis::discover_node(&inventory, &node_contents)?;
+    assert_eq!(evt.event, dis::EventType::BadgeFound);
+    assert_eq!(evt.updated_inventory, expected_inventory);
+    assert_eq!(evt.newly_discovered_items, node_contents);
     Ok(())
 }
+
+#[test]
+fn discovery_adds_badge_level_2_when_player_in_level_2_and_not_on_max()->TmouResult<()> 
+{
+    // ready for a new badge
+    let inventory = vec![
+        item("puzzles", 2, "puzzles-2"),
+        item("badge", 2, "badge-2-1")];
+
+    // new badge
+    let node_contents = vec![item("badge", 2, "badge-2-2")];
+
+    let expected_inventory = vec![
+        item("puzzles", 2, "puzzles-2"),
+        item("badge", 2, "badge-2-1"),
+        item("badge", 2, "badge-2-2")];
+
+    let evt = dis::discover_node(&inventory, &node_contents)?;
+    assert_eq!(evt.event, dis::EventType::BadgeFound);
+    assert_eq!(evt.updated_inventory, expected_inventory);
+    assert_eq!(evt.newly_discovered_items, node_contents);
+    Ok(())
+}
+
+#[test]
+fn discovery_adds_badge_level_3_when_player_in_level_3_and_not_on_max()->TmouResult<()> 
+{
+    // ready for a new badge
+    let inventory = vec![
+        item("puzzles", 3, "puzzles-3")];
+
+    // new badge
+    let node_contents = vec![item("badge", 3, "badge-3-1")];
+
+    let expected_inventory = vec![
+        item("puzzles", 3, "puzzles-3"),
+        item("badge", 3, "badge-3-1")];
+
+    let evt = dis::discover_node(&inventory, &node_contents)?;
+    assert_eq!(evt.event, dis::EventType::BadgeFound);
+    assert_eq!(evt.updated_inventory, expected_inventory);
+    assert_eq!(evt.newly_discovered_items, node_contents);
+    Ok(())
+}
+
+#[test]
+fn discovery_adds_badge_level_4_when_player_in_level_4_and_not_on_max()->TmouResult<()> 
+{
+    // ready for a new badge
+    let inventory = vec![
+        item("puzzles", 4, "puzzles-4")];
+
+    // new badge
+    let node_contents = vec![item("badge", 4, "badge-4-1")];
+
+    let expected_inventory = vec![
+        item("puzzles", 4, "puzzles-4"),
+        item("badge", 4, "badge-4-1")];
+
+    let evt = dis::discover_node(&inventory, &node_contents)?;
+    assert_eq!(evt.event, dis::EventType::BadgeFound);
+    assert_eq!(evt.updated_inventory, expected_inventory);
+    assert_eq!(evt.newly_discovered_items, node_contents);
+    Ok(())
+}
+
+#[test]
+fn discovery_adds_badge_level_5_when_player_in_level_5_and_not_on_max()->TmouResult<()> 
+{
+    // ready for a new badge
+    let inventory = vec![
+        item("puzzles", 5, "puzzles-5")];
+
+    // new badge
+    let node_contents = vec![item("badge", 5, "badge-5-1")];
+
+    let expected_inventory = vec![
+        item("puzzles", 5, "puzzles-5"),
+        item("badge", 5, "badge-5-1")];
+
+    let evt = dis::discover_node(&inventory, &node_contents)?;
+    assert_eq!(evt.event, dis::EventType::BadgeFound);
+    assert_eq!(evt.updated_inventory, expected_inventory);
+    assert_eq!(evt.newly_discovered_items, node_contents);
+    Ok(())
+}
+
 
 #[test]
 fn discovery_does_not_add_badge_when_insufficient_level()->TmouResult<()> 
@@ -397,9 +492,10 @@ fn discovery_does_not_add_badge_when_insufficient_level()->TmouResult<()>
     // new badge
     let node_contents = vec![item("badge", 2, "badge-2-3")];
 
-    let (new_inventory,items) = dis::discover_node(&inventory, &node_contents)?;
-    assert_eq!(new_inventory, inventory);
-    assert_eq!(items, Vec::new());
+    let evt = dis::discover_node(&inventory, &node_contents)?;
+    assert_eq!(evt.event, dis::EventType::Nothing);
+    assert_eq!(evt.updated_inventory, inventory);
+    assert_eq!(evt.newly_discovered_items, Vec::new());
     Ok(())
 }
 
@@ -414,9 +510,10 @@ fn discovery_does_not_add_badge_when_level_too_high()->TmouResult<()>
     // new badge
     let node_contents = vec![item("badge", 1, "badge-1-1")];
 
-    let (new_inventory,items) = dis::discover_node(&inventory, &node_contents)?;
-    assert_eq!(new_inventory, inventory);
-    assert_eq!(items, node_contents);
+    let evt = dis::discover_node(&inventory, &node_contents)?;
+    assert_eq!(evt.event, dis::EventType::BadgeFound);
+    assert_eq!(evt.updated_inventory, inventory);
+    assert_eq!(evt.newly_discovered_items, Vec::new());
     Ok(())
 }
 
@@ -433,9 +530,10 @@ fn discovery_does_not_add_badge_when_already_found()->TmouResult<()>
     // new badge
     let node_contents = vec![item("badge", 1, "badge-1-2")];
 
-    let (new_inventory,items) = dis::discover_node(&inventory, &node_contents)?;
-    assert_eq!(new_inventory, inventory);
-    assert_eq!(items, node_contents);
+    let evt = dis::discover_node(&inventory, &node_contents)?;
+    assert_eq!(evt.event, dis::EventType::BadgeFound);
+    assert_eq!(evt.updated_inventory, inventory);
+    assert_eq!(evt.newly_discovered_items, Vec::new());
     Ok(())
 }
 
@@ -452,8 +550,9 @@ fn discovery_does_not_add_badge_when_on_max()->TmouResult<()>
     // new badge
     let node_contents = vec![item("badge", 1, "badge-1-4")];
 
-    let (new_inventory,items) = dis::discover_node(&inventory, &node_contents)?;
-    assert_eq!(new_inventory, inventory);
-    assert_eq!(items, node_contents);
+    let evt = dis::discover_node(&inventory, &node_contents)?;
+    assert_eq!(evt.event, dis::EventType::BadgeFound);
+    assert_eq!(evt.updated_inventory, inventory);
+    assert_eq!(evt.newly_discovered_items, Vec::new());
     Ok(())
 }

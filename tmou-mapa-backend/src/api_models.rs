@@ -1,6 +1,6 @@
 #![allow(non_snake_case)]
 
-use serde::{Serialize, Deserialize};
+use ::serde::{Serialize, Deserialize};
 
 #[derive(Serialize, Deserialize)]
 pub struct NodeAction
@@ -26,6 +26,7 @@ pub struct Item
     pub level: i16,
     pub name: String,
     pub description: String,
+    pub timestamp: Option<chrono::NaiveDateTime>
 }
 
 #[derive(Serialize, Deserialize)]
