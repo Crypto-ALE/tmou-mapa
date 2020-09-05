@@ -112,10 +112,10 @@ async function run() {
   }
 
   async function handleNodeClick(node: Circle, nodeId) {
-    mapInstance.setView(node.getLatLng(), mapInstance.getZoom());
+    //mapInstance.setView(node.getLatLng(), mapInstance.getZoom());
     currentNodeCoords = node.getLatLng();
+    const {nodes, ways, items, state} = await moveTeam(secretPhase, nodeId);
     console.debug(`Aktuální pozice: ${currentNodeCoords.toString()}`, `Aktuální nodeId: ${state.position}`);
-    const {nodes, ways, items} = await moveTeam(secretPhase, nodeId);
     drawInventory(items);
     drawNodesAndWays(nodes, ways);
   }
