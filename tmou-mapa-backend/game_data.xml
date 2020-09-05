@@ -1,0 +1,373 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<game name="Kvalifikace Tmou XXII">
+  <items>
+ <!-- most puzzles are in one checkpoint -->
+    <item name="puzzles-1a" type="puzzles" description="šifry sady 1" url="https://drive.google.com/file/d/1lE1t_xomxpQdVj1k1Ge1CTKfecBOIMbg/view?usp=sharing" level="1">
+	  <node id="317356190"/> <!--Dopravni hriste Komin-->
+	</item>
+    <item name="puzzles-1b" type="puzzles" description="šifry sady 1" url="https://drive.google.com/file/d/1lE1t_xomxpQdVj1k1Ge1CTKfecBOIMbg/view?usp=sharing" level="1">
+	  <node id="7797669281"/> <!--Dopravni hriste Komin-->
+	</item>
+    <item name="puzzles-1c" type="puzzles" description="šifry sady 1" url="https://drive.google.com/file/d/1lE1t_xomxpQdVj1k1Ge1CTKfecBOIMbg/view?usp=sharing" level="1">
+	  <node id="317356182"/> <!--Dopravni hriste Komin-->
+	</item>
+    <item name="puzzles-1d" type="puzzles" description="šifry sady 1" url="https://drive.google.com/file/d/1lE1t_xomxpQdVj1k1Ge1CTKfecBOIMbg/view?usp=sharing" level="1">
+	  <node id="317356186"/> <!--Dopravni hriste Komin-->
+	</item>
+    <item name="puzzles-1e" type="puzzles" description="šifry sady 1" url="https://drive.google.com/file/d/1lE1t_xomxpQdVj1k1Ge1CTKfecBOIMbg/view?usp=sharing" level="1">
+	  <node id="317356187"/> <!--Dopravni hriste Komin-->
+	</item>
+    <item name="puzzles-1f" type="puzzles" description="šifry sady 1" url="https://drive.google.com/file/d/1lE1t_xomxpQdVj1k1Ge1CTKfecBOIMbg/view?usp=sharing" level="1">
+	  <node id="317356180"/> <!--Dopravni hriste Komin-->
+	</item>
+    <item name="puzzles-1g" type="puzzles" description="šifry sady 1" url="https://drive.google.com/file/d/1lE1t_xomxpQdVj1k1Ge1CTKfecBOIMbg/view?usp=sharing" level="1">
+	  <node id="317356189"/> <!--Dopravni hriste Komin-->
+	</item>
+    <item name="puzzles-1h" type="puzzles" description="šifry sady 1" url="https://drive.google.com/file/d/1lE1t_xomxpQdVj1k1Ge1CTKfecBOIMbg/view?usp=sharing" level="1">
+	  <node id="317356188"/> <!--Dopravni hriste Komin-->
+	</item>
+    <item name="puzzles-1i" type="puzzles" description="šifry sady 1" url="https://drive.google.com/file/d/1lE1t_xomxpQdVj1k1Ge1CTKfecBOIMbg/view?usp=sharing" level="1">
+	  <node id="7797669280"/> <!--Dopravni hriste Komin-->
+	</item>
+    <item name="puzzles-1j" type="puzzles" description="šifry sady 1" url="https://drive.google.com/file/d/1lE1t_xomxpQdVj1k1Ge1CTKfecBOIMbg/view?usp=sharing" level="1">
+	  <node id="317356184"/> <!--Dopravni hriste Komin-->
+	</item>
+    <item name="puzzles-1k" type="puzzles" description="šifry sady 1" url="https://drive.google.com/file/d/1lE1t_xomxpQdVj1k1Ge1CTKfecBOIMbg/view?usp=sharing" level="1">
+	  <node id="317356185"/> <!--Dopravni hriste Komin-->
+	</item>
+    <item name="puzzles-1l" type="puzzles" description="šifry sady 1" url="https://drive.google.com/file/d/1lE1t_xomxpQdVj1k1Ge1CTKfecBOIMbg/view?usp=sharing" level="1">
+	  <node id="317356191"/> <!--Dopravni hriste Komin-->
+	</item>
+    <item name="puzzles-1m" type="puzzles" description="šifry sady 1" url="https://drive.google.com/file/d/1lE1t_xomxpQdVj1k1Ge1CTKfecBOIMbg/view?usp=sharing" level="1">
+	  <node id="317356181"/> <!--Dopravni hriste Komin-->
+	</item>
+    <item name="puzzles-1n" type="puzzles" description="šifry sady 1" url="https://drive.google.com/file/d/1lE1t_xomxpQdVj1k1Ge1CTKfecBOIMbg/view?usp=sharing" level="1">
+	  <node id="1848688193"/> <!--Dopravni hriste Komin-->
+	</item>
+    <item name="puzzles-1o" type="puzzles" description="šifry sady 1" url="https://drive.google.com/file/d/1lE1t_xomxpQdVj1k1Ge1CTKfecBOIMbg/view?usp=sharing" level="1">
+	  <node id="1851824467"/> <!--Dopravni hriste Komin-->
+	</item>
+    <!--Druhy level-->
+    <item name="puzzles-2a" type="puzzles" description="šifry sady 2" url="https://drive.google.com/file/d/11fgL6qRSY58EiYsas7wm3VHZrOzVezQU/view?usp=sharing" level="2">
+	  <node id="317356190"/> <!--Dopravni hriste Komin-->
+	</item>
+    <item name="puzzles-2b" type="puzzles" description="šifry sady 2" url="https://drive.google.com/file/d/11fgL6qRSY58EiYsas7wm3VHZrOzVezQU/view?usp=sharing" level="2">
+	  <node id="7797669281"/> <!--Dopravni hriste Komin-->
+	</item>
+  <item name="puzzles-2c" type="puzzles" description="šifry sady 2" url="https://drive.google.com/file/d/11fgL6qRSY58EiYsas7wm3VHZrOzVezQU/view?usp=sharing" level="2">
+	  <node id="317356182"/> <!--Dopravni hriste Komin-->
+	</item>
+  <item name="puzzles-2d" type="puzzles" description="šifry sady 2" url="https://drive.google.com/file/d/11fgL6qRSY58EiYsas7wm3VHZrOzVezQU/view?usp=sharing" level="2">
+	  <node id="317356186"/> <!--Dopravni hriste Komin-->
+	</item>
+  <item name="puzzles-2e" type="puzzles" description="šifry sady 2" url="https://drive.google.com/file/d/11fgL6qRSY58EiYsas7wm3VHZrOzVezQU/view?usp=sharing" level="2">
+	  <node id="317356187"/> <!--Dopravni hriste Komin-->
+	</item>
+  <item name="puzzles-2f" type="puzzles" description="šifry sady 2" url="https://drive.google.com/file/d/11fgL6qRSY58EiYsas7wm3VHZrOzVezQU/view?usp=sharing" level="2">
+	  <node id="317356180"/> <!--Dopravni hriste Komin-->
+	</item>
+  <item name="puzzles-2g" type="puzzles" description="šifry sady 2" url="https://drive.google.com/file/d/11fgL6qRSY58EiYsas7wm3VHZrOzVezQU/view?usp=sharing" level="2">
+	  <node id="317356189"/> <!--Dopravni hriste Komin-->
+	</item>
+  <item name="puzzles-2h" type="puzzles" description="šifry sady 2" url="https://drive.google.com/file/d/11fgL6qRSY58EiYsas7wm3VHZrOzVezQU/view?usp=sharing" level="2">
+	  <node id="317356188"/> <!--Dopravni hriste Komin-->
+	</item>
+  <item name="puzzles-2i" type="puzzles" description="šifry sady 2" url="https://drive.google.com/file/d/11fgL6qRSY58EiYsas7wm3VHZrOzVezQU/view?usp=sharing" level="2">
+	  <node id="7797669280"/> <!--Dopravni hriste Komin-->
+	</item>
+  <item name="puzzles-2j" type="puzzles" description="šifry sady 2" url="https://drive.google.com/file/d/11fgL6qRSY58EiYsas7wm3VHZrOzVezQU/view?usp=sharing" level="2">
+	  <node id="317356184"/> <!--Dopravni hriste Komin-->
+	</item>
+  <item name="puzzles-2k" type="puzzles" description="šifry sady 2" url="https://drive.google.com/file/d/11fgL6qRSY58EiYsas7wm3VHZrOzVezQU/view?usp=sharing" level="2">
+	  <node id="317356185"/> <!--Dopravni hriste Komin-->
+	</item>
+  <item name="puzzles-2l" type="puzzles" description="šifry sady 2" url="https://drive.google.com/file/d/11fgL6qRSY58EiYsas7wm3VHZrOzVezQU/view?usp=sharing" level="2">
+	  <node id="317356191"/> <!--Dopravni hriste Komin-->
+	</item>
+  <item name="puzzles-2m" type="puzzles" description="šifry sady 2" url="https://drive.google.com/file/d/11fgL6qRSY58EiYsas7wm3VHZrOzVezQU/view?usp=sharing" level="2">
+	  <node id="317356181"/> <!--Dopravni hriste Komin-->
+	</item>
+  <item name="puzzles-2n" type="puzzles" description="šifry sady 2" url="https://drive.google.com/file/d/11fgL6qRSY58EiYsas7wm3VHZrOzVezQU/view?usp=sharing" level="2">
+	  <node id="1848688193"/> <!--Dopravni hriste Komin-->
+	</item>
+  <item name="puzzles-2o" type="puzzles" description="šifry sady 2" url="https://drive.google.com/file/d/11fgL6qRSY58EiYsas7wm3VHZrOzVezQU/view?usp=sharing" level="2">
+	  <node id="1851824467"/> <!--Dopravni hriste Komin-->
+	</item>
+    <!--Treti level-->
+    <item name="puzzles-3a" type="puzzles" description="šifry sady 3" url="https://drive.google.com/file/d/1-GEihkDyIu5UKXvj2LbcUEymsexLHwFQ/view?usp=sharing" level="3">
+	  <node id="317356190"/> <!--Dopravni hriste Komin-->
+	</item>
+  <item name="puzzles-3b" type="puzzles" description="šifry sady 3" url="https://drive.google.com/file/d/1-GEihkDyIu5UKXvj2LbcUEymsexLHwFQ/view?usp=sharing" level="3">
+	  <node id="7797669281"/> <!--Dopravni hriste Komin-->
+	</item>
+  <item name="puzzles-3c" type="puzzles" description="šifry sady 3" url="https://drive.google.com/file/d/1-GEihkDyIu5UKXvj2LbcUEymsexLHwFQ/view?usp=sharing" level="3">
+	  <node id="317356182"/> <!--Dopravni hriste Komin-->
+	</item>
+  <item name="puzzles-3d" type="puzzles" description="šifry sady 3" url="https://drive.google.com/file/d/1-GEihkDyIu5UKXvj2LbcUEymsexLHwFQ/view?usp=sharing" level="3">
+	  <node id="317356186"/> <!--Dopravni hriste Komin-->
+	</item>
+  <item name="puzzles-3e" type="puzzles" description="šifry sady 3" url="https://drive.google.com/file/d/1-GEihkDyIu5UKXvj2LbcUEymsexLHwFQ/view?usp=sharing" level="3">
+	  <node id="317356187"/> <!--Dopravni hriste Komin-->
+	</item>
+  <item name="puzzles-3f" type="puzzles" description="šifry sady 3" url="https://drive.google.com/file/d/1-GEihkDyIu5UKXvj2LbcUEymsexLHwFQ/view?usp=sharing" level="3">
+	  <node id="317356180"/> <!--Dopravni hriste Komin-->
+	</item>
+  <item name="puzzles-3g" type="puzzles" description="šifry sady 3" url="https://drive.google.com/file/d/1-GEihkDyIu5UKXvj2LbcUEymsexLHwFQ/view?usp=sharing" level="3">
+	  <node id="317356189"/> <!--Dopravni hriste Komin-->
+	</item>
+  <item name="puzzles-3h" type="puzzles" description="šifry sady 3" url="https://drive.google.com/file/d/1-GEihkDyIu5UKXvj2LbcUEymsexLHwFQ/view?usp=sharing" level="3">
+	  <node id="317356188"/> <!--Dopravni hriste Komin-->
+	</item>
+  <item name="puzzles-3i" type="puzzles" description="šifry sady 3" url="https://drive.google.com/file/d/1-GEihkDyIu5UKXvj2LbcUEymsexLHwFQ/view?usp=sharing" level="3">
+	  <node id="7797669280"/> <!--Dopravni hriste Komin-->
+	</item>
+  <item name="puzzles-3j" type="puzzles" description="šifry sady 3" url="https://drive.google.com/file/d/1-GEihkDyIu5UKXvj2LbcUEymsexLHwFQ/view?usp=sharing" level="3">
+	  <node id="317356184"/> <!--Dopravni hriste Komin-->
+	</item>
+  <item name="puzzles-3k" type="puzzles" description="šifry sady 3" url="https://drive.google.com/file/d/1-GEihkDyIu5UKXvj2LbcUEymsexLHwFQ/view?usp=sharing" level="3">
+	  <node id="317356185"/> <!--Dopravni hriste Komin-->
+	</item>
+  <item name="puzzles-3l" type="puzzles" description="šifry sady 3" url="https://drive.google.com/file/d/1-GEihkDyIu5UKXvj2LbcUEymsexLHwFQ/view?usp=sharing" level="3">
+	  <node id="317356191"/> <!--Dopravni hriste Komin-->
+	</item>
+  <item name="puzzles-3m" type="puzzles" description="šifry sady 3" url="https://drive.google.com/file/d/1-GEihkDyIu5UKXvj2LbcUEymsexLHwFQ/view?usp=sharing" level="3">
+	  <node id="317356181"/> <!--Dopravni hriste Komin-->
+	</item>
+  <item name="puzzles-3n" type="puzzles" description="šifry sady 3" url="https://drive.google.com/file/d/1-GEihkDyIu5UKXvj2LbcUEymsexLHwFQ/view?usp=sharing" level="3">
+	  <node id="1848688193"/> <!--Dopravni hriste Komin-->
+	</item>
+  <item name="puzzles-3o" type="puzzles" description="šifry sady 3" url="https://drive.google.com/file/d/1-GEihkDyIu5UKXvj2LbcUEymsexLHwFQ/view?usp=sharing" level="3">
+	  <node id="1851824467"/> <!--Dopravni hriste Komin-->
+	</item>
+    <!--Ctvrty level-->
+    <item name="puzzles-4a" type="puzzles" description="šifry sady 4" url="https://drive.google.com/file/d/1c_YUjbHI18xO7df8uUyXCVi7X--lfP-I/view?usp=sharing" level="4">
+	  <node id="317356190"/> <!--Dopravni hriste Komin-->
+	</item>
+  <item name="puzzles-4b" type="puzzles" description="šifry sady 4" url="https://drive.google.com/file/d/1c_YUjbHI18xO7df8uUyXCVi7X--lfP-I/view?usp=sharing" level="4">
+	  <node id="7797669281"/> <!--Dopravni hriste Komin-->
+	</item>
+  <item name="puzzles-4c" type="puzzles" description="šifry sady 4" url="https://drive.google.com/file/d/1c_YUjbHI18xO7df8uUyXCVi7X--lfP-I/view?usp=sharing" level="4">
+	  <node id="317356182"/> <!--Dopravni hriste Komin-->
+	</item>
+  <item name="puzzles-4d" type="puzzles" description="šifry sady 4" url="https://drive.google.com/file/d/1c_YUjbHI18xO7df8uUyXCVi7X--lfP-I/view?usp=sharing" level="4">
+	  <node id="317356186"/> <!--Dopravni hriste Komin-->
+	</item>
+  <item name="puzzles-4e" type="puzzles" description="šifry sady 4" url="https://drive.google.com/file/d/1c_YUjbHI18xO7df8uUyXCVi7X--lfP-I/view?usp=sharing" level="4">
+	  <node id="317356187"/> <!--Dopravni hriste Komin-->
+	</item>
+  <item name="puzzles-4f" type="puzzles" description="šifry sady 4" url="https://drive.google.com/file/d/1c_YUjbHI18xO7df8uUyXCVi7X--lfP-I/view?usp=sharing" level="4">
+	  <node id="317356180"/> <!--Dopravni hriste Komin-->
+	</item>
+  <item name="puzzles-4g" type="puzzles" description="šifry sady 4" url="https://drive.google.com/file/d/1c_YUjbHI18xO7df8uUyXCVi7X--lfP-I/view?usp=sharing" level="4">
+	  <node id="317356189"/> <!--Dopravni hriste Komin-->
+	</item>
+  <item name="puzzles-4h" type="puzzles" description="šifry sady 4" url="https://drive.google.com/file/d/1c_YUjbHI18xO7df8uUyXCVi7X--lfP-I/view?usp=sharing" level="4">
+	  <node id="317356188"/> <!--Dopravni hriste Komin-->
+	</item>
+  <item name="puzzles-4i" type="puzzles" description="šifry sady 4" url="https://drive.google.com/file/d/1c_YUjbHI18xO7df8uUyXCVi7X--lfP-I/view?usp=sharing" level="4">
+	  <node id="7797669280"/> <!--Dopravni hriste Komin-->
+	</item>
+  <item name="puzzles-4j" type="puzzles" description="šifry sady 4" url="https://drive.google.com/file/d/1c_YUjbHI18xO7df8uUyXCVi7X--lfP-I/view?usp=sharing" level="4">
+	  <node id="317356184"/> <!--Dopravni hriste Komin-->
+	</item>
+  <item name="puzzles-4k" type="puzzles" description="šifry sady 4" url="https://drive.google.com/file/d/1c_YUjbHI18xO7df8uUyXCVi7X--lfP-I/view?usp=sharing" level="4">
+	  <node id="317356185"/> <!--Dopravni hriste Komin-->
+	</item>
+  <item name="puzzles-4l" type="puzzles" description="šifry sady 4" url="https://drive.google.com/file/d/1c_YUjbHI18xO7df8uUyXCVi7X--lfP-I/view?usp=sharing" level="4">
+	  <node id="317356191"/> <!--Dopravni hriste Komin-->
+	</item>
+  <item name="puzzles-4m" type="puzzles" description="šifry sady 4" url="https://drive.google.com/file/d/1c_YUjbHI18xO7df8uUyXCVi7X--lfP-I/view?usp=sharing" level="4">
+	  <node id="317356181"/> <!--Dopravni hriste Komin-->
+	</item>
+  <item name="puzzles-4n" type="puzzles" description="šifry sady 4" url="https://drive.google.com/file/d/1c_YUjbHI18xO7df8uUyXCVi7X--lfP-I/view?usp=sharing" level="4">
+	  <node id="1848688193"/> <!--Dopravni hriste Komin-->
+	</item>
+  <item name="puzzles-4o" type="puzzles" description="šifry sady 4" url="https://drive.google.com/file/d/1c_YUjbHI18xO7df8uUyXCVi7X--lfP-I/view?usp=sharing" level="4">
+	  <node id="1851824467"/> <!--Dopravni hriste Komin-->
+	</item>
+    <!--Paty level-->
+    <item name="puzzles-5a" type="puzzles" description="šifry sady 5" url="https://drive.google.com/file/d/106XhEdHKYLMWcmSTC8mlKGSLt7lqgZfv/view?usp=sharing" level="5">
+	  <node id="317356190"/> <!--Dopravni hriste Komin-->
+	</item>
+  <item name="puzzles-5b" type="puzzles" description="šifry sady 5" url="https://drive.google.com/file/d/106XhEdHKYLMWcmSTC8mlKGSLt7lqgZfv/view?usp=sharing" level="5">
+	  <node id="7797669281"/> <!--Dopravni hriste Komin-->
+	</item>
+  <item name="puzzles-5c" type="puzzles" description="šifry sady 5" url="https://drive.google.com/file/d/106XhEdHKYLMWcmSTC8mlKGSLt7lqgZfv/view?usp=sharing" level="5">
+	  <node id="317356182"/> <!--Dopravni hriste Komin-->
+	</item>
+  <item name="puzzles-5d" type="puzzles" description="šifry sady 5" url="https://drive.google.com/file/d/106XhEdHKYLMWcmSTC8mlKGSLt7lqgZfv/view?usp=sharing" level="5">
+	  <node id="317356186"/> <!--Dopravni hriste Komin-->
+	</item>
+  <item name="puzzles-5e" type="puzzles" description="šifry sady 5" url="https://drive.google.com/file/d/106XhEdHKYLMWcmSTC8mlKGSLt7lqgZfv/view?usp=sharing" level="5">
+	  <node id="317356187"/> <!--Dopravni hriste Komin-->
+	</item>
+  <item name="puzzles-5f" type="puzzles" description="šifry sady 5" url="https://drive.google.com/file/d/106XhEdHKYLMWcmSTC8mlKGSLt7lqgZfv/view?usp=sharing" level="5">
+	  <node id="317356180"/> <!--Dopravni hriste Komin-->
+	</item>
+  <item name="puzzles-5g" type="puzzles" description="šifry sady 5" url="https://drive.google.com/file/d/106XhEdHKYLMWcmSTC8mlKGSLt7lqgZfv/view?usp=sharing" level="5">
+	  <node id="317356189"/> <!--Dopravni hriste Komin-->
+	</item>
+  <item name="puzzles-5h" type="puzzles" description="šifry sady 5" url="https://drive.google.com/file/d/106XhEdHKYLMWcmSTC8mlKGSLt7lqgZfv/view?usp=sharing" level="5">
+	  <node id="317356188"/> <!--Dopravni hriste Komin-->
+	</item>
+  <item name="puzzles-5i" type="puzzles" description="šifry sady 5" url="https://drive.google.com/file/d/106XhEdHKYLMWcmSTC8mlKGSLt7lqgZfv/view?usp=sharing" level="5">
+	  <node id="7797669280"/> <!--Dopravni hriste Komin-->
+	</item>
+  <item name="puzzles-5j" type="puzzles" description="šifry sady 5" url="https://drive.google.com/file/d/106XhEdHKYLMWcmSTC8mlKGSLt7lqgZfv/view?usp=sharing" level="5">
+	  <node id="317356184"/> <!--Dopravni hriste Komin-->
+	</item>
+  <item name="puzzles-5k" type="puzzles" description="šifry sady 5" url="https://drive.google.com/file/d/106XhEdHKYLMWcmSTC8mlKGSLt7lqgZfv/view?usp=sharing" level="5">
+	  <node id="317356185"/> <!--Dopravni hriste Komin-->
+	</item>
+  <item name="puzzles-5l" type="puzzles" description="šifry sady 5" url="https://drive.google.com/file/d/106XhEdHKYLMWcmSTC8mlKGSLt7lqgZfv/view?usp=sharing" level="5">
+	  <node id="317356191"/> <!--Dopravni hriste Komin-->
+	</item>
+  <item name="puzzles-5m" type="puzzles" description="šifry sady 5" url="https://drive.google.com/file/d/106XhEdHKYLMWcmSTC8mlKGSLt7lqgZfv/view?usp=sharing" level="5">
+	  <node id="317356181"/> <!--Dopravni hriste Komin-->
+	</item>
+  <item name="puzzles-5n" type="puzzles" description="šifry sady 5" url="https://drive.google.com/file/d/106XhEdHKYLMWcmSTC8mlKGSLt7lqgZfv/view?usp=sharing" level="5">
+	  <node id="1848688193"/> <!--Dopravni hriste Komin-->
+	</item>
+  <item name="puzzles-5o" type="puzzles" description="šifry sady 5" url="https://drive.google.com/file/d/106XhEdHKYLMWcmSTC8mlKGSLt7lqgZfv/view?usp=sharing" level="5">
+	  <node id="1851824467"/> <!--Dopravni hriste Komin-->
+	</item>
+    <!--Checkpoint-->
+    <item name="checkpoint-a" type="checkpoint" description="kontrola" url="" level="0">
+	  <node id="317356190"/> <!--Dopravni hriste Komin-->
+	</item>
+  <item name="checkpoint-b" type="checkpoint" description="kontrola" url="" level="0">
+	  <node id="7797669281"/> <!--Dopravni hriste Komin-->
+	</item>
+  <item name="checkpoint-c" type="checkpoint" description="kontrola" url="" level="0">
+	  <node id="317356182"/> <!--Dopravni hriste Komin-->
+	</item>
+  <item name="checkpoint-d" type="checkpoint" description="kontrola" url="" level="0">
+	  <node id="317356186"/> <!--Dopravni hriste Komin-->
+	</item>
+  <item name="checkpoint-e" type="checkpoint" description="kontrola" url="" level="0">
+	  <node id="317356187"/> <!--Dopravni hriste Komin-->
+	</item>
+  <item name="checkpoint-f" type="checkpoint" description="kontrola" url="" level="0">
+	  <node id="317356180"/> <!--Dopravni hriste Komin-->
+	</item>
+  <item name="checkpoint-g" type="checkpoint" description="kontrola" url="" level="0">
+	  <node id="317356189"/> <!--Dopravni hriste Komin-->
+	</item>
+  <item name="checkpoint-h" type="checkpoint" description="kontrola" url="" level="0">
+	  <node id="317356188"/> <!--Dopravni hriste Komin-->
+	</item>
+  <item name="checkpoint-i" type="checkpoint" description="kontrola" url="" level="0">
+	  <node id="7797669280"/> <!--Dopravni hriste Komin-->
+	</item>
+  <item name="checkpoint-j" type="checkpoint" description="kontrola" url="" level="0">
+	  <node id="317356184"/> <!--Dopravni hriste Komin-->
+	</item>
+  <item name="checkpoint-k" type="checkpoint" description="kontrola" url="" level="0">
+	  <node id="317356185"/> <!--Dopravni hriste Komin-->
+	</item>
+  <item name="checkpoint-l" type="checkpoint" description="kontrola" url="" level="0">
+	  <node id="317356191"/> <!--Dopravni hriste Komin-->
+	</item>
+  <item name="checkpoint-m" type="checkpoint" description="kontrola" url="" level="0">
+	  <node id="317356181"/> <!--Dopravni hriste Komin-->
+	</item>
+  <item name="checkpoint-n" type="checkpoint" description="kontrola" url="" level="0">
+	  <node id="1848688193"/> <!--Dopravni hriste Komin-->
+	</item>
+  <item name="checkpoint-o" type="checkpoint" description="kontrola" url="" level="0">
+	  <node id="1851824467"/> <!--Dopravni hriste Komin-->
+	</item>
+
+
+<!--badges level 1-->
+
+    <item name="badge-1-1" type="badge" description="Od značek 11" url="badge11.png" level="1">
+	  <node id="654588693"/> <!--Holedna-->
+	</item>
+    <item name="badge-1-2a" type="badge" description="Od značek 12" url="badge12.png" level="1">
+	  <node id="2188851998"/> <!--Turisticky pristresek Kozi Hora-->
+	</item>
+    <item name="badge-1-2b" type="badge" description="Od značek 12" url="badge12.png" level="1">
+	  <node id="550471938"/> <!--Turisticky pristresek Kozi Hora-->
+	</item>
+    <item name="badge-1-3" type="badge" description="Od značek 13" url="badge13.png" level="1">
+	  <node id="443893163"/> <!--Hobrtenky NS-->
+	</item>
+    <item name="badge-1-4a" type="badge" description="Od značek 14" url="badge14.png" level="1">
+	  <node id="4467743910"/> <!--Technicka Jih-->
+	</item>
+    <item name="badge-1-4b" type="badge" description="Od značek 14" url="badge14.png" level="1">
+	  <node id="247224257"/> <!--Technicka Jih-->
+	</item>
+
+<!--badges level 2-->
+
+    <item name="badge-2-1a" type="badge" description="Od značek 21" url="badge21.png" level="2">
+	  <node id="626942344"/> <!--Rusky vrch kota-->
+	</item>
+    <item name="badge-2-1b" type="badge" description="Od značek 21" url="badge21.png" level="2">
+	  <node id="626942345"/> <!--Rusky vrch kota-->
+	</item>
+    <item name="badge-2-2" type="badge" description="Od značek 22" url="badge22.png" level="2">
+	  <node id="1234535457"/> <!--Jdi na MHD Tomanovu-->
+	</item>
+    <item name="badge-2-3a" type="badge" description="Od značek 23" url="badge23.png" level="2">
+	  <node id="5679722662"/> <!--Dubova jih-->
+	</item>
+    <item name="badge-2-3b" type="badge" description="Od značek 23" url="badge23.png" level="2">
+	  <node id="300804164"/> <!--Dubova jih-->
+	</item>
+    <item name="badge-2-3c" type="badge" description="Od značek 23" url="badge23.png" level="2">
+	  <node id="5679722677"/> <!--Dubova jih-->
+  <item name="badge-2-3d" type="badge" description="Od značek 23" url="badge23.png" level="2">
+  <node id="5679722690"/> <!--Dubova jih-->
+</item>
+	</item>
+
+<!--badges level 3-->
+
+    <item name="badge-3-1" type="badge" description="Od značek 31" url="badge31.png" level="3">
+	  <node id="567020185"/> <!--CafeSC Kriz parkoviste ZSZ-->
+	</item>
+    <item name="badge-3-2" type="badge" description="Od značek 32" url="badge32.png" level="3">
+	  <node id="34513601"/> <!--Ulice schovana S konec-->
+	</item>
+
+<!--badge level 4-->
+
+    <item name="badge-4-1a" type="badge" description="Od značek 41" url="badge41.png" level="4">
+	  <node id="3381802034"/> <!--Horova Z-->
+	</item>
+    <item name="badge-4-1b" type="badge" description="Od značek 41" url="badge41.png" level="4">
+	  <node id="3381802028"/> <!--Horova Z-->
+	</item>
+    <item name="badge-4-1c" type="badge" description="Od značek 41" url="badge41.png" level="4">
+	  <node id="7218108294"/> <!--Horova Z-->
+	</item>
+    <item name="badge-4-1d" type="badge" description="Od značek 41" url="badge41.png" level="4">
+	  <node id="4829022722"/> <!--Horova Z-->
+	</item>
+
+<!--badge level 5 a.k.a. finish-->
+
+    <item name="badge-5-1a" type="badge" description="Od značek 51" url="badge51.png" level="5">
+	  <node id="524156243"/> <!--Rakovec tocna-->
+	</item>
+    <item name="badge-5-1b" type="badge" description="Od značek 51" url="badge51.png" level="5">
+	  <node id="149002476"/> <!--Rakovec tocna-->
+	</item>
+    <item name="badge-5-1c" type="badge" description="Od značek 51" url="badge51.png" level="5">
+	  <node id="3343440903"/> <!--Rakovec tocna-->
+	</item>
+    <item name="badge-5-1d" type="badge" description="Od značek 51" url="badge51.png" level="5">
+	  <node id="524156242"/> <!--Rakovec tocna-->
+	</item>
+    <item name="badge-5-1e" type="badge" description="Od značek 51" url="badge51.png" level="5">
+	  <node id="149002485"/> <!--Rakovec tocna-->
+	</item>
+    <item name="badge-5-1f" type="badge" description="Od značek 51" url="badge51.png" level="5">
+	  <node id="524156255"/> <!--Rakovec tocna-->
+	</item>
+
+  </items>
+</game>
