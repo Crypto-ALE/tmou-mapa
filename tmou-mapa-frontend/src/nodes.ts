@@ -33,7 +33,9 @@ function parseJson(res: any): TeamState {
   );
   const ways = pois.ways.map((way: any) => way.nodes.map(nodeId => nodes.get(nodeId)!.latLng));
   const parsed_items = items.items.map((item: any) => {
-    return {...item, timestamp: Date.parse(item.timestamp)}
+    // FIXME: Time from server comes in UTC without timezone specification
+    // currently hardocing for correct parsing
+    return {...item, timestamp: Date.parse(item.timestamp+"+00:00")}
   });
 
   return {nodes, ways, state, items: parsed_items};
