@@ -49,6 +49,7 @@ async function run() {
   const lines: Polyline[] = [];
   const latLng: LatLngLiteral = nodes.get(state.position)!.latLng;
   let currentNodeCoords: LatLng = new LatLng(latLng.lat, latLng.lng);
+  let currentNode: Circle;
 
   document.getElementById('teamName').innerText = state.name;
   mapInstance.setView(currentNodeCoords, 17);
@@ -90,6 +91,9 @@ async function run() {
   }
 
   function drawNodesAndWays(nodes, ways) {
+    if (currentNode) {
+      currentNode.setStyle({color: "blue"});
+    }
     for (const [id, nodeInfo] of nodes.entries()) {
       const node = nodeInfo.latLng;
       const clickHandler = async function (e: LeafletMouseEvent) {
@@ -99,6 +103,7 @@ async function run() {
 
       if (currentNodeCoords.equals(node)) {
         c.setStyle({color: "salmon"});
+        currentNode = c;
       }
       c.addTo(mapInstance);
     }
