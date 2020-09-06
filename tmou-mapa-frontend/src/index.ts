@@ -7,13 +7,15 @@ import {
   LeafletMouseEvent,
   Polyline
 } from "leaflet";
-import {Item} from './types';
+import {Item, Node, way} from './types';
 import {discover, getTeamState, moveTeam} from './nodes';
 
 const mapInstance = getMap('map', [49.195, 16.609], 15);
 
 async function run() {
   const secretPhase = document.querySelector("body").dataset.secretphrase;
+  const renderedNodes = new Map<string, Circle>();
+  const renderedWays = new Set();
 
   document.getElementById('discover').onclick = async () => {
     const {event, newItems} = await discover(secretPhase);
@@ -90,29 +92,37 @@ async function run() {
     }
   }
 
-  function drawNodesAndWays(nodes, ways) {
+  function drawNodesAndWays(nodes: Map<string, Node>, ways: Map<string, way>) {
     if (currentNode) {
-      currentNode.setStyle({color: "blue"});
+      currentNode.setStyle({color: "#000000b5"});
     }
-    for (const [id, nodeInfo] of nodes.entries()) {
-      const node = nodeInfo.latLng;
-      const clickHandler = async function (e: LeafletMouseEvent) {
-        await handleNodeClick(e.target, id);
+    for (const [id, way] of ways) {
+      if (!renderedWays.has(id)) {
+        const l = new Polyline(way, {color: "#00000066", weight: 3, interactive: false});
+        lines.push(l);
+        l.bringToBack();
+        l.addTo(mapInstance);
+        renderedWays.add(id);
       }
-      const c = circleFactory(node, id, "blue", 2, clickHandler);
+    }
+    for (const [id, node] of nodes.entries()) {
+      const nodeCoords = node.latLng;
+      let c = renderedNodes.get(id);
+      if (!c) {
+        const clickHandler = async function (e: LeafletMouseEvent) {
+          await handleNodeClick(e.target, id);
+        }
+        const radius = node.type === 'junction' ? 6 : 3;
+        c = circleFactory(nodeCoords, id, "#000000b5", radius, clickHandler);
+        c.addTo(mapInstance);
+        c.bringToFront();
+        renderedNodes.set(id, c);
+      }
 
-      if (currentNodeCoords.equals(node)) {
-        c.setStyle({color: "salmon"});
+      if (currentNodeCoords.equals(nodeCoords)) {
+        c.setStyle({color: "#FFEC01"});
         currentNode = c;
       }
-      c.addTo(mapInstance);
-    }
-
-    for (const way of ways) {
-      const l = new Polyline(way, {color: "black", weight: 1, interactive: false});
-      lines.push(l);
-      l.bringToBack();
-      l.addTo(mapInstance);
     }
   }
 

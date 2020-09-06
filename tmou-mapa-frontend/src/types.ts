@@ -26,9 +26,11 @@ export interface Node {
   data?: String,
 }
 
+export type way = LatLngLiteral[][];
+
 export interface TeamState {
   nodes: Map<string, Node>;
-  ways: LatLngLiteral[][];
+  ways: Map<string, way>;
   state: Info;
   items: Item[];
 }

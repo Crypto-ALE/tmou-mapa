@@ -1,4 +1,4 @@
-import {TeamState, Node, DiscoveryEvent} from './types';
+import {TeamState, Node, way, DiscoveryEvent} from './types';
 
 export async function getTeamState(secretPhrase: string): Promise<TeamState> {
   const res = await fetch(`/game/${secretPhrase}`);
@@ -31,7 +31,9 @@ function parseJson(res: any): TeamState {
           // .filter((node) => node.type === 'junction')
           .map((node: any) => [node.id, {latLng:{lat: node.y, lng: node.x}, type: node.type, data: node.data}])
   );
-  const ways = pois.ways.map((way: any) => way.nodes.map(nodeId => nodes.get(nodeId)!.latLng));
+  const ways: Map<string, way> = new Map(
+    pois.ways.map((way: any) => [way.id, way.nodes.map(nodeId => nodes.get(nodeId)!.latLng)])
+  );
   const parsed_items = items.items.map((item: any) => {
     // FIXME: Time from server comes in UTC without timezone specification
     // currently hardocing for correct parsing
