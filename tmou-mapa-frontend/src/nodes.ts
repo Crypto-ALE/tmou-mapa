@@ -1,9 +1,26 @@
-import {TeamState, Node, way, DiscoveryEvent} from './types';
+import {TeamState, Node, way, DiscoveryEvent, TeamPosition} from './types';
 
 export async function getTeamState(secretPhrase: string): Promise<TeamState> {
   const res = await fetch(`/game/${secretPhrase}`);
 
   return parseJson(await res.json());
+}
+
+export async function getTeamsPositions(): Promise<TeamPosition[]> {
+  const res = await fetch(`/admin/positions`);
+  const teamPositions = await res.json();
+
+  const tps: TeamPosition[] = teamPositions.map((item: any) => {
+    return {
+      teamName: item.team_name,
+      position: {
+        latLng: {lat: item.lat, lng: item.lon},
+        type: "ordinary" //HAAAAACK
+      }
+    }
+  });
+
+  return tps;
 }
 
 export async function moveTeam(secretPhrase: string, nodeId: string): Promise<TeamState> {

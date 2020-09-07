@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>TMOU</title>
+        <link rel="stylesheet" href="/static/tmou.css">
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css"
+              integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
+              crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"
+            integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew=="
+            crossorigin=""></script>
+</head>
+<div class="container">
+
+  <div id="header_left">
+    <h1>KVALIFIKACE TMOU! 22</h1>
+  </div>
+
+  <div id="header_right">
+    <span id="team">Přihlášený tým: <span id="teamName">teamName</span></span> |
+      <a href="#">Logout</a>
+  </div>
+
+
+    <div id="map"></div>
+
+    <div id="panel">
+      <div class="section">
+        <div>
+          <p>Tady se můžou objevit zprávy od organizátorů.</p>
+        </div>
+        <!-- <div class="message OK">
+        <p> Toto je dobrá zpráva :-) </p>
+        </div>
+
+        <div class="message WRONG">
+        <p> Toto je špatná zpráva :-( </p>
+        </div>
+
+        <div class="message INFO">
+        <p> Toto je neutrální zpráva :-| </p>
+        </div>
+        -->
+      </div>
+      <div class="section" id="puzzles">
+        <h2>Zadání šifer</h2>
+        <div id="puzzles-list">
+        <p> Zadání se zde objeví až po startu hry </p>
+        </div>
+      </div>
+
+      <div class="section" id="navigation">
+        <h2>Akce</h2>
+        <button id="discover">Zkusit štěstí</button>
+      </div>
+
+      <div class="section">
+        <h2>Získané odznáčky</h2>
+        <div id="badges">
+        </div>
+      </div>
+
+
+
+  </div>
+
+  <!-- ADD POPUP - CHANGE TO DISPLAY:NONE WHEN HIDDEN-->
+  <div class="overlay overlay__hidden" id="overlay"></div>
+    <div class="popup popup__hidden" id="popup">
+      <div class="large_badge">
+        <!-- <span class="time">00:00</span> -->
+        <span class="label"></span>
+      </div>
+      <div class="popup_text">
+        <h2>Bohužel...</h2>
+        <p>Na toto místo žádná šifra nevede, zkuste to jinde.</p>
+        <button id="continue">Pokračovat</button>
+      </div>
+    </div>
+  <!-- END POPUP -->
+
+
+</div>
+  <script src="/static/admin.js"></script>
+</body>
+</html>
