@@ -72,6 +72,14 @@ pub struct Team
 }
 
 #[derive(Serialize, Deserialize)]
+pub struct TeamPosition
+{
+   pub team_name: String,
+   pub lat: f32,
+   pub lon: f32,
+}
+
+#[derive(Serialize, Deserialize)]
 pub struct TeamInfo
 {
     pub state: Team,
