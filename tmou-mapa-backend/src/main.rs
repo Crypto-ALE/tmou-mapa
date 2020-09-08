@@ -6,9 +6,10 @@
 
 use rocket::fairing::AdHoc;
 use rocket::http::RawStr;
-use rocket::http::{Status};
+use rocket::http::{Status, Header};
 use rocket::outcome::IntoOutcome;
 use rocket::request::{FromRequest, Outcome};
+use rocket::response::Responder;
 use rocket::Request;
 use rocket::Rocket;
 use rocket_contrib::database;
@@ -16,6 +17,7 @@ use rocket_contrib::json::Json;
 use rocket_contrib::serve::StaticFiles;
 use rocket_contrib::templates::Template;
 use std::env;
+use http_auth_basic::Credentials;
 
 mod api_models;
 mod postgres_db_controller;
@@ -134,7 +136,6 @@ fn discover_phrase(
 }
 
 
-
 //#[get("/game/<secret_phrase>/discover")]
 fn discover(
     team: db_models::Team,
@@ -153,17 +154,15 @@ fn discover(
  ------------ */
 
 
-// TODO: Add guards!
 #[get("/admin")]
-fn admin() -> Template {
+fn admin(_admin: Admin) -> Template {
     let context = std::collections::HashMap::<String, String>::new();
     Template::render("admin", context)
 }
 
 
-// TODO: Add guards!
 #[get("/admin/positions")]
-fn admin_positions(conn: PostgresDbConn) -> Result<Json<Vec<TeamPosition>>, Status> {
+fn admin_positions(_admin: Admin, conn: PostgresDbConn) -> Result<Json<Vec<TeamPosition>>, Status> {
     let db_ctrl = PostgresDbControl::new(conn);
     match admin_controller::get_teams_positions(&db_ctrl)
     {
@@ -201,15 +200,56 @@ fn main() {
         _ => panic!("Cannot access current directory"),
     };
     rocket::ignite()
+        .register(catchers![not_auth])
         .attach(PostgresDbConn::fairing())
         .attach(AdHoc::on_attach("Database Migrations", run_migrations))
         .attach(Template::fairing())
         .mount("/static", StaticFiles::from(static_dir))
         .mount(
             "/",
-            routes![index, info_cookie, info_phrase, go_cookie, go_phrase, discover_cookie, discover_phrase, team_index, admin, admin_positions],
+            routes![index, team_index, info_cookie, info_phrase, go_cookie, go_phrase, discover_cookie, discover_phrase, admin, admin_positions],
         )
         .launch();
+}
+
+
+#[derive(Responder)]
+struct BasicAuthResponder {
+    inner: rocket::response::status::Unauthorized<()>,
+    auth: Header<'static>,
+}
+
+#[catch(401)]
+fn not_auth(_req: &Request) -> BasicAuthResponder {
+        BasicAuthResponder {
+        inner: rocket::response::status::Unauthorized(Some(())),
+        auth: Header {
+            name: rocket::http::uncased::Uncased{string: "WWW-Authenticate".into()},
+            value: "Basic".into(),
+        },
+    }
+}
+
+struct Admin {}
+
+impl <'a, 'r> FromRequest<'a, 'r> for Admin {
+    type Error = ();
+
+    fn from_request(request: &'a Request<'r>) -> Outcome<Admin, Self::Error> {
+        match env::var("BYPASS_AUTH") {
+            Ok(_) => rocket::Outcome::Success(Admin{}),
+            _ => match request.headers().get_one("Authorization") {
+                Some(auth) => match Credentials::from_header(auth.to_string()) {
+                    Ok(credentials) => match env::var("ADMIN_USERNAME").ok().eq(&Some(credentials.user_id)) && env::var("ADMIN_PASSWORD").ok().eq(&Some(credentials.password)) {
+                        true => rocket::Outcome::Success(Admin{}),
+                        _ => rocket::Outcome::Failure((rocket::http::Status::Unauthorized, ())),
+                    },
+                    _ => rocket::Outcome::Failure((rocket::http::Status::Unauthorized, ())),
+                },
+                _ => rocket::Outcome::Failure((rocket::http::Status::Unauthorized, ())),
+            }
+        }
+    }
 }
 
 impl<'a, 'r> FromRequest<'a, 'r> for db_models::Team {
