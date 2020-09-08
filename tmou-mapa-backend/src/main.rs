@@ -1,4 +1,5 @@
 #![feature(proc_macro_hygiene, decl_macro)]
+#![feature(bool_to_option)]
 
 #[macro_use] extern crate rocket;
 #[macro_use] extern crate diesel;
@@ -238,16 +239,12 @@ impl <'a, 'r> FromRequest<'a, 'r> for Admin {
     fn from_request(request: &'a Request<'r>) -> Outcome<Admin, Self::Error> {
         match env::var("BYPASS_AUTH") {
             Ok(_) => rocket::Outcome::Success(Admin{}),
-            _ => match request.headers().get_one("Authorization") {
-                Some(auth) => match Credentials::from_header(auth.to_string()) {
-                    Ok(credentials) => match env::var("ADMIN_USERNAME").ok().eq(&Some(credentials.user_id)) && env::var("ADMIN_PASSWORD").ok().eq(&Some(credentials.password)) {
-                        true => rocket::Outcome::Success(Admin{}),
-                        _ => rocket::Outcome::Failure((rocket::http::Status::Unauthorized, ())),
-                    },
-                    _ => rocket::Outcome::Failure((rocket::http::Status::Unauthorized, ())),
-                },
-                _ => rocket::Outcome::Failure((rocket::http::Status::Unauthorized, ())),
-            }
+            _ => request.headers().get_one("Authorization")
+                .and_then(|auth| Credentials::from_header(auth.to_string()).ok())
+                .and_then(|creds| (env::var("ADMIN_USERNAME").ok().eq(&Some(creds.user_id))).then_some(creds.password))
+                .and_then(|password| (env::var("ADMIN_PASSWORD").ok().eq(&Some(password))).then_some(true))
+                .and_then(|_is_auth| Some(rocket::Outcome::Success(Admin{})))
+                .unwrap_or(rocket::Outcome::Failure((rocket::http::Status::Unauthorized, ())))
         }
     }
 }
