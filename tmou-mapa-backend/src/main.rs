@@ -23,13 +23,14 @@ mod db_controller;
 mod db_models;
 mod errors;
 mod game_controller;
+mod admin_controller;
 mod osm_models;
 mod osm_reader;
 mod tests;
 mod schema;
 mod discovery;
 
-use api_models::{NodeAction, TeamInfo, DiscoveryEvent};
+use api_models::{NodeAction, TeamInfo, DiscoveryEvent, TeamPosition};
 use postgres_db_controller::PostgresDbControl;
 
 embed_migrations!("./migrations/");
@@ -147,6 +148,30 @@ fn discover(
     }
 }
 
+/* ----------
+ * ADMIN
+ ------------ */
+
+
+// TODO: Add guards!
+#[get("/admin")]
+fn admin() -> Template {
+    let context = std::collections::HashMap::<String, String>::new();
+    Template::render("admin", context)
+}
+
+
+// TODO: Add guards!
+#[get("/admin/positions")]
+fn admin_positions(conn: PostgresDbConn) -> Result<Json<Vec<TeamPosition>>, Status> {
+    let db_ctrl = PostgresDbControl::new(conn);
+    match admin_controller::get_teams_positions(&db_ctrl)
+    {
+        Ok(positions) => Ok(Json(positions)),
+        Err(_) => Err(Status::InternalServerError),
+    }
+}
+
 #[get("/")]
 fn index() -> Template {
     let context = std::collections::HashMap::<String, String>::new();
@@ -182,7 +207,7 @@ fn main() {
         .mount("/static", StaticFiles::from(static_dir))
         .mount(
             "/",
-            routes![index, info_cookie, info_phrase, go_cookie, go_phrase, discover_cookie, discover_phrase, team_index],
+            routes![index, info_cookie, info_phrase, go_cookie, go_phrase, discover_cookie, discover_phrase, team_index, admin, admin_positions],
         )
         .launch();
 }

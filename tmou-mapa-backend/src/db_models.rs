@@ -23,7 +23,7 @@ pub struct WaysToNodes {
 
 impl std::cmp::PartialEq for WaysToNodes // for unique()
 {
-    fn eq(&self, other: &Self) -> bool 
+    fn eq(&self, other: &Self) -> bool
     {
         self.way_id == other.way_id && self.node_id == other.node_id
     }
@@ -96,4 +96,11 @@ pub struct TeamItem {
     pub name: String,
     pub description: Option<String>,
     pub timestamp: Option<chrono::NaiveDateTime>
+}
+
+#[derive(Clone, Default, Debug, PartialEq, Queryable)]
+pub struct TeamPosition {
+    pub team_name: String,
+    pub lat: f32,
+    pub lon: f32,
 }

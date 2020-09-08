@@ -155,6 +155,11 @@ fn put_team_items(&mut self, team_id: i32, items: std::vec::Vec<db_models::Item>
     }
 }
 
+fn get_teams_positions(&self) -> std::result::Result<std::vec::Vec<db_models::TeamPosition>, errors::TmouError>
+{
+    let teams_positions = teams::teams.inner_join(nodes::nodes).select((teams::name, nodes::lat, nodes::lon)).load(&*self.conn)?;
+    Ok(teams_positions)
+    }
 }
 
 pub fn get_team_by_phrase(connection: &diesel::PgConnection, phr:&String) -> Option<Team> {

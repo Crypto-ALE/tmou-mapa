@@ -4,7 +4,7 @@ import commonjs from "@rollup/plugin-commonjs";
 import copy from 'rollup-plugin-copy';
 import { terser } from 'rollup-plugin-terser';
 
-export default {
+export default [{
     input: 'src/index.ts',
     external: [ 'leaflet' ],
     output: [
@@ -26,4 +26,26 @@ export default {
         commonjs(),
         terser(),
     ],
-};
+},{
+    input: 'src/admin.ts',
+    external: [ 'leaflet' ],
+    output: [
+        {
+            file: '../tmou-mapa-backend/static/admin.js',
+            format: 'iife',
+            sourcemap: true,
+            globals: { leaflet: 'L' },
+        }],
+    plugins: [
+        copy({
+            targets: [
+                { src: 'admin.html', dest: '../tmou-mapa-backend/templates/', rename: 'admin.html.tera' },
+            ],
+        }),
+        typescript(),
+        nodeResolve({browser: true}),
+        commonjs(),
+        terser(),
+    ],
+}
+];

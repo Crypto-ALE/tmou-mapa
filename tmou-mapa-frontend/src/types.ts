@@ -39,3 +39,8 @@ export interface DiscoveryEvent {
   event: "badge-found" | "checkpoint-visited" | "nothing";
   newItems: Item[];
 }
+
+export interface TeamPosition {
+  teamName: string;
+  position: Node;
+}
