@@ -27,6 +27,7 @@ impl From<&db::TeamPosition> for api::TeamPosition
             team_name: value.team_name.clone(),
             lat: value.lat,
             lon: value.lon,
+            level: value.level.unwrap_or(0),
         }
     }
 }

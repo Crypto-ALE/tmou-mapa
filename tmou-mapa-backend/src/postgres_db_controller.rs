@@ -1,5 +1,6 @@
 use super::db_models::Team;
 use diesel::prelude::*;
+use diesel::dsl::sql;
 use diesel::insert_into;
 use rocket_contrib::databases::diesel;
 
@@ -17,7 +18,7 @@ use super::errors;
 // use diesel::debug_query;
 // use diesel::pg::Pg;
 // let debug = debug_query::<Pg, _>(&query);
-// // println!("Insert query: {:?}", debug);
+// println!("Insert query: {:?}", debug);
 
 pub struct PostgresDbControl
 {
@@ -148,10 +149,16 @@ fn put_team_items(&mut self, team_id: i32, items: std::vec::Vec<db_models::Item>
 
 fn get_teams_positions(&self) -> std::result::Result<std::vec::Vec<db_models::TeamPosition>, errors::TmouError>
 {
-    let teams_positions = teams::teams.inner_join(nodes::nodes).select((teams::name, nodes::lat, nodes::lon)).load(&*self.conn)?;
-    Ok(teams_positions)
-}
+    let teams_positions = teams::teams
+        .left_join(teams_items::teams_items)
+        .left_join(items::items.on(items::name.eq(teams_items::item_name)))
+        .inner_join(nodes::nodes)
+        .group_by((teams::name, nodes::lat, nodes::lon))
+        .select((teams::name, nodes::lat, nodes::lon, sql("MAX(items.level)")))
+        .load(&*self.conn);
 
+    Ok(teams_positions?)
+}
 }
 
 pub fn get_team_by_phrase(connection: &diesel::PgConnection, phr:&String) -> Option<Team> {
