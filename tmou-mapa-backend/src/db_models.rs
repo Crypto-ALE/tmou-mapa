@@ -54,6 +54,14 @@ pub struct Pois {
     pub ways_to_nodes: Vec<WaysToNodes>,
 }
 
+#[derive(Serialize, Deserialize, Clone, Default, Debug, Insertable)]
+#[table_name = "teams"]
+pub struct WebTeam {
+    pub team_id: i32,
+    pub name: String,
+    pub phrase: String,
+}
+
 #[derive(Serialize, Deserialize, Clone, Default, Queryable, Debug, Identifiable)]
 pub struct Team {
     pub id: i32,

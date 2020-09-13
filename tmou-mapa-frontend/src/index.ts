@@ -13,12 +13,12 @@ import {discover, getTeamState, moveTeam} from './nodes';
 const mapInstance = getMap('map', [49.195, 16.609], 15);
 
 async function run() {
-  const secretPhase = document.querySelector("body").dataset.secretphrase;
+  const secretPhrase = document.querySelector("body").dataset.secretphrase || null;
   const renderedNodes = new Map<string, Circle>();
   const renderedWays = new Set();
 
   document.getElementById('discover').onclick = async () => {
-    const {event, newItems} = await discover(secretPhase);
+    const {event, newItems} = await discover(secretPhrase);
     switch (event) {
       case "nothing": {
         showPopup('Bohužel...', 'Na toto místo žádná šifra nevede, zkuste to jinde.');
@@ -43,11 +43,11 @@ async function run() {
         break;
       }
     }
-    let {items} = await getTeamState(secretPhase);
+    let {items} = await getTeamState(secretPhrase);
     drawInventory(items);
   }
 
-  let {nodes, ways, state, items} = await getTeamState(secretPhase);
+  let {nodes, ways, state, items} = await getTeamState(secretPhrase);
   const lines: Polyline[] = [];
   const latLng: LatLngLiteral = nodes.get(state.position)!.latLng;
   let currentNodeCoords: LatLng = new LatLng(latLng.lat, latLng.lng);
@@ -129,7 +129,7 @@ async function run() {
   async function handleNodeClick(node: Circle, nodeId) {
     //mapInstance.setView(node.getLatLng(), mapInstance.getZoom());
     currentNodeCoords = node.getLatLng();
-    const {nodes, ways, items, state} = await moveTeam(secretPhase, nodeId);
+    const {nodes, ways, items, state} = await moveTeam(nodeId, secretPhrase);
     console.debug(`Aktuální pozice: ${currentNodeCoords.toString()}`, `Aktuální nodeId: ${state.position}`);
     drawInventory(items);
     drawNodesAndWays(nodes, ways);

@@ -19,6 +19,10 @@ use rocket_contrib::serve::StaticFiles;
 use rocket_contrib::templates::Template;
 use std::env;
 use http_auth_basic::Credentials;
+use jsonwebtoken::{decode, DecodingKey, Validation, Algorithm};
+use serde::{Deserialize, Serialize};
+use slugify::slugify;
+use log::{info, warn};
 
 mod api_models;
 mod postgres_db_controller;
@@ -253,27 +257,38 @@ impl<'a, 'r> FromRequest<'a, 'r> for db_models::Team {
     type Error = ();
 
     fn from_request(request: &'a Request<'r>) -> Outcome<db_models::Team, Self::Error> {
+        #[derive(Debug, Serialize, Deserialize)]
+        struct TeamWeb {
+            tid: i32,
+            tna: String
+        }
         let conn = request.guard::<PostgresDbConn>()?;
         request
             .cookies()
             .get("TMOU_SSO_JWT")
             .and_then(|cookie| {
-                println!("Some cookie");
                 let val: Result<String, _> = cookie.value().parse();
-                println!("Debug: {:?}", val);
-                // TODO: Extract data from JWT
-                let team_id: i32 = 1;
-                let team_name = "Maštěné Ředkvičky".to_string();
-                let phrase = "MegaTajnáFráze".to_string();
-                let mut db_ctrl= PostgresDbControl::new(conn);
-                let db: &mut dyn db_controller::DbControl = &mut db_ctrl;
-                db.get_team(team_id)
-                    .or_else(|| Some(db.put_team(db_models::Team {
-                        id: team_id,
-                        name: team_name,
-                        phrase: phrase,
-                        team_id: 0,
-                        position: 0}).unwrap()))
+                match env::var("JWT_TOKEN") {
+                    Ok(secret) => decode::<TeamWeb>(&val.unwrap(), &DecodingKey::from_secret(secret.as_ref()), &Validation::new(Algorithm::HS512)).ok(),
+                    Err(_) => {warn!("JWT_TOKEN env var not found."); None}
+                }
+            })
+            .and_then(|team_web| {
+                let team_id: i32 = team_web.claims.tid;
+                let team_name = team_web.claims.tna;
+                postgres_db_controller::get_team_by_external_id(&*conn, team_id)
+                    .or_else(|| {
+                        info!("Inserting team {}", &team_name);
+                        let new_team = db_models::WebTeam {
+                            name: team_name.clone(),
+                            phrase: slugify!(&team_name),
+                            team_id,
+                        };
+                        match postgres_db_controller::put_team(&*conn, new_team) {
+                            Ok(team) => Some(team),
+                            Err(err) => {warn!("Failed to insert team with error: {:?}", err); None}
+                        }
+                    })
             })
             .or_forward(())
     }

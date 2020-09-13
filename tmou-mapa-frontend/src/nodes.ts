@@ -1,7 +1,8 @@
 import {TeamState, Node, way, DiscoveryEvent, TeamPosition} from './types';
 
-export async function getTeamState(secretPhrase: string): Promise<TeamState> {
-  const res = await fetch(`/game/${secretPhrase}`);
+export async function getTeamState(secretPhrase?: string): Promise<TeamState> {
+  const url = secretPhrase ? `/game/${secretPhrase}` : '/game';
+  const res = await fetch(url);
 
   return parseJson(await res.json());
 }
@@ -23,8 +24,9 @@ export async function getTeamsPositions(): Promise<TeamPosition[]> {
   return tps;
 }
 
-export async function moveTeam(secretPhrase: string, nodeId: string): Promise<TeamState> {
-  const res = await fetch(`/game/${secretPhrase}`, {
+export async function moveTeam(nodeId: string, secretPhrase?: string): Promise<TeamState> {
+  const url = secretPhrase ? `/game/${secretPhrase}` : '/game';
+  const res = await fetch(url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json;charset=utf-8'
@@ -35,8 +37,9 @@ export async function moveTeam(secretPhrase: string, nodeId: string): Promise<Te
     return parseJson(await res.json());
 }
 
-export async function discover(secretPhrase: string): Promise<DiscoveryEvent> {
-  const res = await fetch(`/game/${secretPhrase}/discover`);
+export async function discover(secretPhrase?: string): Promise<DiscoveryEvent> {
+  const url = secretPhrase ? `/game/${secretPhrase}/discover` : '/game/discover';
+  const res = await fetch(url);
 
   return (await res.json());
 }
