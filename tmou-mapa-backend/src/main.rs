@@ -10,7 +10,7 @@ use rocket::http::RawStr;
 use rocket::http::{Status, Header};
 use rocket::outcome::IntoOutcome;
 use rocket::request::{FromRequest, Outcome};
-use rocket::response::Responder;
+use rocket::response::{Responder, Redirect};
 use rocket::Request;
 use rocket::Rocket;
 use rocket_contrib::database;
@@ -74,8 +74,6 @@ fn info(
     team: db_models::Team,
     conn: PostgresDbConn
 ) -> Result<Json<TeamInfo>, Status> {
-    // TODO: more concise way?
-    println!("Debug team:{:?}", team);
     let db_ctrl = PostgresDbControl::new(conn);
     match game_controller::get_info(&db_ctrl, team) {
         Ok(info) => Ok(Json(info)),
@@ -183,10 +181,18 @@ fn index() -> Template {
 }
 
 #[get("/<secret_phrase>")]
-fn team_index(secret_phrase: &RawStr) -> Template {
+fn team_index(secret_phrase: &RawStr, conn: PostgresDbConn) -> Result<Template, Redirect> {
     let mut context = std::collections::HashMap::<String, String>::new();
-    context.insert("secretPhrase".to_string(), secret_phrase.to_string());
-    Template::render("index", context)
+    match postgres_db_controller::get_team_by_phrase(&*conn, &secret_phrase.to_string()) {
+        Some(_) => {
+                context.insert("secretPhrase".to_string(), secret_phrase.to_string());
+                Ok(Template::render("index", context))
+        },
+        None => {
+            let url: String = env::var("LOGIN_REDIRECT").unwrap_or("https://www.tmou.cz".to_string());
+            Err(Redirect::temporary(url))
+        }
+    }
 }
 
 fn run_migrations(rocket: Rocket) -> Result<Rocket, Rocket> {
