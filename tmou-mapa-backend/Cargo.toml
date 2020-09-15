@@ -20,6 +20,9 @@ lazy_static = "1.4.0"
 regex = "1"
 chrono = {version = "0.4.15", features = ["serde"]}
 http-auth-basic = "0.1.0"
+jsonwebtoken = "7.2.0"
+slugify = "0.1.0"
+log = "0.4"
 
 [[bin]]
 name = "import-osm-data"

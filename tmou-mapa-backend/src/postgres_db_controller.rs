@@ -35,9 +35,10 @@ impl PostgresDbControl
 impl DbControl for PostgresDbControl
 {
 
+
 fn get_team(&self, id: i32) -> std::option::Option<db_models::Team>
 {
-    match teams::teams.filter(teams::team_id.eq(id))
+    match teams::teams.filter(teams::id.eq(id))
         .limit(1)
         .first::<Team>(&*self.conn) {
             Ok(team) => Some(team),
@@ -45,16 +46,6 @@ fn get_team(&self, id: i32) -> std::option::Option<db_models::Team>
         }
 }
 
-fn put_team(&mut self, team: db_models::Team) -> std::result::Result<Team, errors::TmouError>
-{
-    let query = insert_into(teams::teams)
-        .values((teams::team_id.eq(team.id), teams::name.eq(team.name), teams::phrase.eq(team.phrase)));
-
-    match query.get_result::<Team>(&*self.conn) {
-            Ok(team) => Ok(team),
-            Err(err) => Err(err.into())
-        }
-}
 
 fn update_team_position(&mut self, team: &db_models::Team, pos: i64) -> std::result::Result<Team, errors::TmouError>
 {
@@ -63,7 +54,7 @@ fn update_team_position(&mut self, team: &db_models::Team, pos: i64) -> std::res
     match query.get_result::<Team>(&*self.conn) {
             Ok(team) => Ok(team),
             Err(err) => Err(err.into())
-        }
+    }
 }
 
 fn get_reachable_nodes(&self, seed: i64) -> std::result::Result<db_models::Pois, errors::TmouError>
@@ -159,7 +150,8 @@ fn get_teams_positions(&self) -> std::result::Result<std::vec::Vec<db_models::Te
 {
     let teams_positions = teams::teams.inner_join(nodes::nodes).select((teams::name, nodes::lat, nodes::lon)).load(&*self.conn)?;
     Ok(teams_positions)
-    }
+}
+
 }
 
 pub fn get_team_by_phrase(connection: &diesel::PgConnection, phr:&String) -> Option<Team> {
@@ -168,5 +160,26 @@ pub fn get_team_by_phrase(connection: &diesel::PgConnection, phr:&String) -> Opt
         .first::<Team>(connection) {
             Ok(team) => Some(team),
             Err(_) => None
+        }
+}
+
+pub fn get_team_by_external_id(connection: &diesel::PgConnection, id: i32) -> std::option::Option<db_models::Team>
+{
+    match teams::teams.filter(teams::team_id.eq(id))
+        .limit(1)
+        .first::<Team>(connection) {
+            Ok(team) => Some(team),
+            Err(_) => None
+        }
+}
+
+pub fn put_team(connection: &diesel::PgConnection, team: db_models::WebTeam) -> std::result::Result<Team, errors::TmouError>
+{
+    let query = insert_into(teams::teams)
+        .values((teams::team_id.eq(team.team_id), teams::name.eq(team.name), teams::phrase.eq(team.phrase)));
+
+    match query.get_result::<Team>(connection) {
+            Ok(team) => Ok(team),
+            Err(err) => Err(err.into())
         }
 }
