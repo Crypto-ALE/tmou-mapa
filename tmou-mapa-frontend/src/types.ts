@@ -43,4 +43,5 @@ export interface DiscoveryEvent {
 export interface TeamPosition {
   teamName: string;
   position: Node;
+  level: number;
 }

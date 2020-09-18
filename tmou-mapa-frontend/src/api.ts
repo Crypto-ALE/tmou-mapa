@@ -17,7 +17,8 @@ export async function getTeamsPositions(): Promise<TeamPosition[]> {
       position: {
         latLng: {lat: item.lat, lng: item.lon},
         type: "ordinary" //HAAAAACK
-      }
+      },
+      level: item.level,
     }
   });
 

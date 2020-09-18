@@ -8,7 +8,7 @@ import {
   Polyline
 } from "leaflet";
 import {Item, Node, way} from './types';
-import {discover, getTeamState, moveTeam} from './nodes';
+import {discover, getTeamState, moveTeam} from './api';
 
 const mapInstance = getMap('map', [49.195, 16.609], 15);
 
