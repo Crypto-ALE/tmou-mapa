@@ -16,6 +16,8 @@ async function run() {
   const secretPhrase = document.querySelector("body").dataset.secretphrase || null;
   const renderedNodes = new Map<string, Circle>();
   const renderedWays = new Set();
+  const localContainer = [];
+
 
   document.getElementById('discover').onclick = async () => {
     const {event, newItems} = await discover(secretPhrase);
@@ -52,6 +54,16 @@ async function run() {
   const latLng: LatLngLiteral = nodes.get(state.position)!.latLng;
   let currentNodeCoords: LatLng = new LatLng(latLng.lat, latLng.lng);
   let currentNode: Circle;
+
+  const lastNodesAndWays = window.localStorage.getItem('nodesAndWays');
+  if (lastNodesAndWays) {
+    const nodesAndWays = JSON.parse(lastNodesAndWays);
+    for (const nw of nodesAndWays) {
+      const nodes: Map<string, Node> = new Map(JSON.parse(nw.nodes));
+      const ways: Map<string, way> = new Map(JSON.parse(nw.ways));
+      drawNodesAndWays(nodes, ways);
+    }
+  }
 
   document.getElementById('teamName').innerText = state.name;
   mapInstance.setView(currentNodeCoords, 17);
@@ -93,6 +105,7 @@ async function run() {
   }
 
   function drawNodesAndWays(nodes: Map<string, Node>, ways: Map<string, way>) {
+    storeNodesAndWays(nodes, ways);
     if (currentNode) {
       currentNode.setStyle({color: "#000000b5"});
     }
@@ -126,7 +139,16 @@ async function run() {
     }
   }
 
-  async function handleNodeClick(node: Circle, nodeId) {
+  function storeNodesAndWays(nodes: Map<string, Node>, ways: Map<string, way>) {
+    if (localContainer.length === 10) {
+      localContainer.shift();
+    }
+
+    localContainer.push({nodes: JSON.stringify(Array.from(nodes)), ways: JSON.stringify(Array.from(ways))});
+    window.localStorage.setItem('nodesAndWays', JSON.stringify(localContainer));
+  }
+
+  async function handleNodeClick(node: Circle, nodeId: string) {
     //mapInstance.setView(node.getLatLng(), mapInstance.getZoom());
     currentNodeCoords = node.getLatLng();
     const {nodes, ways, items, state} = await moveTeam(nodeId, secretPhrase);
