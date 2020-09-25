@@ -1,19 +1,33 @@
 import {getMap} from './map';
 import {
   Circle,
+  layerGroup,
 } from "leaflet";
 import {getTeamsPositions} from './api';
+import {TeamPosition} from './types';
 
 const mapInstance = getMap('map', [49.195, 16.609], 15);
+const teamsPositionsLayer = layerGroup();
+teamsPositionsLayer.addTo(mapInstance);
 const colors = ['#000000aa', '#ffd83c', '#28d428', '#2972ff', '#ff2929', '#9346ba']
 
 async function run() {
-  const teamsPositions = await getTeamsPositions();
+  await updateTeamsPositions();
+  setInterval(updateTeamsPositions, 5000);
+}
 
+
+async function updateTeamsPositions() {
+    const teamsPositions = await getTeamsPositions();
+    drawTeamsPositions(teamsPositions);
+}
+
+function drawTeamsPositions(teamsPositions: TeamPosition[]) {
+  teamsPositionsLayer.clearLayers();
   for (const team of teamsPositions) {
     const c = new Circle(team.position.latLng, 18, {color: colors[team.level], fillOpacity: 1, interactive: true});
     c.bindTooltip(team.teamName);
-    c.addTo(mapInstance);
+    c.addTo(teamsPositionsLayer);
   }
 }
 
