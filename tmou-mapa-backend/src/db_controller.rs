@@ -17,3 +17,9 @@ pub trait DbControl
     fn get_team_items_with_timestamps(&self, team_id: i32) -> TmouResult<Vec<TeamItem>>;
     fn put_team_items(&mut self, team_id: i32, items: Vec<Item>) -> TmouResult<()>;
 }
+
+pub trait MessagesDbControl
+{
+    fn get_messages(&self, team_id: i32, limit: Option<i64>) -> Option<Vec<Message>>;
+    fn send_message(&self, message: WebMessage, teams_ids: Vec<i32>) -> TmouResult<()>;
+}

@@ -113,3 +113,25 @@ pub struct TeamPosition {
     pub lon: f32,
     pub level: Option<i16>,
 }
+
+#[derive(Serialize, Deserialize, Clone, Default, Debug, Insertable)]
+#[table_name = "messages"]
+pub struct WebMessage {
+    pub content: String,
+    pub type_: String, // success | fail | info
+}
+
+#[derive(Serialize, Deserialize, Clone, Default, Queryable)]
+pub struct Message {
+    pub id: i32,
+    pub content: String,
+    pub type_: String, // success | fail | info
+    pub timestamp: Option<chrono::NaiveDateTime>
+}
+
+#[derive(Serialize, Deserialize, Clone, Default, Insertable)]
+#[table_name = "messages_teams"]
+pub struct MessageToTeam {
+    pub message_id: i32,
+    pub team_id: i32,
+}
