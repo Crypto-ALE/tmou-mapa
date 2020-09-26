@@ -87,3 +87,11 @@ pub struct TeamInfo
     pub pois: Pois,
     pub items: Items
 }
+
+#[derive(Serialize, Deserialize)]
+pub struct Message
+{
+    pub content: String,
+    pub r#type: String, // fail | success | info
+    pub timestamp: Option<chrono::NaiveDateTime>
+}
