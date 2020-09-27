@@ -92,19 +92,21 @@ a{
   padding:0px 10px;
   margin-bottom:15px;
   font-weight:300;
+  display: flex;
+  justify-content: space-between;
 }
 
-.message.OK{
+.message.ok{
   border: 2px solid #003300;
   background: #33FF33aa;
 }
 
-.message.INFO{
+.message.info{
   border:2px solid #333ABA;
   background:#7F92FFaa;
 }
 
-.message.WRONG{
+.message.wrong{
   border:2px solid #682323;
   background: #EA6060aa;
 }

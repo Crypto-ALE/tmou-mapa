@@ -45,3 +45,9 @@ export interface TeamPosition {
   position: Node;
   level: number;
 }
+
+export interface Message {
+  content: string;
+  type: "success" | "fail" | "info";
+  timestamp: unix_timestamp;
+}
