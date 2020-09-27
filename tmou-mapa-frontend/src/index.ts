@@ -1,4 +1,4 @@
-import {getMap} from './map';
+import {getMap, switchToMapyCzBase, switchToMapyCzOutdoor, switchToOSM} from './map';
 import {circleFactory} from "./circle";
 import {
   Circle,
@@ -26,6 +26,10 @@ async function run() {
     const messages = await fetchMessages(secretPhrase);
     drawMessages(messages);
   }
+
+  document.getElementById("mapSelectorMO").onclick = switchToMapyCzOutdoor;
+  document.getElementById("mapSelectorMB").onclick = switchToMapyCzBase;
+  document.getElementById("mapSelectorOSM").onclick = switchToOSM;
 
   document.getElementById('discover').onclick = async () => {
     const {event, newItems} = await discover(secretPhrase);
@@ -204,7 +208,11 @@ async function run() {
   }
 
   function drawInventory(items: Item[]) {
-    const puzzles = items.filter((item) => item.type === "puzzles").sort((a, b) => a.level - b.level).map(({url, level}) => `<li><a href="${url}">Level ${level}</a>`);
+    const puzzles = items
+      .filter((item) => item.type === "puzzles")
+      .sort((a, b) => a.level - b.level)
+      .map(({url, level}) => `<li><a href="${url}" target="_blank">Level ${level}</a>`);
+
     const badges = items
       .filter((item) => item.type === "badge")
       .sort((a, b) => a.timestamp - b.timestamp)
@@ -215,6 +223,7 @@ async function run() {
           </div>`
       })
       .join('');
+
     document.getElementById('badges').innerHTML = badges;
     if (puzzles.length) {
       document.querySelector('#puzzles>#puzzles-list').innerHTML = `<ul>${puzzles.join('')}</ul>`;

@@ -145,8 +145,15 @@ button#discover{
 
 #navigation{
   position:relative;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
 }
 
+#navigation > div {
+  width: 50%;
+  min-width: 130px;
+}
 .debug{
   display:block; /*change to display:none in production*/
 }
