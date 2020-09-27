@@ -119,6 +119,8 @@ pub struct TeamPosition {
 pub struct WebMessage {
     pub content: String,
     pub type_: String, // success | fail | info
+    // Preparation for future-appearing messages
+    pub timestamp: Option<chrono::NaiveDateTime>
 }
 
 #[derive(Serialize, Deserialize, Clone, Default, Queryable)]

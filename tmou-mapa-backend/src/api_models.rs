@@ -95,3 +95,10 @@ pub struct Message
     pub r#type: String, // fail | success | info
     pub timestamp: Option<chrono::NaiveDateTime>
 }
+
+#[derive(Serialize, Deserialize)]
+pub struct IncomingMessage
+{
+    pub recipient_id: i32,
+    pub message: Message,
+}

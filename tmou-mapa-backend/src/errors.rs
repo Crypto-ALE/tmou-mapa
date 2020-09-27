@@ -1,4 +1,4 @@
-// TODO: 
+// TODO:
 // - implement error::Error
 // - add types of encapsulated errors for better handling
 // - make an automatic response somehow?
@@ -9,9 +9,9 @@ pub struct TmouError
     pub response: u16
 }
 
-impl TmouError 
+impl TmouError
 {
-    fn new(msg: &str, resp: u16) -> TmouError 
+    fn new(msg: &str, resp: u16) -> TmouError
     {
         TmouError{message: msg.to_string(), response: resp}
     }
@@ -46,8 +46,11 @@ impl From<TmouError> for rocket::http::Status
 {
     fn from(err:TmouError) -> Self
     {
-        // wtf, how to get String into the rocket's Status::reason?
-        rocket::http::Status::new(err.response, "Unknown error")
+        match err.response {
+            400 => rocket::http::Status::BadRequest,
+            404 => rocket::http::Status::NotFound,
+            _ => rocket::http::Status::InternalServerError
+        }
     }
 }
 

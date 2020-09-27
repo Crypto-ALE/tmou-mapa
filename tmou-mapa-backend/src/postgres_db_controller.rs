@@ -187,7 +187,7 @@ impl MessagesDbControl for PostgresDbControl
         }
     }
 
-    fn send_message(&self, message: db_models::WebMessage, teams_ids: Vec<i32>) -> std::result::Result<(), errors::TmouError> {
+    fn put_message(&self, message: db_models::WebMessage, teams_ids: Vec<i32>) -> std::result::Result<(), errors::TmouError> {
         let message_id = insert_into(messages::messages)
             .values(message)
             .returning(messages::id)

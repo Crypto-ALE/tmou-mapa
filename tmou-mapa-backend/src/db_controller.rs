@@ -21,5 +21,5 @@ pub trait DbControl
 pub trait MessagesDbControl
 {
     fn get_messages(&self, team_id: i32, limit: Option<i64>) -> Option<Vec<Message>>;
-    fn send_message(&self, message: WebMessage, teams_ids: Vec<i32>) -> TmouResult<()>;
+    fn put_message(&self, message: WebMessage, teams_ids: Vec<i32>) -> TmouResult<()>;
 }

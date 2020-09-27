@@ -41,7 +41,7 @@ mod schema;
 mod discovery;
 mod datetime_operators;
 
-use api_models::{NodeAction, TeamInfo, DiscoveryEvent, TeamPosition, Message};
+use api_models::{NodeAction, TeamInfo, DiscoveryEvent, TeamPosition, Message, IncomingMessage};
 use postgres_db_controller::PostgresDbControl;
 
 embed_migrations!("./migrations/");
@@ -215,6 +215,22 @@ fn admin_positions(_admin: Admin, conn: PostgresDbConn) -> Result<Json<Vec<TeamP
     }
 }
 
+#[post("/admin/messages",  data = "<message>")]
+fn admin_send_message(_admin: Admin, conn: PostgresDbConn, message: Json<IncomingMessage>) -> Result<Status, Status> {
+    let db_msg_control: PostgresDbControl = PostgresDbControl::new(conn);
+    let res = match message.recipient_id {
+        postgres_db_controller::BROADCAST_TEAM_ID => message_controller::send_message_to_all_teams(&db_msg_control, message.into_inner().message),
+        _ => admin_controller::unwrap_incoming_message(&db_msg_control, message.into_inner())
+                .and_then(|(team, message)| {message_controller::send_message_to_team(&db_msg_control, team, message)
+        })
+    };
+
+    match res {
+        Ok(_) => Ok(Status::Created),
+        Err(err) => {warn!("Failed to send message: {}", err.message); Err(err.into())},
+    }
+}
+
 #[get("/")]
 fn index(_team: db_models::Team) -> Template {
     let context = std::collections::HashMap::<String, String>::new();
@@ -268,7 +284,7 @@ fn rocket() -> rocket::Rocket {
         .mount(
             "/",
             routes![index, index_redirect, team_index, info_cookie, info_phrase, messages_cookie, messages_phrase, go_cookie, go_phrase, discover_cookie,
-                discover_phrase, admin, admin_positions],
+                discover_phrase, admin, admin_positions, admin_send_message],
         )
 }
 

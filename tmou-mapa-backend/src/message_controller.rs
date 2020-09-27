@@ -16,6 +16,14 @@ pub fn get_messages_for_team(msg_control: & impl MessagesDbControl, team: db::Te
     }
 }
 
+pub fn send_message_to_team(msg_control: & impl MessagesDbControl, team: db::Team, message: api::Message) -> TmouResult<()> {
+    msg_control.put_message(message.into(), vec![team.id])
+}
+
+pub fn send_message_to_all_teams(msg_control: & impl MessagesDbControl, message: api::Message) -> TmouResult<()> {
+    msg_control.put_message(message.into(), vec![0])
+}
+
 ////////////////////////////////////////////////////////////////////
 /// Implementation details
 ////////////////////////////////////////////////////////////////////
@@ -29,6 +37,19 @@ impl From<&db::Message> for api::Message
             content: value.content.clone(),
             r#type: value.type_.clone(),
             timestamp: value.timestamp.clone(),
+        }
+    }
+}
+
+impl From<api::Message> for db::WebMessage
+{
+
+    fn from(value: api::Message) -> Self
+    {
+        db::WebMessage{
+            content: value.content.clone(),
+            type_: value.r#type.clone(),
+            timestamp: value.timestamp,
         }
     }
 }
