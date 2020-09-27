@@ -46,8 +46,18 @@ export interface TeamPosition {
   level: number;
 }
 
-export interface Message {
-  content: string;
-  type: "success" | "fail" | "info";
+export interface MessageWithTimestamp extends Message {
   timestamp: unix_timestamp;
+}
+
+export type MessageType = "success" | "fail" | "info";
+
+export interface OutgoingMessage {
+  recipient_id?: number;
+  message: Message;
+}
+
+interface Message {
+  content: string;
+  type: MessageType;
 }

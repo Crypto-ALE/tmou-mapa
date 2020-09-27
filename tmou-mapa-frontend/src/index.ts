@@ -7,7 +7,7 @@ import {
   LeafletMouseEvent,
   Polyline
 } from "leaflet";
-import {Item, Node, way, Message} from './types';
+import {Item, Node, way, MessageWithTimestamp} from './types';
 import {discover, getTeamState, moveTeam, fetchMessages} from './api';
 
 const mapInstance = getMap('map', [49.195, 16.609], 15);
@@ -156,7 +156,7 @@ async function run() {
     window.localStorage.setItem('nodesAndWays', JSON.stringify(localContainer));
   }
 
-  function drawMessages(messages: Message[]) {
+  function drawMessages(messages: MessageWithTimestamp[]) {
     const typesToClasses = {
       success: 'ok',
       fail: 'wrong',

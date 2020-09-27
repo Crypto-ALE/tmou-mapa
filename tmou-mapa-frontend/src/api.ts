@@ -1,4 +1,4 @@
-import {TeamState, Node, way, DiscoveryEvent, TeamPosition, Message} from './types';
+import {TeamState, Node, way, DiscoveryEvent, TeamPosition, MessageWithTimestamp, OutgoingMessage, MessageType} from './types';
 
 export async function getTeamState(secretPhrase?: string): Promise<TeamState> {
   const url = secretPhrase ? `/game/${secretPhrase}` : '/game';
@@ -45,7 +45,7 @@ export async function discover(secretPhrase?: string): Promise<DiscoveryEvent> {
   return (await res.json());
 }
 
-export async function fetchMessages(secretPhrase?: string, limit?: number): Promise<Message[]> {
+export async function fetchMessages(secretPhrase?: string, limit?: number): Promise<MessageWithTimestamp[]> {
   const url = new URL(secretPhrase ? `/messages/${secretPhrase}` : '/messages', document.location.toString());
   if (limit) {
     url.search = new URLSearchParams([['limit', limit.toString()]]).toString();
@@ -54,6 +54,26 @@ export async function fetchMessages(secretPhrase?: string, limit?: number): Prom
   const messages = await res.json();
 
   return timestampMapper(messages);
+}
+
+export async function sendMessage(data: FormData, secretPhrase?: string) {
+  const payload: OutgoingMessage = {
+    recipient_id: parseInt(data.get('recipient').toString(), 10),
+    message: {content: data.get('message').toString(), type: data.get('type') as MessageType}
+  }
+
+  const url = secretPhrase ? `/messages/${secretPhrase}` : '/messages';
+  const res = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json;charset=utf-8'
+      },
+      body: JSON.stringify(payload)
+    });
+
+    if (!res.ok) {
+      throw new Error();
+    }
 }
 
 function parseJson(res: any): TeamState {

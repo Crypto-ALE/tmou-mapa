@@ -199,9 +199,16 @@ fn discover(
 
 
 #[get("/admin")]
-fn admin(_admin: Admin) -> Template {
-    let context = std::collections::HashMap::<String, String>::new();
-    Template::render("admin", context)
+fn admin(_admin: Admin, conn: PostgresDbConn) -> Template {
+    let teams = postgres_db_controller::get_all_teams(&*conn).unwrap_or_default();
+
+    #[derive(Serialize, Deserialize)]
+    struct AdminContext {
+        broadcast_team_id: i32,
+        teams: Vec<db_models::Team>
+    }
+
+    Template::render("admin", AdminContext{broadcast_team_id: postgres_db_controller::BROADCAST_TEAM_ID, teams})
 }
 
 
@@ -215,7 +222,7 @@ fn admin_positions(_admin: Admin, conn: PostgresDbConn) -> Result<Json<Vec<TeamP
     }
 }
 
-#[post("/admin/messages",  data = "<message>")]
+#[post("/messages",  data = "<message>")]
 fn admin_send_message(_admin: Admin, conn: PostgresDbConn, message: Json<IncomingMessage>) -> Result<Status, Status> {
     let db_msg_control: PostgresDbControl = PostgresDbControl::new(conn);
     let res = match message.recipient_id {

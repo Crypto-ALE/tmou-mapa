@@ -49,7 +49,6 @@ fn get_team(&self, id: i32) -> std::option::Option<db_models::Team>
         }
 }
 
-
 fn update_team_position(&mut self, team: &db_models::Team, pos: i64) -> std::result::Result<Team, errors::TmouError>
 {
     let query = diesel::update(team).set(teams::position.eq(pos));
@@ -164,7 +163,7 @@ fn get_teams_positions(&self) -> std::result::Result<std::vec::Vec<db_models::Te
 }
 
 // messages for this team id are broadcasted to all the teams
-const BROADCAST_TEAM_ID: i32 = 0;
+pub const BROADCAST_TEAM_ID: i32 = 0;
 
 impl MessagesDbControl for PostgresDbControl
 {
@@ -229,4 +228,9 @@ pub fn put_team(connection: &diesel::PgConnection, team: db_models::WebTeam) -> 
             Ok(team) => Ok(team),
             Err(err) => Err(err.into())
         }
+}
+
+pub fn get_all_teams(connection: &diesel::PgConnection) -> std::result::Result<Vec<Team>, errors::TmouError>
+{
+    teams::teams.order_by(teams::name).load(connection).or_else(|err| Err(err.into()))
 }

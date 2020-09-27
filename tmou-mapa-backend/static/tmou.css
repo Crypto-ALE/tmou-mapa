@@ -118,6 +118,22 @@ a{
   overflow: hidden;
 }
 
+#panel .section > form {
+  display: grid;
+  grid-template-rows: 1fr 1fr 1fr;
+  row-gap: 1em;
+}
+
+#panel .section > form > div {
+  display: flex;
+  flex-direction: column;
+}
+
+#panel .section > form select,input {
+  height: 2em;
+  font-size: bigger;
+}
+
 button#discover{
   width:50%;
   height:50px;
