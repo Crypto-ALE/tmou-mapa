@@ -29,10 +29,11 @@ pub fn get_teams_standings(db_control: & impl DbControl) -> TmouResult<api::Stan
     let badge_labels_db = db_control.get_badge_labels()?;
     let teams_badges_db = db_control.get_teams_badges()?;
 
-
-    let badge_labels = badge_labels_db.iter().map_into().collect();
-    let standings = standings_db.iter().map_into().collect();
-    Ok(api::Standings{badge_labels, standings})
+    dbg!(badge_labels_db, teams_badges_db);
+    todo!();
+    //let badge_labels = badge_labels_db.iter().map_into().collect();
+    //let standings = teams_badges_db.iter().map_into().collect();
+    //Ok(api::Standings{badge_labels, standings})
 }
 
 ////////////////////////////////////////////////////////////////////
