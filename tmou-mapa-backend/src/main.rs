@@ -34,6 +34,7 @@ mod admin_controller;
 mod osm_models;
 mod osm_reader;
 mod tests;
+mod rocket_test;
 mod schema;
 mod discovery;
 
@@ -175,9 +176,15 @@ fn admin_positions(_admin: Admin, conn: PostgresDbConn) -> Result<Json<Vec<TeamP
 }
 
 #[get("/")]
-fn index() -> Template {
+fn index(_team: db_models::Team) -> Template {
     let context = std::collections::HashMap::<String, String>::new();
     Template::render("index", context)
+}
+
+#[get("/", rank=2)]
+fn index_redirect() -> Redirect {
+    let url: String = env::var("LOGIN_REDIRECT").unwrap_or("https://www.tmou.cz".to_string());
+    Redirect::temporary(url)
 }
 
 #[get("/<secret_phrase>")]
@@ -205,11 +212,13 @@ fn run_migrations(rocket: Rocket) -> Result<Rocket, Rocket> {
     }
 }
 
-fn main() {
+
+fn rocket() -> rocket::Rocket {
     let static_dir = match env::current_dir() {
         Ok(x) => x.join("static"),
         _ => panic!("Cannot access current directory"),
     };
+
     rocket::ignite()
         .register(catchers![not_auth])
         .attach(PostgresDbConn::fairing())
@@ -218,9 +227,12 @@ fn main() {
         .mount("/static", StaticFiles::from(static_dir))
         .mount(
             "/",
-            routes![index, team_index, info_cookie, info_phrase, go_cookie, go_phrase, discover_cookie, discover_phrase, admin, admin_positions],
-        )
-        .launch();
+            routes![index, index_redirect, team_index, info_cookie, info_phrase, go_cookie, go_phrase, discover_cookie, discover_phrase, admin, admin_positions],
+    )
+}
+
+fn main() {
+    rocket().launch();
 }
 
 

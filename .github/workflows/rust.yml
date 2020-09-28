@@ -24,4 +24,6 @@ jobs:
     - name: Build
       run: cargo build --verbose
     - name: Run tests
+      env:
+        ROCKET_DATABASES: '{postgres={url="${{ secrets.DB_URL }}",pool_size=1}}'
       run: cargo test --verbose
