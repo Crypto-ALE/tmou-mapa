@@ -23,6 +23,7 @@ use jsonwebtoken::{decode, DecodingKey, Validation, Algorithm};
 use serde::{Deserialize, Serialize};
 use slugify::slugify;
 use log::{info, warn};
+use chrono::{DateTime,Utc,FixedOffset};
 
 mod api_models;
 mod postgres_db_controller;
@@ -48,6 +49,7 @@ pub struct PostgresDbConn(diesel::PgConnection);
 
 #[get("/game")]
 fn info_cookie(
+    _started: GameWasStarted,
     team: db_models::Team,
     conn: PostgresDbConn
 ) -> Result<Json<TeamInfo>, Status> {
@@ -57,6 +59,7 @@ fn info_cookie(
 
 #[get("/game/<secret_phrase>")]
 fn info_phrase(
+    _started: GameWasStarted,
     secret_phrase: &RawStr,
     conn: PostgresDbConn
 ) -> Result<Json<TeamInfo>, Status> {
@@ -86,6 +89,7 @@ fn info(
 
 #[post("/game", data = "<action>")]
 fn go_cookie(
+    _started: GameWasStarted,
     action: Json<NodeAction>,
     team: db_models::Team,
     conn: PostgresDbConn
@@ -95,6 +99,7 @@ fn go_cookie(
 
 #[post("/game/<secret_phrase>", data = "<action>")]
 fn go_phrase(
+    _started: GameWasStarted,
     secret_phrase: &RawStr,
     action: Json<NodeAction>,
     conn: PostgresDbConn
@@ -121,6 +126,7 @@ fn go(
 
 #[get("/game/discover")]
 fn discover_cookie(
+    _running: GameIsRunning,
     team: db_models::Team,
     conn: PostgresDbConn
 ) -> Result<Json<DiscoveryEvent>, Status> {
@@ -129,6 +135,7 @@ fn discover_cookie(
 
 #[get("/game/<secret_phrase>/discover")]
 fn discover_phrase(
+    _running: GameIsRunning,
     secret_phrase: &RawStr,
     conn: PostgresDbConn
 ) -> Result<Json<DiscoveryEvent>, Status> {
@@ -309,5 +316,72 @@ impl<'a, 'r> FromRequest<'a, 'r> for db_models::Team {
                     })
             })
             .or_forward(())
+    }
+}
+
+fn now_is_between(from: DateTime<FixedOffset>, to: DateTime<FixedOffset>) -> bool
+{
+    let now = Utc::now();
+    from < now && now < to
+}
+
+fn now_is_after_start(from: DateTime<FixedOffset>, _to: DateTime<FixedOffset>) -> bool
+{
+    let now = Utc::now();
+    from < now
+}
+
+
+// when TMOU_GAME_EXECUTION_MODE is:
+// On: returns true
+// Off: returns false
+// Auto: checks the time condition provided as a comparison closure comp_fn
+// time format: YYYY-MM-DDThh:mm:ss+/-offset, e. g. 2020-10-11-17:00:00+02:00
+fn check_game_state<CompFn>(comp_fn: CompFn) -> bool 
+where CompFn: Fn(DateTime<FixedOffset>,DateTime<FixedOffset>)->bool {
+    match env::var("TMOU_GAME_EXECUTION_MODE").as_ref().map(String::as_str) {
+        Ok("On") => true,
+        Ok("Auto") => 
+        {
+            let from = env::var("TMOU_GAME_START")
+                .and_then(|s| DateTime::parse_from_rfc3339(s.as_str()).or(Err(env::VarError::NotPresent)));
+            let to = env::var("TMOU_GAME_END")
+            .and_then(|s| DateTime::parse_from_rfc3339(s.as_str()).or(Err(env::VarError::NotPresent)));
+            
+            match (from, to)
+            {
+                (Ok(f), Ok(t)) if comp_fn(f,t) => true,
+                _ => false
+            }
+            
+        },
+        _ => false // Off or not specified
+    }
+}
+
+
+struct GameIsRunning {} // current date time is between TMOU_GAME_START and TMOU_GAME_END
+
+impl <'a, 'r> FromRequest<'a, 'r> for GameIsRunning {
+    type Error = ();
+
+    fn from_request(_request: &'a Request<'r>) -> Outcome<GameIsRunning, Self::Error> {
+        if check_game_state(now_is_between)
+        {  rocket::Outcome::Success(GameIsRunning{})}
+        else
+        {  rocket::Outcome::Failure((rocket::http::Status::Unauthorized, ())) }
+    }
+}
+
+struct GameWasStarted {} // current date time is greater than TMOU_GAME_START
+
+impl <'a, 'r> FromRequest<'a, 'r> for GameWasStarted {
+    type Error = ();
+
+    fn from_request(_request: &'a Request<'r>) -> Outcome<GameWasStarted, Self::Error> {
+        if check_game_state(now_is_after_start)
+        {  rocket::Outcome::Success(GameWasStarted{})}
+        else
+        {  rocket::Outcome::Failure((rocket::http::Status::Unauthorized, ())) }
     }
 }
