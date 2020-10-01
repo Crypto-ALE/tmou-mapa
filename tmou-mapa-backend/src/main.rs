@@ -23,7 +23,7 @@ use jsonwebtoken::{decode, DecodingKey, Validation, Algorithm};
 use serde::{Deserialize, Serialize};
 use slugify::slugify;
 use log::{info, warn};
-use chrono::{DateTime,Utc,FixedOffset};
+use chrono::{DateTime,FixedOffset};
 
 mod api_models;
 mod postgres_db_controller;
@@ -38,6 +38,7 @@ mod tests;
 mod rocket_test;
 mod schema;
 mod discovery;
+mod datetime_operators;
 
 use api_models::{NodeAction, TeamInfo, DiscoveryEvent, TeamPosition};
 use postgres_db_controller::PostgresDbControl;
@@ -319,19 +320,6 @@ impl<'a, 'r> FromRequest<'a, 'r> for db_models::Team {
     }
 }
 
-fn now_is_between(from: DateTime<FixedOffset>, to: DateTime<FixedOffset>) -> bool
-{
-    let now = Utc::now();
-    from < now && now < to
-}
-
-fn now_is_after_start(from: DateTime<FixedOffset>, _to: DateTime<FixedOffset>) -> bool
-{
-    let now = Utc::now();
-    from < now
-}
-
-
 // when TMOU_GAME_EXECUTION_MODE is:
 // On: returns true
 // Off: returns false
@@ -350,7 +338,7 @@ where CompFn: Fn(DateTime<FixedOffset>,DateTime<FixedOffset>)->bool {
             
             match (from, to)
             {
-                (Ok(f), Ok(t)) if comp_fn(f,t) => true,
+                (Ok(f), Ok(t))  => comp_fn(f,t),
                 _ => false
             }
             
@@ -366,7 +354,7 @@ impl <'a, 'r> FromRequest<'a, 'r> for GameIsRunning {
     type Error = ();
 
     fn from_request(_request: &'a Request<'r>) -> Outcome<GameIsRunning, Self::Error> {
-        if check_game_state(now_is_between)
+        if check_game_state(datetime_operators::now_is_between)
         {  rocket::Outcome::Success(GameIsRunning{})}
         else
         {  rocket::Outcome::Failure((rocket::http::Status::Unauthorized, ())) }
@@ -379,7 +367,7 @@ impl <'a, 'r> FromRequest<'a, 'r> for GameWasStarted {
     type Error = ();
 
     fn from_request(_request: &'a Request<'r>) -> Outcome<GameWasStarted, Self::Error> {
-        if check_game_state(now_is_after_start)
+        if check_game_state(datetime_operators::now_is_after_start)
         {  rocket::Outcome::Success(GameWasStarted{})}
         else
         {  rocket::Outcome::Failure((rocket::http::Status::Unauthorized, ())) }
