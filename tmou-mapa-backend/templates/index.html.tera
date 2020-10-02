@@ -23,16 +23,16 @@
   </div>
 
   <div id="header_right">
-    <span id="team">Přihlášený tým: <span id="teamName">teamName</span></span> |
-      <a href="#">Logout</a>
+    <span id="team">Přihlášený tým: <span id="teamName">teamName</span></span>
+    {% if not secretPhrase %}
+        | <a href="{{main_game_url}}/logout">Logout</a>
+    {% endif %}
   </div>
 
 
     <div id="map"></div>
 
     <div id="panel">
-      <div class="section" id="messages">
-      </div>
       <div class="section" id="puzzles">
         <h2>Zadání šifer</h2>
         <div id="puzzles-list">
@@ -41,8 +41,18 @@
       </div>
 
       <div class="section" id="navigation">
-        <h2>Akce</h2>
-        <button id="discover">Zkusit štěstí</button>
+        <div>
+          <h2>Akce</h2>
+          <button id="discover">Zkusit štěstí</button>
+        </div>
+        <div>
+          <h2>Změnit mapu</h2>
+          <ul>
+            <li><a href="#" id="mapSelectorMO">Mapy.cz - outdoor</a></li>
+            <li><a href="#" id="mapSelectorMB">Mapy.cz - základ</a></li>
+            <li><a href="#" id="mapSelectorOSM">OpenStreetMap</a></li>
+          </ul>
+        </div>
       </div>
 
       <div class="section">
@@ -51,7 +61,11 @@
         </div>
       </div>
 
-
+      <div class="section">
+        <h2>Zprávy</h2>
+        <div id="messages">
+        </div>
+      </div>
 
   </div>
 
@@ -69,7 +83,6 @@
       </div>
     </div>
   <!-- END POPUP -->
-
 
 </div>
 <script src="/static/index.js"></script>

@@ -239,9 +239,9 @@ fn admin_send_message(_admin: Admin, conn: PostgresDbConn, message: Json<Incomin
 }
 
 #[get("/")]
-fn index(_team: db_models::Team) -> Template {
+fn index_cookie(_team: db_models::Team) -> Template {
     let context = std::collections::HashMap::<String, String>::new();
-    Template::render("index", context)
+    index(context)
 }
 
 #[get("/", rank=2)]
@@ -256,13 +256,18 @@ fn team_index(secret_phrase: &RawStr, conn: PostgresDbConn) -> Result<Template, 
     match postgres_db_controller::get_team_by_phrase(&*conn, &secret_phrase.to_string()) {
         Some(_) => {
                 context.insert("secretPhrase".to_string(), secret_phrase.to_string());
-                Ok(Template::render("index", context))
+                Ok(index(context))
         },
         None => {
             let url: String = env::var("LOGIN_REDIRECT").unwrap_or("https://www.tmou.cz".to_string());
             Err(Redirect::temporary(url))
         }
     }
+}
+
+fn index(mut context: std::collections::HashMap<String, String>) -> Template {
+    context.insert("main_game_url".to_string(), env::var("MAIN_GAME_URL").unwrap_or("https://www.tmou.cz/22/page".to_string()));
+    Template::render("index", context)
 }
 
 fn run_migrations(rocket: Rocket) -> Result<Rocket, Rocket> {
@@ -290,7 +295,7 @@ fn rocket() -> rocket::Rocket {
         .mount("/static", StaticFiles::from(static_dir))
         .mount(
             "/",
-            routes![index, index_redirect, team_index, info_cookie, info_phrase, messages_cookie, messages_phrase, go_cookie, go_phrase, discover_cookie,
+            routes![index_cookie, index_redirect, team_index, info_cookie, info_phrase, messages_cookie, messages_phrase, go_cookie, go_phrase, discover_cookie,
                 discover_phrase, admin, admin_positions, admin_send_message],
         )
 }
