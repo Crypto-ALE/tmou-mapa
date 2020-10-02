@@ -1,5 +1,7 @@
 use super::rocket;
+#[allow(unused)]
 use rocket::local::Client;
+#[allow(unused)]
 use rocket::http::Status;
 
 #[test]
