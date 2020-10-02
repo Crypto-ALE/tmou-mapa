@@ -32,6 +32,7 @@ mod db_models;
 mod errors;
 mod game_controller;
 mod admin_controller;
+mod message_controller;
 mod osm_models;
 mod osm_reader;
 mod tests;
@@ -40,7 +41,7 @@ mod schema;
 mod discovery;
 mod datetime_operators;
 
-use api_models::{NodeAction, TeamInfo, DiscoveryEvent, TeamPosition};
+use api_models::{NodeAction, TeamInfo, DiscoveryEvent, TeamPosition, Message, IncomingMessage};
 use postgres_db_controller::PostgresDbControl;
 
 embed_migrations!("./migrations/");
@@ -87,6 +88,37 @@ fn info(
 }
 
 
+#[get("/messages?<limit>")]
+fn messages_cookie(
+    team: db_models::Team,
+    conn: PostgresDbConn,
+    limit: Option<i64>
+) -> Result<Json<Vec<Message>>, Status> {
+    messages(team, conn, limit)
+}
+
+#[get("/messages/<secret_phrase>?<limit>")]
+fn messages_phrase(
+    secret_phrase: &RawStr,
+    conn: PostgresDbConn,
+    limit: Option<i64>
+) -> Result<Json<Vec<Message>>, Status> {
+    match postgres_db_controller::get_team_by_phrase(&*conn, &secret_phrase.to_string())
+    {
+        Some(team) => messages(team, conn, limit),
+        None => Err(Status::NotFound)
+    }
+}
+
+fn messages(
+    team: db_models::Team, conn: PostgresDbConn, limit: Option<i64>
+) -> Result<Json<Vec<Message>>, Status> {
+    let db_ctrl = PostgresDbControl::new(conn);
+    match message_controller::get_messages_for_team(&db_ctrl, team, limit) {
+        Ok(msgs) => Ok(Json(msgs)),
+        Err(_) => Err(Status::InternalServerError),
+    }
+}
 
 #[post("/game", data = "<action>")]
 fn go_cookie(
@@ -167,9 +199,16 @@ fn discover(
 
 
 #[get("/admin")]
-fn admin(_admin: Admin) -> Template {
-    let context = std::collections::HashMap::<String, String>::new();
-    Template::render("admin", context)
+fn admin(_admin: Admin, conn: PostgresDbConn) -> Template {
+    let teams = postgres_db_controller::get_all_teams(&*conn).unwrap_or_default();
+
+    #[derive(Serialize, Deserialize)]
+    struct AdminContext {
+        broadcast_team_id: i32,
+        teams: Vec<db_models::Team>
+    }
+
+    Template::render("admin", AdminContext{broadcast_team_id: postgres_db_controller::BROADCAST_TEAM_ID, teams})
 }
 
 
@@ -180,6 +219,22 @@ fn admin_positions(_admin: Admin, conn: PostgresDbConn) -> Result<Json<Vec<TeamP
     {
         Ok(positions) => Ok(Json(positions)),
         Err(_) => Err(Status::InternalServerError),
+    }
+}
+
+#[post("/messages",  data = "<message>")]
+fn admin_send_message(_admin: Admin, conn: PostgresDbConn, message: Json<IncomingMessage>) -> Result<Status, Status> {
+    let db_msg_control: PostgresDbControl = PostgresDbControl::new(conn);
+    let res = match message.recipient_id {
+        postgres_db_controller::BROADCAST_TEAM_ID => message_controller::send_message_to_all_teams(&db_msg_control, message.into_inner().message),
+        _ => admin_controller::unwrap_incoming_message(&db_msg_control, message.into_inner())
+                .and_then(|(team, message)| {message_controller::send_message_to_team(&db_msg_control, team, message)
+        })
+    };
+
+    match res {
+        Ok(_) => Ok(Status::Created),
+        Err(err) => {warn!("Failed to send message: {}", err.message); Err(err.into())},
     }
 }
 
@@ -235,8 +290,9 @@ fn rocket() -> rocket::Rocket {
         .mount("/static", StaticFiles::from(static_dir))
         .mount(
             "/",
-            routes![index, index_redirect, team_index, info_cookie, info_phrase, go_cookie, go_phrase, discover_cookie, discover_phrase, admin, admin_positions],
-    )
+            routes![index, index_redirect, team_index, info_cookie, info_phrase, messages_cookie, messages_phrase, go_cookie, go_phrase, discover_cookie,
+                discover_phrase, admin, admin_positions, admin_send_message],
+        )
 }
 
 fn main() {
@@ -325,23 +381,23 @@ impl<'a, 'r> FromRequest<'a, 'r> for db_models::Team {
 // Off: returns false
 // Auto: checks the time condition provided as a comparison closure comp_fn
 // time format: YYYY-MM-DDThh:mm:ss+/-offset, e. g. 2020-10-11-17:00:00+02:00
-fn check_game_state<CompFn>(comp_fn: CompFn) -> bool 
+fn check_game_state<CompFn>(comp_fn: CompFn) -> bool
 where CompFn: Fn(DateTime<FixedOffset>,DateTime<FixedOffset>)->bool {
     match env::var("TMOU_GAME_EXECUTION_MODE").as_ref().map(String::as_str) {
         Ok("On") => true,
-        Ok("Auto") => 
+        Ok("Auto") =>
         {
             let from = env::var("TMOU_GAME_START")
                 .and_then(|s| DateTime::parse_from_rfc3339(s.as_str()).or(Err(env::VarError::NotPresent)));
             let to = env::var("TMOU_GAME_END")
             .and_then(|s| DateTime::parse_from_rfc3339(s.as_str()).or(Err(env::VarError::NotPresent)));
-            
+
             match (from, to)
             {
                 (Ok(f), Ok(t))  => comp_fn(f,t),
                 _ => false
             }
-            
+
         },
         _ => false // Off or not specified
     }

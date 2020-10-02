@@ -26,33 +26,38 @@
     <div id="map"></div>
 
     <div id="panel">
-      <div class="section">
-        <div>
-          <p>Tady se můžou objevit zprávy od organizátorů.</p>
-        </div>
-        <!-- <div class="message OK">
-        <p> Toto je dobrá zpráva :-) </p>
-        </div>
-
-        <div class="message WRONG">
-        <p> Toto je špatná zpráva :-( </p>
-        </div>
-
-        <div class="message INFO">
-        <p> Toto je neutrální zpráva :-| </p>
-        </div>
-        -->
+      <div class="section" id="messaging">
+        <h2>Posílání zpráv</h2>
+        <form method="post" id="messageForm">
+          <div>
+            <label for="recipient">Tým</label>
+            <select name="recipient" id="recipient">
+              <option value={{broadcast_team_id}}>VŠECHNY TÝMY</option>
+              {% for any in teams %}
+                <option value={{any.id}}>{{any.name}}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div>
+          <label for="type">Typ</label>
+          <select name="type" id="type">
+              <option value="success">Dobrý</option>
+              <option value="fail">Špatný</option>
+              <option value="info" selected="selected">Neutrální</option>
+          </select>
+          </div>
+          <div>
+            <label for="message">Zpráva</label>
+            <input type="text" placeholder="Zpráva pro tým" name="message" id="message">
+          </div>
+          <button id="discover">Odeslat</button>
+        </form>
       </div>
       <div class="section" id="puzzles">
         <h2>Zadání šifer</h2>
         <div id="puzzles-list">
         <p> Zadání se zde objeví až po startu hry </p>
         </div>
-      </div>
-
-      <div class="section" id="navigation">
-        <h2>Akce</h2>
-        <button id="discover">Zkusit štěstí</button>
       </div>
 
       <div class="section">

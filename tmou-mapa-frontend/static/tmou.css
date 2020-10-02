@@ -92,19 +92,21 @@ a{
   padding:0px 10px;
   margin-bottom:15px;
   font-weight:300;
+  display: flex;
+  justify-content: space-between;
 }
 
-.message.OK{
+.message.ok{
   border: 2px solid #003300;
   background: #33FF33aa;
 }
 
-.message.INFO{
+.message.info{
   border:2px solid #333ABA;
   background:#7F92FFaa;
 }
 
-.message.WRONG{
+.message.wrong{
   border:2px solid #682323;
   background: #EA6060aa;
 }
@@ -114,6 +116,22 @@ a{
   padding-bottom:10px;
   margin-bottom:10px;
   overflow: hidden;
+}
+
+#panel .section > form {
+  display: grid;
+  grid-template-rows: 1fr 1fr 1fr;
+  row-gap: 1em;
+}
+
+#panel .section > form > div {
+  display: flex;
+  flex-direction: column;
+}
+
+#panel .section > form select,input {
+  height: 2em;
+  font-size: bigger;
 }
 
 button#discover{

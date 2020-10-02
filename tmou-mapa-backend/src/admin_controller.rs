@@ -14,6 +14,17 @@ pub fn get_teams_positions(db_control: & impl DbControl) -> TmouResult<Vec<api::
     Ok(teams_poistions.iter().map_into().collect())
 }
 
+
+pub fn unwrap_incoming_message(db_control: & impl DbControl, message: api::IncomingMessage) -> TmouResult<(db::Team, api::Message)> {
+    let inner_message = message.message;
+    db_control.get_team(message.recipient_id)
+        .and_then(|team| Some((team, inner_message)))
+        .ok_or(TmouError {
+            message: format!("Team with id {} not found.", message.recipient_id),
+            response: 400
+    })
+}
+
 ////////////////////////////////////////////////////////////////////
 /// Implementation details
 ////////////////////////////////////////////////////////////////////

@@ -7,8 +7,8 @@ import {
   LeafletMouseEvent,
   Polyline
 } from "leaflet";
-import {Item, Node, way} from './types';
-import {discover, getTeamState, moveTeam} from './api';
+import {Item, Node, way, MessageWithTimestamp} from './types';
+import {discover, getTeamState, moveTeam, fetchMessages} from './api';
 
 const mapInstance = getMap('map', [49.195, 16.609], 15);
 
@@ -18,6 +18,14 @@ async function run() {
   const renderedWays = new Set();
   const localContainer = [];
 
+
+  messagesHandler();
+  setInterval(messagesHandler, 10000);
+
+  async function messagesHandler() {
+    const messages = await fetchMessages(secretPhrase);
+    drawMessages(messages);
+  }
 
   document.getElementById('discover').onclick = async () => {
     const {event, newItems} = await discover(secretPhrase);
@@ -148,7 +156,37 @@ async function run() {
     window.localStorage.setItem('nodesAndWays', JSON.stringify(localContainer));
   }
 
-  async function handleNodeClick(node: Circle, nodeId: string) {
+  function drawMessages(messages: MessageWithTimestamp[]) {
+    const typesToClasses = {
+      success: 'ok',
+      fail: 'wrong',
+      info: 'info',
+    }
+
+    let messagesElements = '';
+
+    for (const m of messages) {
+      messagesElements += `
+        <div class="message ${typesToClasses[m.type]}">
+        <p>${m.content}</p>
+        <p>${formatTimestamp(m.timestamp)}</p>
+        </div>
+      `
+    }
+
+    if (!messagesElements) {
+      messagesElements =`
+        <div>
+          <p>Tady se můžou objevit zprávy od organizátorů.</p>
+        </div>
+      `
+    }
+
+    const messagesEl = document.getElementById('messages');
+    messagesEl.innerHTML = messagesElements;
+  }
+
+  async function handleNodeClick(node: Circle, nodeId) {
     //mapInstance.setView(node.getLatLng(), mapInstance.getZoom());
     currentNodeCoords = node.getLatLng();
     const {nodes, ways, items, state} = await moveTeam(nodeId, secretPhrase);

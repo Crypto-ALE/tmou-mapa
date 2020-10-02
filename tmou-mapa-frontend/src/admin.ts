@@ -3,8 +3,8 @@ import {
   Circle,
   layerGroup,
 } from "leaflet";
-import {getTeamsPositions} from './api';
 import {TeamPosition} from './types';
+import {getTeamsPositions, sendMessage} from './api';
 
 const mapInstance = getMap('map', [49.195, 16.609], 15);
 const teamsPositionsLayer = layerGroup();
@@ -28,6 +28,20 @@ function drawTeamsPositions(teamsPositions: TeamPosition[]) {
     const c = new Circle(team.position.latLng, 18, {color: colors[team.level], fillOpacity: 1, interactive: true});
     c.bindTooltip(team.teamName);
     c.addTo(teamsPositionsLayer);
+  }
+
+  document.getElementById('discover').onclick = async (e: Event) => {
+    e.preventDefault();
+    const formEl = document.getElementById("messageForm") as HTMLFormElement;
+    const data = new FormData(formEl);
+    try {
+      await sendMessage(data);
+      //TODO Better flash system
+      alert("Zpráva odeslána");
+      (document.getElementById("message") as HTMLFormElement).value = null;
+    } catch (e) {
+      alert("Nepovedlo se odeslat zprávu.");
+    }
   }
 }
 

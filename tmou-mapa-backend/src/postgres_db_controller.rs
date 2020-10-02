@@ -5,12 +5,14 @@ use diesel::insert_into;
 use rocket_contrib::databases::diesel;
 
 use super::schema::teams::dsl as teams;
+use super::schema::messages::dsl as messages;
+use super::schema::messages_teams::dsl as messages_teams;
 use super::schema::nodes::dsl as nodes;
 use super::schema::ways_nodes::dsl as ways_nodes;
 use super::schema::nodes_items::dsl as nodes_items;
 use super::schema::items::dsl as items;
 use super::schema::teams_items::dsl as teams_items;
-use super::db_controller::DbControl;
+use super::db_controller::{DbControl, MessagesDbControl};
 use super::db_models;
 use super::errors;
 
@@ -46,7 +48,6 @@ fn get_team(&self, id: i32) -> std::option::Option<db_models::Team>
             Err(_) => None
         }
 }
-
 
 fn update_team_position(&mut self, team: &db_models::Team, pos: i64) -> std::result::Result<Team, errors::TmouError>
 {
@@ -161,6 +162,44 @@ fn get_teams_positions(&self) -> std::result::Result<std::vec::Vec<db_models::Te
 }
 }
 
+// messages for this team id are broadcasted to all the teams
+pub const BROADCAST_TEAM_ID: i32 = 0;
+
+impl MessagesDbControl for PostgresDbControl
+{
+    fn get_messages(&self, team_id: i32, limit: Option<i64>) -> Option<Vec<db_models::Message>> {
+        let mut query = messages_teams::messages_teams
+            .filter(messages_teams::team_id.eq(team_id).or(messages_teams::team_id.eq(BROADCAST_TEAM_ID)))
+            .inner_join(messages::messages)
+            .select((messages::id, messages::content, messages::type_, messages::timestamp))
+            .order_by(messages::timestamp.desc())
+            .into_boxed();
+
+        if let Some(l) = limit {
+            query = query.limit(l);
+        }
+
+        match query.load(&*self.conn) {
+            Ok(messages) => Some(messages),
+            Err(diesel::result::Error::NotFound) => None,
+            Err(_) => None,
+        }
+    }
+
+    fn put_message(&self, message: db_models::WebMessage, teams_ids: Vec<i32>) -> std::result::Result<(), errors::TmouError> {
+        let message_id = insert_into(messages::messages)
+            .values(message)
+            .returning(messages::id)
+            .get_result(&*self.conn)?;
+        let messages_teams: Vec<db_models::MessageToTeam> = teams_ids.into_iter()
+            .map(|team_id| db_models::MessageToTeam {message_id, team_id}).collect();
+        match insert_into(messages_teams::messages_teams).values(messages_teams).execute(&*self.conn) {
+            Ok(_) => Ok(()),
+            Err(err) => Err(err.into()),
+        }
+    }
+}
+
 pub fn get_team_by_phrase(connection: &diesel::PgConnection, phr:&String) -> Option<Team> {
     match teams::teams.filter(teams::phrase.eq(phr))
         .limit(1)
@@ -189,4 +228,9 @@ pub fn put_team(connection: &diesel::PgConnection, team: db_models::WebTeam) -> 
             Ok(team) => Ok(team),
             Err(err) => Err(err.into())
         }
+}
+
+pub fn get_all_teams(connection: &diesel::PgConnection) -> std::result::Result<Vec<Team>, errors::TmouError>
+{
+    teams::teams.order_by(teams::name).load(connection).or_else(|err| Err(err.into()))
 }

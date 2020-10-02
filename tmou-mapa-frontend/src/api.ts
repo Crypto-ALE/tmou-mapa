@@ -1,4 +1,4 @@
-import {TeamState, Node, way, DiscoveryEvent, TeamPosition} from './types';
+import {TeamState, Node, way, DiscoveryEvent, TeamPosition, MessageWithTimestamp, OutgoingMessage, MessageType} from './types';
 
 export async function getTeamState(secretPhrase?: string): Promise<TeamState> {
   const url = secretPhrase ? `/game/${secretPhrase}` : '/game';
@@ -45,6 +45,37 @@ export async function discover(secretPhrase?: string): Promise<DiscoveryEvent> {
   return (await res.json());
 }
 
+export async function fetchMessages(secretPhrase?: string, limit?: number): Promise<MessageWithTimestamp[]> {
+  const url = new URL(secretPhrase ? `/messages/${secretPhrase}` : '/messages', document.location.toString());
+  if (limit) {
+    url.search = new URLSearchParams([['limit', limit.toString()]]).toString();
+  }
+  const res = await fetch(url.toString());
+  const messages = await res.json();
+
+  return timestampMapper(messages);
+}
+
+export async function sendMessage(data: FormData, secretPhrase?: string) {
+  const payload: OutgoingMessage = {
+    recipient_id: parseInt(data.get('recipient').toString(), 10),
+    message: {content: data.get('message').toString(), type: data.get('type') as MessageType}
+  }
+
+  const url = secretPhrase ? `/messages/${secretPhrase}` : '/messages';
+  const res = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json;charset=utf-8'
+      },
+      body: JSON.stringify(payload)
+    });
+
+    if (!res.ok) {
+      throw new Error();
+    }
+}
+
 function parseJson(res: any): TeamState {
   const {pois, state, items} = res;
   const nodes: Map<string, Node> = new Map(
@@ -55,11 +86,14 @@ function parseJson(res: any): TeamState {
   const ways: Map<string, way> = new Map(
     pois.ways.map((way: any) => [way.id, way.nodes.map(nodeId => nodes.get(nodeId)!.latLng)])
   );
-  const parsed_items = items.items.map((item: any) => {
+  const parsed_items = timestampMapper(items.items);
+  return {nodes, ways, state, items: parsed_items};
+}
+
+function timestampMapper(items: any[]) {
+  return items.map((item: any) => {
     // FIXME: Time from server comes in UTC without timezone specification
     // currently hardocing for correct parsing
     return {...item, timestamp: Date.parse(item.timestamp+"+00:00")}
   });
-
-  return {nodes, ways, state, items: parsed_items};
 }
