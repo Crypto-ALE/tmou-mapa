@@ -127,6 +127,20 @@ fn get_team_items_with_timestamps(&self, team_id: i32) -> std::result::Result<st
     Ok(team_items)
 }
 
+fn get_teams_badges(&self) -> std::result::Result<std::vec::Vec<db_models::TeamBadge>, errors::TmouError>
+{
+    let items:Vec<db_models::TeamBadge> = teams::teams
+        .left_join(teams_items::teams_items)
+        .left_join(items::items.on(items::name.eq(teams_items::item_name).and(items::type_.eq("badge"))))
+        .select((teams::name, 
+                 items::name.nullable(), 
+                 teams_items::timestamp.nullable()))
+        .order_by(teams::name)
+        .load(&*self.conn)?;
+    Ok(items)
+}
+
+
 fn put_team_items(&mut self, team_id: i32, items: std::vec::Vec<db_models::Item>) -> std::result::Result<(), errors::TmouError>
 {
     let existing_records: Vec<String> = teams_items::teams_items
@@ -159,8 +173,21 @@ fn get_teams_positions(&self) -> std::result::Result<std::vec::Vec<db_models::Te
 {
     let teams_positions = teams::teams.inner_join(nodes::nodes).select((teams::name, nodes::lat, nodes::lon)).load(&*self.conn)?;
     Ok(teams_positions)
-    }
 }
+fn get_badge_labels(&self) -> std::result::Result<Vec<String>, errors::TmouError>
+{
+    let badges = items::items
+        .filter(items::type_.eq("badge"))
+        .select(items::name)
+        .order_by(items::name)
+        .load(&*self.conn)?;
+    Ok(badges)
+}
+
+
+}
+
+
 
 pub fn get_team_by_phrase(connection: &diesel::PgConnection, phr:&String) -> Option<Team> {
     match teams::teams.filter(teams::phrase.eq(phr))

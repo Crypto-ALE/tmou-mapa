@@ -104,3 +104,10 @@ pub struct TeamPosition {
     pub lat: f32,
     pub lon: f32,
 }
+
+#[derive(Clone, Default, Debug, PartialEq, Queryable)]
+pub struct TeamBadge{
+    pub team_name: String,
+    pub badge_name: Option<String>,
+    pub timestamp: Option<chrono::NaiveDateTime>
+}

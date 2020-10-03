@@ -33,7 +33,7 @@ mod tests;
 mod schema;
 mod discovery;
 
-use api_models::{NodeAction, TeamInfo, DiscoveryEvent, TeamPosition};
+use api_models::{NodeAction, TeamInfo, DiscoveryEvent, TeamPosition, Standings};
 use postgres_db_controller::PostgresDbControl;
 
 embed_migrations!("./migrations/");
@@ -172,6 +172,16 @@ fn admin_positions(_admin: Admin, conn: PostgresDbConn) -> Result<Json<Vec<TeamP
     }
 }
 
+#[get("/admin/standings")]
+fn admin_standings(_admin: Admin, conn: PostgresDbConn) -> Result<Json<Standings>, Status> {
+    let db_ctrl = PostgresDbControl::new(conn);
+    match admin_controller::get_teams_standings(&db_ctrl)
+    {
+        Ok(standings) => Ok(Json(standings)),
+        Err(_) => Err(Status::InternalServerError),
+    }
+}
+
 #[get("/")]
 fn index() -> Template {
     let context = std::collections::HashMap::<String, String>::new();
@@ -208,7 +218,8 @@ fn main() {
         .mount("/static", StaticFiles::from(static_dir))
         .mount(
             "/",
-            routes![index, team_index, info_cookie, info_phrase, go_cookie, go_phrase, discover_cookie, discover_phrase, admin, admin_positions],
+            routes![index, team_index, info_cookie, info_phrase, go_cookie, go_phrase, discover_cookie, discover_phrase, 
+                    admin, admin_positions, admin_standings],
         )
         .launch();
 }

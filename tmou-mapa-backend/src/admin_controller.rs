@@ -14,9 +14,22 @@ pub fn get_teams_positions(db_control: & impl DbControl) -> TmouResult<Vec<api::
     Ok(teams_poistions.iter().map_into().collect())
 }
 
+pub fn get_teams_standings(db_control: & impl DbControl) -> TmouResult<api::Standings>
+{
+    let badge_labels_db = db_control.get_badge_labels()?;
+    let teams_badges_db = db_control.get_teams_badges()?;
+
+
+    let badge_labels = badge_labels_db.iter().map_into().collect();
+    let standings = standings_db.iter().map_into().collect();
+    Ok(api::Standings{badge_labels, standings})
+}
+
 ////////////////////////////////////////////////////////////////////
 /// Implementation details
 ////////////////////////////////////////////////////////////////////
+
+
 
 impl From<&db::TeamPosition> for api::TeamPosition
 {

@@ -86,3 +86,18 @@ pub struct TeamInfo
     pub pois: Pois,
     pub items: Items
 }
+
+#[derive(Serialize, Deserialize)]
+pub struct TeamStanding
+{
+   pub rank: u16,
+   pub name: String,
+   pub badge_timestamps: Vec<Option<chrono::NaiveDateTime>>
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct Standings
+{
+    pub badge_labels: Vec<String>,
+    pub standings: Vec<TeamStanding>
+}
