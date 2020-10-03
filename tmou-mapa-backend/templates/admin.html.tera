@@ -61,8 +61,8 @@
       </div>
 
       <div class="section">
-        <h2>Získané odznáčky</h2>
-        <div id="badges">
+        <h2>Aktuální výsledky</h2>
+        <div id="standings">
         </div>
       </div>
 

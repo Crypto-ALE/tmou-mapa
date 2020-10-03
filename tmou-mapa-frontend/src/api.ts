@@ -1,4 +1,4 @@
-import {TeamState, Node, way, DiscoveryEvent, TeamPosition, MessageWithTimestamp, OutgoingMessage, MessageType} from './types';
+import {TeamState, Node, way, DiscoveryEvent, TeamPosition, MessageWithTimestamp, OutgoingMessage, MessageType, Standings, TeamStanding} from './types';
 
 export async function getTeamState(secretPhrase?: string): Promise<TeamState> {
   const url = secretPhrase ? `/game/${secretPhrase}` : '/game';
@@ -74,6 +74,24 @@ export async function sendMessage(data: FormData, secretPhrase?: string) {
     if (!res.ok) {
       throw new Error();
     }
+}
+
+export async function getStandings(): Promise<Standings> {
+  const res = await fetch(`/admin/standings`);
+  const {badge_labels, standings: standings_raw} = await res.json();
+
+  const standings: TeamStanding[] = standings_raw.map((item: any) => {
+    return {
+      name: item.name,
+      rank: item.rank,
+      badge_timestamps: Object.entries(item.badge_timestamps).reduce((acc, [k,v]) => {
+        acc[k] = Date.parse(v+"+00:00");
+        return acc;
+      }, {}),
+    }
+  });
+
+  return {badge_labels, standings};
 }
 
 function parseJson(res: any): TeamState {
