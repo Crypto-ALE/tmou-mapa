@@ -14,7 +14,6 @@ pub fn get_teams_positions(db_control: & impl DbControl) -> TmouResult<Vec<api::
     Ok(teams_poistions.iter().map_into().collect())
 }
 
-
 pub fn unwrap_incoming_message(db_control: & impl DbControl, message: api::IncomingMessage) -> TmouResult<(db::Team, api::Message)> {
     let inner_message = message.message;
     db_control.get_team(message.recipient_id)
@@ -25,9 +24,22 @@ pub fn unwrap_incoming_message(db_control: & impl DbControl, message: api::Incom
     })
 }
 
+pub fn get_teams_standings(db_control: & impl DbControl) -> TmouResult<api::Standings>
+{
+    let badge_labels_db = db_control.get_badge_labels()?;
+    let teams_badges_db = db_control.get_teams_badges()?;
+
+
+    let badge_labels = badge_labels_db.iter().map_into().collect();
+    let standings = standings_db.iter().map_into().collect();
+    Ok(api::Standings{badge_labels, standings})
+}
+
 ////////////////////////////////////////////////////////////////////
 /// Implementation details
 ////////////////////////////////////////////////////////////////////
+
+
 
 impl From<&db::TeamPosition> for api::TeamPosition
 {

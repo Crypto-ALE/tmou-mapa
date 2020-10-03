@@ -102,3 +102,18 @@ pub struct IncomingMessage
     pub recipient_id: i32,
     pub message: Message,
 }
+
+#[derive(Serialize, Deserialize)]
+pub struct TeamStanding
+{
+   pub rank: u16,
+   pub name: String,
+   pub badge_timestamps: Vec<Option<chrono::NaiveDateTime>>
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct Standings
+{
+    pub badge_labels: Vec<String>,
+    pub standings: Vec<TeamStanding>
+}
