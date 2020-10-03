@@ -1,6 +1,7 @@
 #![allow(non_snake_case)]
 
 use ::serde::{Serialize, Deserialize};
+use std::collections::HashMap;
 
 #[derive(Serialize, Deserialize)]
 pub struct NodeAction
@@ -87,12 +88,12 @@ pub struct TeamInfo
     pub items: Items
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct TeamStanding
 {
    pub rank: u16,
    pub name: String,
-   pub badge_timestamps: Vec<Option<chrono::NaiveDateTime>>
+   pub badge_timestamps: HashMap<String, chrono::NaiveDateTime>
 }
 
 #[derive(Serialize, Deserialize)]
