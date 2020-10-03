@@ -1,6 +1,7 @@
 #![allow(non_snake_case)]
 
 use ::serde::{Serialize, Deserialize};
+use std::collections::HashMap;
 
 #[derive(Serialize, Deserialize)]
 pub struct NodeAction
@@ -101,4 +102,19 @@ pub struct IncomingMessage
 {
     pub recipient_id: i32,
     pub message: Message,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct TeamStanding
+{
+   pub rank: u16,
+   pub name: String,
+   pub badge_timestamps: HashMap<String, chrono::NaiveDateTime>
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct Standings
+{
+    pub badge_labels: Vec<String>,
+    pub standings: Vec<TeamStanding>
 }

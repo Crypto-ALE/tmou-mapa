@@ -137,3 +137,10 @@ pub struct MessageToTeam {
     pub message_id: i32,
     pub team_id: i32,
 }
+
+#[derive(Clone, Default, Debug, PartialEq, Queryable)]
+pub struct TeamBadge{
+    pub team_name: String,
+    pub badge_name: Option<String>,
+    pub timestamp: Option<chrono::NaiveDateTime>
+}
