@@ -57,6 +57,19 @@ export interface OutgoingMessage {
   message: Message;
 }
 
+export interface Standings {
+  badge_labels: string[],
+  standings: TeamStanding[],
+}
+
+export interface TeamStanding {
+  rank: number,
+  name: string,
+  badge_timestamps: {
+    [key: string]: unix_timestamp
+  }
+}
+
 interface Message {
   content: string;
   type: MessageType;

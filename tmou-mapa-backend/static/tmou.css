@@ -193,20 +193,33 @@ button#discover{
 }
 
 
+.header_badge {
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
+  min-height: 30px;
+  height: 30px;
+}
 
-.badge.lvl1, .large_badge.lvl1{
+.header_badge span{
+  text-align: center;
+  color: black;
+  display: inline-block;
+}
+
+.badge.lvl1, .large_badge.lvl1, .header_badge.lvl1{
   background-image: url("./img/badge1_yellow.png")
   }
-.badge.lvl2, .large_badge.lvl2{
+.badge.lvl2, .large_badge.lvl2, .header_badge.lvl2{
   background-image: url("./img/badge2_green.png")
   }
-.badge.lvl3, .large_badge.lvl3{
+.badge.lvl3, .large_badge.lvl3, .header_badge.lvl3{
   background-image: url("./img/badge3_blue.png")
   }
-.badge.lvl4, .large_badge.lvl4{
+.badge.lvl4, .large_badge.lvl4, .header_badge.lvl4{
   background-image: url("./img/badge4_red.png")
   }
-.badge.lvl5, .large_badge.lvl5{
+.badge.lvl5, .large_badge.lvl5, .header_badge.lvl5{
   background-image: url("./img/badge5_purple.png")
   }
 
@@ -315,4 +328,14 @@ button#continue{
   font-size:18px;
   border: 2px solid #003300;
   background: #33FF33aa;
+}
+
+
+#standings > table {
+  width: 100%;
+  text-align: center;
+}
+
+#standings td {
+  padding: 0.3em 0;
 }
