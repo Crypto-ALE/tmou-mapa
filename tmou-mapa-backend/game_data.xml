@@ -112,59 +112,60 @@
 
 <!--badges level 1-->
     <item name="badge-1-1" type="badge" description="Od značek 11" url="badge11.png" level="1">
-	  <node id="654588693"/> <!--Holedna-->
+      <node id="6196861828"/> <!-- MHD Podveska -->
+	    <node id="1433264722"/> <!-- MHD Podveska -->
+	    <node id="6196861827"/> <!-- MHD Podveska -->
 	</item>
     <item name="badge-1-2" type="badge" description="Od značek 12" url="badge12.png" level="1">
-	  <node id="2188851998"/> <!--Turisticky pristresek Kozi Hora-->
-	  <node id="550471938"/> <!--Turisticky pristresek Kozi Hora-->
+	    <node id="300806310"/> <!--Ulice Podlesi-->
 	</item>
     <item name="badge-1-3" type="badge" description="Od značek 13" url="badge13.png" level="1">
-	  <node id="443893163"/> <!--Hobrtenky NS-->
+	    <node id="2188851998"/> <!--Turisticky pristresek Kozi Hora-->
+	    <node id="550471938"/> <!--Turisticky pristresek Kozi Hora-->
 	</item>
     <item name="badge-1-4" type="badge" description="Od značek 14" url="badge14.png" level="1">
-	  <node id="4467743910"/> <!--Technicka Jih-->
-	  <node id="247224257"/> <!--Technicka Jih-->
+	    <node id="4467743910"/> <!--Technicka Jih-->
+	    <node id="247224257"/> <!--Technicka Jih-->
 	</item>
 
 <!--badges level 2-->
     <item name="badge-2-1" type="badge" description="Od značek 21" url="badge21.png" level="2">
-	  <node id="626942344"/> <!--Rusky vrch kota-->
-	  <node id="626942345"/> <!--Rusky vrch kota-->
+	    <node id="5911236701"/> <!--Slovinska U kavarny-->
 	</item>
     <item name="badge-2-2" type="badge" description="Od značek 22" url="badge22.png" level="2">
-	  <node id="1234535457"/> <!--Jdi na MHD Tomanovu-->
+	    <node id="496831101"/> <!--Privrat x Topolky-->
 	</item>
     <item name="badge-2-3" type="badge" description="Od značek 23" url="badge23.png" level="2">
-	  <node id="5679722662"/> <!--Dubova jih-->
-	  <node id="300804164"/> <!--Dubova jih-->
-	  <node id="5679722677"/> <!--Dubova jih-->
-    <node id="5679722690"/> <!--Dubova jih-->
+	    <node id="5679722662"/> <!--Dubova jih-->
+	    <node id="300804164"/> <!--Dubova jih-->
+	    <node id="5679722677"/> <!--Dubova jih-->
+      <node id="5679722690"/> <!--Dubova jih-->
 	</item>
 
 <!--badges level 3-->
     <item name="badge-3-1" type="badge" description="Od značek 31" url="badge31.png" level="3">
-	  <node id="567020185"/> <!--CafeSC Kriz parkoviste ZSZ-->
+	  <node id="654588693"/> <!--Holedna-->
 	</item>
     <item name="badge-3-2" type="badge" description="Od značek 32" url="badge32.png" level="3">
-	  <node id="34513601"/> <!--Ulice schovana S konec-->
+	    <node id="3381802034"/> <!--Horova Z-->
+	    <node id="3381802028"/> <!--Horova Z-->
+	    <node id="7218108294"/> <!--Horova Z-->
+	    <node id="4829022722"/> <!--Horova Z-->
 	</item>
 
 <!--badge level 4-->
     <item name="badge-4-1" type="badge" description="Od značek 41" url="badge41.png" level="4">
-	  <node id="3381802034"/> <!--Horova Z-->
-	  <node id="3381802028"/> <!--Horova Z-->
-	  <node id="7218108294"/> <!--Horova Z-->
-	  <node id="4829022722"/> <!--Horova Z-->
+	    <node id="470239287"/> <!--Kota 275 100m JZ-->
 	</item>
 
 <!--badge level 5 a.k.a. finish-->
     <item name="badge-5-1" type="badge" description="Od značek 51" url="badge51.png" level="5">
-	  <node id="524156243"/> <!--Rakovec tocna-->
-	  <node id="149002476"/> <!--Rakovec tocna-->
-	  <node id="3343440903"/> <!--Rakovec tocna-->
-	  <node id="524156242"/> <!--Rakovec tocna-->
-	  <node id="149002485"/> <!--Rakovec tocna-->
-	  <node id="524156255"/> <!--Rakovec tocna-->
+	    <node id="524156243"/> <!--Rakovec tocna-->
+	    <node id="149002476"/> <!--Rakovec tocna-->
+	    <node id="3343440903"/> <!--Rakovec tocna-->
+	    <node id="524156242"/> <!--Rakovec tocna-->
+	    <node id="149002485"/> <!--Rakovec tocna-->
+	    <node id="524156255"/> <!--Rakovec tocna-->
 	</item>
 
   </items>
