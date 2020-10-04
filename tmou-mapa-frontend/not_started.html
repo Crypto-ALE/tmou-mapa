@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>TMOU</title>
+        <link rel="stylesheet" href="/static/tmou.css">
+</head>
+
+<div class="container">
+
+  <div id="header_left">
+    <h1>KVALIFIKACE TMOU! 22</h1>
+  </div>
+
+  <div id="header_right">
+    <span id="team">Přihlášený tým: <span id="teamName">{{teamName}}</span></span>
+    {% if not secretPhrase %}
+        | <a href="{{main_game_url}}/logout">Logout</a>
+    {% endif %}
+  </div>
+
+  <div class="banner">Kvalifikace ještě nezačala. Začne v <span id="startTime"></span> hodin.</div>
+  </div>
+
+</div>
+  <script>
+    function formatTimestamp(timestamp) {
+          const date = new Date(timestamp);
+          const hours = date.getHours();
+          const mins = date.getMinutes();
+
+          return `${hours < 10 ? '0' : ''}${hours}:${mins < 10 ? '0' : ''}${mins}`;
+    }
+    document.getElementById('startTime').innerText = formatTimestamp('{{start}}');
+  </script>
+</body>
+</html>
