@@ -261,10 +261,14 @@ fn index_redirect() -> Redirect {
 }
 
 #[get("/<secret_phrase>")]
-fn team_index(secret_phrase: &RawStr, conn: PostgresDbConn) -> Result<Template, Redirect> {
+fn team_index(started: Option<GameWasStarted>, secret_phrase: &RawStr, conn: PostgresDbConn) -> Result<Template, Redirect> {
     let mut context = std::collections::HashMap::<String, String>::new();
     match postgres_db_controller::get_team_by_phrase(&*conn, &secret_phrase.to_string()) {
-        Some(_) => {
+        Some(team) => {
+                context.insert("teamName".to_string(), team.name);
+                if started.is_none() {
+                    return Ok(game_not_started(context));
+                }
                 context.insert("secretPhrase".to_string(), secret_phrase.to_string());
                 Ok(index(context))
         },
@@ -278,6 +282,15 @@ fn team_index(secret_phrase: &RawStr, conn: PostgresDbConn) -> Result<Template, 
 fn index(mut context: std::collections::HashMap<String, String>) -> Template {
     context.insert("main_game_url".to_string(), env::var("MAIN_GAME_URL").unwrap_or("https://www.tmou.cz/22/page".to_string()));
     Template::render("index", context)
+}
+
+fn game_not_started(mut context: std::collections::HashMap<String, String>) -> Template {
+    context.insert("main_game_url".to_string(), env::var("MAIN_GAME_URL").unwrap_or("https://www.tmou.cz/22/page".to_string()));
+    // FIXME Despite this env var has been parsed successfully in guard, it would be nice to verify
+    // it again
+    let from = env::var("TMOU_GAME_START").unwrap();
+    context.insert("start".to_string(), from);
+    Template::render("not_started", context)
 }
 
 fn run_migrations(rocket: Rocket) -> Result<Rocket, Rocket> {

@@ -339,3 +339,11 @@ button#continue{
 #standings td {
   padding: 0.3em 0;
 }
+
+.banner {
+  text-align: center;
+  grid-column-start: 1;
+  grid-column-end: 3;
+  margin: auto 0;
+  font-size: xxx-large;
+}
