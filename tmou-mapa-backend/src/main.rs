@@ -41,7 +41,7 @@ mod schema;
 mod discovery;
 mod datetime_operators;
 
-use api_models::{NodeAction, TeamInfo, DiscoveryEvent, TeamPosition, Message, IncomingMessage, Standings};
+use api_models::{NodeAction, TeamInfo, DiscoveryEvent, TeamPosition, Message, IncomingMessage, Standings, PuzzleStats, PuzzlesStats};
 use postgres_db_controller::PostgresDbControl;
 
 embed_migrations!("./migrations/");
@@ -249,6 +249,16 @@ fn admin_standings(_admin: Admin, conn: PostgresDbConn) -> Result<Json<Standings
     }
 }
 
+#[get("/admin/puzzles-stats")]
+fn puzzles_stats(_admin: Admin, conn: PostgresDbConn) -> Result<Json<PuzzlesStats>, Status> {
+    let db_ctrl = PostgresDbControl::new(conn);
+    match admin_controller::get_puzzles_stats(&db_ctrl)
+    {
+        Ok(stats) => Ok(Json(stats)),
+        Err(_) => Err(Status::InternalServerError),
+    }
+}
+
 #[get("/")]
 fn index_cookie(team: db_models::Team, started: Option<GameWasStarted>, running: Option<GameIsRunning>) -> Template {
     let mut context = std::collections::HashMap::<String, String>::new();
@@ -319,7 +329,7 @@ fn rocket() -> rocket::Rocket {
         .mount(
             "/",
             routes![index_cookie, index_redirect, team_index, info_cookie, info_phrase, messages_cookie, messages_phrase, go_cookie, go_phrase, discover_cookie,
-                discover_phrase, admin, admin_positions, admin_send_message, admin_standings],
+                discover_phrase, admin, admin_positions, admin_send_message, admin_standings, puzzles_stats],
         )
 }
 
