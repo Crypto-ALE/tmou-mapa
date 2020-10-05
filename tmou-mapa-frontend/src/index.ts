@@ -32,6 +32,7 @@ async function run() {
   document.getElementById("mapSelectorOSM").onclick = switchToOSM;
 
   document.getElementById('discover').onclick = async () => {
+    try {
     const {event, newItems} = await discover(secretPhrase);
     switch (event) {
       case "nothing": {
@@ -59,6 +60,9 @@ async function run() {
     }
     let {items} = await getTeamState(secretPhrase);
     drawInventory(items);
+    } catch (e) {
+      console.info(e);
+    }
   }
 
   let {nodes, ways, state, items} = await getTeamState(secretPhrase);
@@ -79,7 +83,6 @@ async function run() {
 
   document.getElementById('teamName').innerText = state.name;
   mapInstance.setView(currentNodeCoords, 17);
-  console.debug(`Aktuální pozice: ${currentNodeCoords.toString()}`, `Aktuální nodeId: ${state.position}`);
   drawInventory(items);
   drawNodesAndWays(nodes, ways);
 
@@ -194,7 +197,6 @@ async function run() {
     //mapInstance.setView(node.getLatLng(), mapInstance.getZoom());
     currentNodeCoords = node.getLatLng();
     const {nodes, ways, items, state} = await moveTeam(nodeId, secretPhrase);
-    console.debug(`Aktuální pozice: ${currentNodeCoords.toString()}`, `Aktuální nodeId: ${state.position}`);
     drawInventory(items);
     drawNodesAndWays(nodes, ways);
   }
@@ -235,4 +237,4 @@ async function run() {
 
 
 
-run().then(r => console.log('Running'));
+run().then(r => console.log('Running'))

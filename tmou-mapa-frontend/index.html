@@ -21,7 +21,9 @@
   <div id="header_left">
     <h1>KVALIFIKACE TMOU! 22</h1>
   </div>
-
+  {% if gameFinished %}
+    <div id="flash" class="wrong">Hra už skončila. Můžete se procházet po mapě, ale nic už nezískáte.</div>
+  {% endif %}
   <div id="header_right">
     <span id="team">Přihlášený tým: <span id="teamName">teamName</span></span>
     {% if not secretPhrase %}
@@ -36,14 +38,14 @@
       <div class="section" id="puzzles">
         <h2>Zadání šifer</h2>
         <div id="puzzles-list">
-        <p> Zadání se zde objeví až po startu hry </p>
+        <p>Zadání si musíte nejdříve vyzvednout.</p>
         </div>
       </div>
 
       <div class="section" id="navigation">
         <div>
           <h2>Akce</h2>
-          <button id="discover">Zkusit štěstí</button>
+          <button id="discover"{% if gameFinished %} disabled="disabled" {% endif %}>Zkusit štěstí</button>
         </div>
         <div>
           <h2>Změnit mapu</h2>

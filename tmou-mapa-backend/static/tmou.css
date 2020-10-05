@@ -17,9 +17,9 @@ button{
 
     display: grid;
     grid-template:
-    [header-start] "header_left header_right" 42px [header-end]
-    [content-start] "map panel " 1fr [content-end]
-    / 7fr 3fr;
+    [header-start] "header_left flash header_right" 42px [header-end]
+    [content-start] "map map panel " 1fr [content-end]
+    / 3fr 4fr 3fr;
 
     column-gap: 1vw;
     row-gap: 0;
@@ -45,6 +45,17 @@ button{
     line-height:32px;
     font-size:14px;
     align-self:center; /*vertical align*/
+}
+
+#flash {
+  border-radius: 0.5vw;
+  padding:0px 10px;
+  font-weight:300;
+  border:2px solid #682323;
+  background: #EA6060aa;
+  align-self: center;
+  line-height: 32px;
+  text-align: center;
 }
 
 #map {
@@ -96,17 +107,17 @@ a{
   justify-content: space-between;
 }
 
-.message.ok{
+.ok{
   border: 2px solid #003300;
   background: #33FF33aa;
 }
 
-.message.info{
+.info{
   border:2px solid #333ABA;
   background:#7F92FFaa;
 }
 
-.message.wrong{
+.wrong{
   border:2px solid #682323;
   background: #EA6060aa;
 }
@@ -343,7 +354,7 @@ button#continue{
 .banner {
   text-align: center;
   grid-column-start: 1;
-  grid-column-end: 3;
+  grid-column-end: 4;
   margin: auto 0;
   font-size: xxx-large;
 }
