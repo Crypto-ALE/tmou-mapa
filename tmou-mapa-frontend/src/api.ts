@@ -4,6 +4,10 @@ export async function getTeamState(secretPhrase?: string): Promise<TeamState> {
   const url = secretPhrase ? `/game/${secretPhrase}` : '/game';
   const res = await fetch(url);
 
+  if (!res.ok) {
+    throw new Error("Team state not working, has game started?");
+  }
+
   return parseJson(await res.json());
 }
 
@@ -35,12 +39,20 @@ export async function moveTeam(nodeId: string, secretPhrase?: string): Promise<T
       body: JSON.stringify({nodeId})
     });
 
+  if (!res.ok) {
+    throw new Error("Move team not working, has game started?");
+  }
+
     return parseJson(await res.json());
 }
 
 export async function discover(secretPhrase?: string): Promise<DiscoveryEvent> {
   const url = secretPhrase ? `/game/${secretPhrase}/discover` : '/game/discover';
   const res = await fetch(url);
+
+  if (!res.ok) {
+    throw new Error("Discover not working, is game running?");
+  }
 
   return (await res.json());
 }

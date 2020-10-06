@@ -90,6 +90,7 @@ fn info(
 
 #[get("/messages?<limit>")]
 fn messages_cookie(
+    _started: GameWasStarted,
     team: db_models::Team,
     conn: PostgresDbConn,
     limit: Option<i64>
@@ -99,6 +100,7 @@ fn messages_cookie(
 
 #[get("/messages/<secret_phrase>?<limit>")]
 fn messages_phrase(
+    _started: GameWasStarted,
     secret_phrase: &RawStr,
     conn: PostgresDbConn,
     limit: Option<i64>
@@ -185,7 +187,6 @@ fn discover(
     team: db_models::Team,
     conn: PostgresDbConn
 ) -> Result<Json<DiscoveryEvent>, Status> {
-    println!("Debug team:{:?}", team);
     let mut db_ctrl = PostgresDbControl::new(conn);
     match game_controller::discover_node(& mut db_ctrl, team) {
         Ok(nc) => Ok(Json(nc)),
@@ -249,9 +250,10 @@ fn admin_standings(_admin: Admin, conn: PostgresDbConn) -> Result<Json<Standings
 }
 
 #[get("/")]
-fn index_cookie(_team: db_models::Team) -> Template {
-    let context = std::collections::HashMap::<String, String>::new();
-    index(context)
+fn index_cookie(team: db_models::Team, started: Option<GameWasStarted>, running: Option<GameIsRunning>) -> Template {
+    let mut context = std::collections::HashMap::<String, String>::new();
+    context.insert("teamName".to_string(), team.name);
+    index(context, started, running)
 }
 
 #[get("/", rank=2)]
@@ -261,16 +263,13 @@ fn index_redirect() -> Redirect {
 }
 
 #[get("/<secret_phrase>")]
-fn team_index(started: Option<GameWasStarted>, secret_phrase: &RawStr, conn: PostgresDbConn) -> Result<Template, Redirect> {
+fn team_index(started: Option<GameWasStarted>, running: Option<GameIsRunning>, secret_phrase: &RawStr, conn: PostgresDbConn) -> Result<Template, Redirect> {
     let mut context = std::collections::HashMap::<String, String>::new();
     match postgres_db_controller::get_team_by_phrase(&*conn, &secret_phrase.to_string()) {
         Some(team) => {
                 context.insert("teamName".to_string(), team.name);
-                if started.is_none() {
-                    return Ok(game_not_started(context));
-                }
                 context.insert("secretPhrase".to_string(), secret_phrase.to_string());
-                Ok(index(context))
+                Ok(index(context, started, running))
         },
         None => {
             let url: String = env::var("LOGIN_REDIRECT").unwrap_or("https://www.tmou.cz".to_string());
@@ -279,18 +278,19 @@ fn team_index(started: Option<GameWasStarted>, secret_phrase: &RawStr, conn: Pos
     }
 }
 
-fn index(mut context: std::collections::HashMap<String, String>) -> Template {
+fn index(mut context: std::collections::HashMap<String, String>, started: Option<GameWasStarted>, running: Option<GameIsRunning>, ) -> Template {
     context.insert("main_game_url".to_string(), env::var("MAIN_GAME_URL").unwrap_or("https://www.tmou.cz/22/page".to_string()));
-    Template::render("index", context)
-}
+    match (started, running) {
+        (Some(_), Some(_)) => Template::render("index", context),
+        (Some(_), None) => {
+            context.insert("gameFinished".to_string(), "1".to_string());
+            Template::render("index", context)
+        }
+        (None, _) => {
+            Template::render("not_started", context)
+        }
+    }
 
-fn game_not_started(mut context: std::collections::HashMap<String, String>) -> Template {
-    context.insert("main_game_url".to_string(), env::var("MAIN_GAME_URL").unwrap_or("https://www.tmou.cz/22/page".to_string()));
-    // FIXME Despite this env var has been parsed successfully in guard, it would be nice to verify
-    // it again
-    let from = env::var("TMOU_GAME_START").unwrap();
-    context.insert("start".to_string(), from);
-    Template::render("not_started", context)
 }
 
 fn run_migrations(rocket: Rocket) -> Result<Rocket, Rocket> {
@@ -416,16 +416,16 @@ where CompFn: Fn(DateTime<FixedOffset>,DateTime<FixedOffset>)->bool {
         Ok("Auto") =>
         {
             let from = env::var("TMOU_GAME_START")
-                .and_then(|s| DateTime::parse_from_rfc3339(s.as_str()).or(Err(env::VarError::NotPresent)));
-            let to = env::var("TMOU_GAME_END")
-            .and_then(|s| DateTime::parse_from_rfc3339(s.as_str()).or(Err(env::VarError::NotPresent)));
+                        .or_else(|_| panic!("Game mode is set to auto, but TMOU_GAME_START is not set"))
+                        .and_then(|s| DateTime::parse_from_rfc3339(s.as_str()))
+                        .unwrap_or_else(|_| panic!("Parsing TMOU_GAME_START failed!"));
+                let to = env::var("TMOU_GAME_END")
+                    .or_else(|_| panic!("Game mode is set to auto, but TMOU_GAME_END is not set"))
+                    .and_then(|s| DateTime::parse_from_rfc3339(s.as_str()))
+                    .unwrap_or_else(|_| panic!("Parsing TMOU_GAME_END failed!"));
 
-            match (from, to)
-            {
-                (Ok(f), Ok(t))  => comp_fn(f,t),
-                _ => false
-            }
 
+            comp_fn(from, to)
         },
         _ => false // Off or not specified
     }
@@ -441,7 +441,7 @@ impl <'a, 'r> FromRequest<'a, 'r> for GameIsRunning {
         if check_game_state(datetime_operators::now_is_between)
         {  rocket::Outcome::Success(GameIsRunning{})}
         else
-        {  rocket::Outcome::Failure((rocket::http::Status::Unauthorized, ())) }
+        {  rocket::Outcome::Failure((rocket::http::Status::Forbidden, ())) }
     }
 }
 
@@ -454,6 +454,6 @@ impl <'a, 'r> FromRequest<'a, 'r> for GameWasStarted {
         if check_game_state(datetime_operators::now_is_after_start)
         {  rocket::Outcome::Success(GameWasStarted{})}
         else
-        {  rocket::Outcome::Failure((rocket::http::Status::Unauthorized, ())) }
+        {  rocket::Outcome::Failure((rocket::http::Status::Forbidden, ())) }
     }
 }

@@ -19,19 +19,8 @@
     {% endif %}
   </div>
 
-  <div class="banner">Kvalifikace ještě nezačala. Začne v <span id="startTime"></span> hodin.</div>
-  </div>
+  <div class="banner">Kvalifikace ještě nezačala.</div>
 
 </div>
-  <script>
-    function formatTimestamp(timestamp) {
-          const date = new Date(timestamp);
-          const hours = date.getHours();
-          const mins = date.getMinutes();
-
-          return `${hours < 10 ? '0' : ''}${hours}:${mins < 10 ? '0' : ''}${mins}`;
-    }
-    document.getElementById('startTime').innerText = formatTimestamp('{{start}}');
-  </script>
 </body>
 </html>
