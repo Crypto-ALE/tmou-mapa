@@ -77,8 +77,11 @@ type HashOfReceived = HashMap<String, Received>;
 
 pub fn get_puzzles_stats(db_control: & impl DbControl) -> TmouResult<api::PuzzlesStats>
 {
+    // get all items from db - puzzles and badges
     let items_teams = db_control.get_items_teams()?;
 
+    // group them into hashmap where key is item (name, level, type)
+    // and value is a vector of Received structs (team, timestamp)
     let item_map_opt = items_teams.into_iter().map(|it| (
         Item
         {
@@ -95,6 +98,7 @@ pub fn get_puzzles_stats(db_control: & impl DbControl) -> TmouResult<api::Puzzle
     }
     )).into_group_map();
 
+    // remove Optional, where None becomes empty vector
     let item_map:HashOfStatVec = item_map_opt.into_iter()
       .map(|(k, v)| (k, v.into_iter()
            .filter(|i| i.is_some()).map(|b| b.unwrap())
@@ -108,6 +112,7 @@ pub fn get_puzzles_stats(db_control: & impl DbControl) -> TmouResult<api::Puzzle
     // make stats for receiving puzzle stats retrieveable by level number
     let puzzle_vec_map: HashMap<i16, StatVec> = puzzles.into_iter()
         .map(|(p,v)| (p.item_level, (p,v))).collect();
+
     // here, it gets complicated. Every vector of Received record needs to be also hashed by team name
     // so that in the function below, the particular team's puzzle stat (e. g. when they picked up a puzzle)
     // is easily retrievable
@@ -120,7 +125,10 @@ pub fn get_puzzles_stats(db_control: & impl DbControl) -> TmouResult<api::Puzzle
             )
           ).collect();
 
-    
+
+    // for every badge, call a conversion function
+    // send also puzzle of corresponding level:
+    // for badge level1, puzzle level1 sent so that the duration can be computed for every team
     let stats:Vec<api::PuzzleStats> = badges.into_iter()
         .map(|b| item_group_to_badge_stats_opt(puzzle_map.get(&b.0.item_level), b)).collect();
 
@@ -148,26 +156,27 @@ fn item_group_to_badge_stats(puzzles: &HashOfReceived, badges: StatVec) -> api::
     // number of solved is number of badges
     let solved_by = badges.1.len();
 
-    // first team is min from badges
+    // first team is min from badges, trivial
+    // TODO: factor out MIN algorithm implemented using fold, into templated fn
+    //       or, wait for fold_first to become stable (more readable)
     let max_badge_received = Received{team_name: String::new(), timestamp:chrono::naive::MAX_DATETIME};
     let first = badges.1.iter().fold(&max_badge_received,|a, b| if a.timestamp < b.timestamp {a} else {b} );
     let (first_team, first_time) = if first.team_name.is_empty() { (None, None) } 
                                    else { (Some(first.team_name.clone()), Some(first.timestamp)) };
 
-    // fastest is min from delta
+    // fastest is min from difference between getting the badge (solving) and getting the puzzle (starting)
     // so we need to calculate deltas
-    // TODO: factor out MIN to templated fn
-    //       or, wait for fold_first to become stable (more readable)
     let times: Vec<Solved> = badges.1.iter().map(|b| Solved{ 
         team_name: b.team_name.clone(),
         time: match puzzles.get(&b.team_name) 
         {
             Some(p) => b.timestamp - p.timestamp,
-            None => chrono::Duration::max_value()
+            None => chrono::Duration::max_value() // when no corresponding puzzle record found - should not happen
         }
     }
     ).collect();
 
+    // MIN in terms of fold again
     let max_badge_solved = Solved{team_name: String::new(), time:chrono::Duration::max_value()};
     let fastest = times.iter().fold(&max_badge_solved,|a, b| if a.time < b.time {a} else {b} );
     let (fastest_team, fastest_time) = if fastest.team_name.is_empty() { (None, None) } 
@@ -176,6 +185,8 @@ fn item_group_to_badge_stats(puzzles: &HashOfReceived, badges: StatVec) -> api::
     api::PuzzleStats{name: badges.0.item_name.clone(), solved_by, first_team, first_time, fastest_time, fastest_team, median_time: None}
 }
 
+// helper function that strips off Optional puzzle records
+// only happens for unsolved puzzles
 fn item_group_to_badge_stats_opt(puzzles: Option<&HashOfReceived>, badges: StatVec) -> api::PuzzleStats
 {
     match puzzles
@@ -209,6 +220,7 @@ struct Item {
 }
 
 
+// helper sturcts for puzzle stats
 #[derive(Debug)]
 struct Received {
     team_name: String,
