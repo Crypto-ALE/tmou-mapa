@@ -146,8 +146,10 @@ pub struct TeamBadge{
 }
 
 #[derive(Clone, Default, Debug, PartialEq, Queryable)]
-pub struct BadgeTeam{
-    pub badge_name: String,
+pub struct ItemTeam{
+    pub item_name: String,
+    pub item_type: String,
+    pub item_level: i16,
     pub team_name: Option<String>,
     pub timestamp: Option<chrono::NaiveDateTime>
 }

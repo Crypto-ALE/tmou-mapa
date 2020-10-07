@@ -41,7 +41,7 @@ mod schema;
 mod discovery;
 mod datetime_operators;
 
-use api_models::{NodeAction, TeamInfo, DiscoveryEvent, TeamPosition, Message, IncomingMessage, Standings, PuzzleStats, PuzzlesStats};
+use api_models::{NodeAction, TeamInfo, DiscoveryEvent, TeamPosition, Message, IncomingMessage, Standings, PuzzlesStats};
 use postgres_db_controller::PostgresDbControl;
 
 embed_migrations!("./migrations/");

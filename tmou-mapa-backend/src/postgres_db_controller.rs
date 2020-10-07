@@ -131,12 +131,13 @@ fn get_teams_badges(&self) -> std::result::Result<std::vec::Vec<db_models::TeamB
     Ok(items)
 }
 
-fn get_badges_teams(&self) -> std::result::Result<std::vec::Vec<db_models::BadgeTeam>, errors::TmouError>
+fn get_items_teams(&self) -> std::result::Result<std::vec::Vec<db_models::ItemTeam>, errors::TmouError>
 {
-    let items:Vec<db_models::BadgeTeam> = items::items
-        .filter(items::type_.eq("badge"))
+    let items:Vec<db_models::ItemTeam> = items::items
         .left_join(teams_items::teams_items.inner_join(teams::teams.on(teams::id.eq(teams_items::team_id))))
         .select((items::name,
+                 items::type_,
+                 items::level,
                  teams::name.nullable(),
                  teams_items::timestamp.nullable()))
         .load(&*self.conn)?;
