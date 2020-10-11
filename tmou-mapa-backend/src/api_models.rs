@@ -118,3 +118,21 @@ pub struct Standings
     pub badge_labels: Vec<String>,
     pub standings: Vec<TeamStanding>
 }
+
+#[derive(Serialize, Deserialize)]
+pub struct PuzzleStats
+{
+    pub name: String,
+    pub solved_by: usize,
+    pub first_team: Option<String>,
+    pub first_time: Option<chrono::NaiveDateTime>,
+    pub fastest_team: Option<String>,
+    pub fastest_time: Option<String>, // duration not serializable
+    pub median_time:  Option<String> // duration not serializable
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct PuzzlesStats
+{
+    pub stats: Vec<PuzzleStats>
+}
