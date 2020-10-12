@@ -238,6 +238,10 @@ button#discover{
   background-image: url("./img/shrug.png")
   }
 
+.large_badge.get_puzzle{
+  background-image: url("./img/panacek_sifra.png")
+  }
+
 
 .badge span.time{
   width:100%;

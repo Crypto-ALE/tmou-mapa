@@ -36,7 +36,7 @@ async function run() {
     const {event, newItems} = await discover(secretPhrase);
     switch (event) {
       case "nothing": {
-        showPopup('Bohužel...', 'Na toto místo žádná šifra nevede, zkuste to jinde.');
+        showPopup('Bohužel...', 'Na toto místo žádná šifra nevede, zkuste to jinde.', 'shrug');
         break;
       }
       case "badge-found": {
@@ -44,16 +44,16 @@ async function run() {
           const {level, description} = newItems[0];
           showBadgePopup(level.toString(), description.slice(-2));
         } else {
-          showPopup('No...', 'Jste tu správně, ale buď jste tu už byli nebo už jste v jiném levelu, takže nic nedostanete.');
+          showPopup('No...', 'Jste tu správně, ale buď jste tu už byli nebo už jste v jiném levelu, takže nic nedostanete.', 'shrug');
         }
         break;
       }
       case "checkpoint-visited": {
         const items = newItems.filter((item) => item.type != "checkpoint");
         if (items.length) {
-          showPopup('Hurá!', 'Organizátoři vám dali nové šifry.');
+          showPopup('Hurá!', 'Organizátoři vám dali nové šifry.', 'get_puzzle');
         } else {
-          showPopup('Bohužel...', 'Tentokrát jste od organizátorů nic nedostali.');
+          showPopup('Bohužel...', 'Tentokrát jste od organizátorů nic nedostali.', 'shrug');
         }
         break;
       }
@@ -87,13 +87,15 @@ async function run() {
   drawNodesAndWays(nodes, ways);
 
   function showBadgePopup(lvl: string, label: string) {
-    const badgeClass = lvl ? `lvl${lvl}` : 'shrug';
+    const badgeClass = (lvl ? `lvl${lvl}` : 'shrug') as BadgeClass;
     document.querySelector('#popup .large_badge > .label').innerHTML = label;
     const message = lvl === '5' ? 'Gratulujeme k dokončení kvalifikace a budeme se na vás (nejspíš) těšit na startu TMOU.' : 'Řešení je správně, získali jste za něj odznáček.';
     showPopup('Hurá!', message, badgeClass);
   }
 
-  function showPopup(heading: string, text: string, badgeClass='shrug') {
+  type BadgeClass = 'lvl1' | 'lvl2' | 'lvl3' | 'lvl4' | 'lvl5' | 'shrug' | 'get_puzzle';
+
+  function showPopup(heading: string, text: string, badgeClass: BadgeClass) {
     document.querySelector('.popup_text>h2').textContent = heading;
     document.querySelector('.popup_text>p').innerHTML = text;
     document.querySelector('#popup .large_badge').classList.add(badgeClass);
@@ -193,10 +195,10 @@ async function run() {
     messagesEl.innerHTML = messagesElements;
   }
 
-  async function handleNodeClick(node: Circle, nodeId) {
+  async function handleNodeClick(node: Circle, nodeId: string) {
     //mapInstance.setView(node.getLatLng(), mapInstance.getZoom());
     currentNodeCoords = node.getLatLng();
-    const {nodes, ways, items, state} = await moveTeam(nodeId, secretPhrase);
+    const {nodes, ways, items} = await moveTeam(nodeId, secretPhrase);
     drawInventory(items);
     drawNodesAndWays(nodes, ways);
   }
@@ -233,6 +235,11 @@ async function run() {
 
   }
 
+  // Attach debugging current node function for teams in troubles
+  window['debug_node'] = () => {
+    console.info("Actual node ID", currentNode['id']);
+    console.info("Actual node coord", currentNodeCoords);
+  }
 }
 
 
