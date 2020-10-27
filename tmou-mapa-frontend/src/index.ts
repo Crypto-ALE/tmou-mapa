@@ -84,6 +84,7 @@ async function run() {
   document.getElementById('teamName').innerText = state.name;
   mapInstance.setView(currentNodeCoords, 17);
   drawInventory(items);
+  drawBonuses(items);
   drawNodesAndWays(nodes, ways);
 
   function showBadgePopup(lvl: string, label: string) {
@@ -223,7 +224,6 @@ async function run() {
       .map(({level, description, timestamp}) => {
         return `<div class="badge lvl${level}">
             <span class="time">${formatTimestamp(timestamp)}</span>
-            <span class="label">${description.slice(-2)}</span>
           </div>`
       })
       .join('');
@@ -232,6 +232,22 @@ async function run() {
     if (puzzles.length) {
       document.querySelector('#puzzles>#puzzles-list').innerHTML = `<ul>${puzzles.join('')}</ul>`;
     }
+
+  }
+
+  function drawBonuses(items: Item[]) {
+    const puzzles = items
+      .filter((item) => item.type === "puzzles")
+      .sort((a, b) => a.level - b.level)
+      .map(({url, level}) => `<li><a href="${url}" target="_blank">Level ${level}</a>`);
+
+    const tmpPuzzles = [];
+
+    for (let i = 0; i < 12; i++) {
+      tmpPuzzles.push(puzzles[0]);
+    }
+
+    document.querySelector('#bonuses>#bonuses-list').innerHTML = `<ul>${tmpPuzzles.join('')}</ul>`;
 
   }
 
