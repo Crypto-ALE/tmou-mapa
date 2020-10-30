@@ -81,6 +81,15 @@ pub struct Item {
     pub description: Option<String>,
 }
 
+#[derive(Serialize, Deserialize, Clone, Queryable, Insertable, Debug)]
+#[table_name = "bonuses"]
+pub struct Bonus {
+    pub url: String,
+    pub label: String,
+    pub description: Option<String>,
+    pub display_time: chrono::NaiveDateTime
+}
+
 #[derive(Serialize, Deserialize, Clone, Default, Queryable, Insertable)]
 #[table_name = "nodes_items"]
 pub struct NodeToItem {

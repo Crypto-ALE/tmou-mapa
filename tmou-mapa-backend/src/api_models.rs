@@ -31,6 +31,14 @@ pub struct Item
 }
 
 #[derive(Serialize, Deserialize)]
+pub struct Bonus
+{
+    pub url: String,
+    pub label: String,
+    pub description: Option<String>,
+}
+
+#[derive(Serialize, Deserialize)]
 pub struct DiscoveryEvent
 {
     pub event: String, // checkpoint-visited | badge-found | nothing
