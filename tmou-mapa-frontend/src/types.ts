@@ -6,7 +6,7 @@ export interface Info {
 }
 
 export interface Item {
-  type: "puzzles" | "badge" | "message" | "checkpoint",
+  type: "puzzles" | "badge" | "message" | "checkpoint" | "dead" | "puzzles-fake" | "checkpoint-start",
   url: String,
   level: number,
   name: String,
@@ -48,6 +48,12 @@ export interface TeamPosition {
 
 export interface MessageWithTimestamp extends Message {
   timestamp: unix_timestamp;
+}
+
+export interface Bonus {
+  url: String,
+  label: String,
+  description: String,
 }
 
 export type MessageType = "success" | "fail" | "info";
