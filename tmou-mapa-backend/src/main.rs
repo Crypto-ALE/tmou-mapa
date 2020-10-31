@@ -1,5 +1,6 @@
 #![feature(proc_macro_hygiene, decl_macro)]
 #![feature(bool_to_option)]
+#![feature(is_sorted)]
 
 #[macro_use] extern crate rocket;
 #[macro_use] extern crate diesel;
@@ -40,6 +41,7 @@ mod rocket_test;
 mod schema;
 mod discovery;
 mod datetime_operators;
+mod skip;
 
 use api_models::{NodeAction, TeamInfo, DiscoveryEvent, TeamPosition, Message, IncomingMessage, Standings, PuzzlesStats, Bonus};
 use postgres_db_controller::PostgresDbControl;
