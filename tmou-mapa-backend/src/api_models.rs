@@ -144,3 +144,9 @@ pub struct PuzzlesStats
 {
     pub stats: Vec<PuzzleStats>
 }
+
+#[derive(Serialize, Deserialize)]
+pub struct Skip
+{
+    pub allowed: bool
+}

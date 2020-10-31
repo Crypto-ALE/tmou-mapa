@@ -7,8 +7,10 @@ use super::errors::*;
 // etc.)
 //
 // Returns simple true/false value meaning skips is allowed or not.
+//
+// Assumption: there is level 0, which is start. If not, whole functionality needs to be shifted
 
-pub fn is_allowed(level: usize, badges: usize, game_state: Vec<i32>) -> TmouResult<bool> {
+pub fn is_allowed(level: usize, badges: usize, game_state: Vec<i64>) -> TmouResult<bool> {
     // check if game_state is correct - number of acquired puzzles per level, i.e. sorted DESC
     let mut rev = game_state.clone();
     rev.reverse();
@@ -20,7 +22,7 @@ pub fn is_allowed(level: usize, badges: usize, game_state: Vec<i32>) -> TmouResu
     }
     // source https://docs.google.com/spreadsheets/d/1WmDUIM449LT_mrxuotBnOs9MqBU5z2FhK6LawGPz-58/edit#gid=0
     let skips_limits = vec![
-        vec![std::i32::MAX], //level 0 is start, cannot be skipped
+        vec![std::i64::MAX], //level 0 is start, cannot be skipped
         vec![300, 200],
         vec![250, 200, 150],
         vec![250, 225, 200, 150],

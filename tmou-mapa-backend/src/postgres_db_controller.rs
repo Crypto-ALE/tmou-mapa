@@ -1,6 +1,6 @@
 use super::db_models::Team;
 use diesel::prelude::*;
-use diesel::dsl::sql;
+use diesel::dsl::{sql, count};
 use diesel::insert_into;
 use rocket_contrib::databases::diesel;
 
@@ -208,6 +208,16 @@ fn get_bonuses(&self) -> std::result::Result<std::vec::Vec<db_models::Bonus>, er
     Ok(bonuses)
 }
 
+fn get_game_state_by_puzzles(&self) -> std::result::Result<std::vec::Vec<i64>, errors::TmouError> {
+   let game_state: Vec<Option<i64>> = items::items
+       .left_join(teams_items::teams_items.on(items::name.eq(teams_items::item_name).and(items::type_.eq("puzzles"))))
+       .group_by(items::level)
+       .select(count(teams_items::team_id).nullable())
+       .order_by(items::level)
+       .load(&*self.conn)?;
+
+    Ok(game_state.iter().map(|c| c.unwrap_or(0)).collect())
+}
 }
 //
 // messages for this team id are broadcasted to all the teams

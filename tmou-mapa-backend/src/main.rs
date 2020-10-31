@@ -43,7 +43,7 @@ mod discovery;
 mod datetime_operators;
 mod skip;
 
-use api_models::{NodeAction, TeamInfo, DiscoveryEvent, TeamPosition, Message, IncomingMessage, Standings, PuzzlesStats, Bonus};
+use api_models::{NodeAction, TeamInfo, DiscoveryEvent, TeamPosition, Message, IncomingMessage, Standings, PuzzlesStats, Bonus, Skip};
 use postgres_db_controller::PostgresDbControl;
 
 embed_migrations!("./migrations/");
@@ -58,7 +58,6 @@ fn info_cookie(
     conn: PostgresDbConn
 ) -> Result<Json<TeamInfo>, Status> {
     info(team, conn)
-
 }
 
 #[get("/game/<secret_phrase>")]
@@ -72,12 +71,8 @@ fn info_phrase(
         Some(team) => info(team, conn),
         None => Err(Status::NotFound)
     }
-
 }
 
-
-
-//#[get("/game/<secret_phrase>")]
 fn info(
     team: db_models::Team,
     conn: PostgresDbConn
@@ -85,6 +80,39 @@ fn info(
     let db_ctrl = PostgresDbControl::new(conn);
     match game_controller::get_info(&db_ctrl, team) {
         Ok(info) => Ok(Json(info)),
+        Err(_) => Err(Status::NotFound)
+    }
+}
+
+#[get("/game/skip")]
+fn skip_cookie(
+    _started: GameWasStarted,
+    team: db_models::Team,
+    conn: PostgresDbConn
+) -> Result<Json<Skip>, Status> {
+    skip(team, conn)
+}
+
+#[get("/game/<secret_phrase>/skip")]
+fn skip_phrase(
+    _started: GameWasStarted,
+    secret_phrase: &RawStr,
+    conn: PostgresDbConn
+) -> Result<Json<Skip>, Status> {
+    match postgres_db_controller::get_team_by_phrase(&*conn, &secret_phrase.to_string())
+    {
+        Some(team) => skip(team, conn),
+        None => Err(Status::NotFound)
+    }
+}
+
+fn skip(
+    team: db_models::Team,
+    conn: PostgresDbConn
+) -> Result<Json<Skip>, Status> {
+    let db_ctrl = PostgresDbControl::new(conn);
+    match game_controller::is_skip_allowed(&db_ctrl, team) {
+        Ok(skip) => Ok(Json(skip)),
         Err(_) => Err(Status::NotFound)
     }
 }
@@ -342,8 +370,7 @@ fn rocket() -> rocket::Rocket {
         .mount("/static", StaticFiles::from(static_dir))
         .mount(
             "/",
-            routes![index_cookie, index_redirect, team_index, info_cookie, info_phrase, messages_cookie, messages_phrase, go_cookie, go_phrase, discover_cookie, bonuses,
-                discover_phrase, admin, admin_positions, admin_send_message, admin_standings, puzzles_stats],
+            routes![index_cookie, index_redirect, team_index, info_cookie, info_phrase, messages_cookie, messages_phrase, go_cookie, go_phrase, discover_cookie, discover_phrase, bonuses, skip_cookie, skip_phrase, admin, admin_positions, admin_send_message, admin_standings, puzzles_stats],
         )
 }
 

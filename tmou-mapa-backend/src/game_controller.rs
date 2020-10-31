@@ -5,6 +5,7 @@ use super::db_controller::{DbControl};
 use super::errors::*;
 use itertools::*;
 use super::discovery as disc;
+use super::skip;
 
 // const FILLOVA_X_BROZIKOVA_NODE_ID: i64 = 3750367566;
 
@@ -88,6 +89,20 @@ pub fn discover_node(db_control: & mut impl DbControl, team: db::Team) -> TmouRe
     let api_event = event_to_api_event(&evt.event);
     let api_newly_discovered_items = items_to_api_items(&evt.newly_discovered_items) ;
     Ok(api::DiscoveryEvent{event: api_event, newItems: api_newly_discovered_items})
+}
+
+pub fn is_skip_allowed(db_control: & impl DbControl, team: db::Team) -> TmouResult<api::Skip> {
+    let team_items = db_control.get_team_items(team.id)?;
+    let grouped_items = team_items.iter().map(|item| (item.type_.clone(), item)).into_group_map();
+    // TODO what about puzzles fakes?
+    let max_puzzle_level = max(grouped_items.get("puzzles").unwrap().iter().map(|item| item.level as usize)).unwrap_or(0);
+    let badges_count = grouped_items.get("badge").and_then(|bdgs| Some(bdgs.len())).unwrap_or(0);
+    let game_state = db_control.get_game_state_by_puzzles()?;
+    let allowed = skip::is_allowed(max_puzzle_level, badges_count, game_state)?;
+
+    return Ok(api::Skip {
+        allowed,
+    })
 }
 
 ////////////////////////////////////////////////////////////////////
