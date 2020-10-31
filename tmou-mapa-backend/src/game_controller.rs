@@ -95,7 +95,7 @@ pub fn is_skip_allowed(db_control: & impl DbControl, team: db::Team) -> TmouResu
     let team_items = db_control.get_team_items(team.id)?;
     let grouped_items = team_items.iter().map(|item| (item.type_.clone(), item)).into_group_map();
     // TODO what about puzzles fakes?
-    let max_puzzle_level = max(grouped_items.get("puzzles").unwrap().iter().map(|item| item.level as usize)).unwrap_or(0);
+    let max_puzzle_level = grouped_items.get("puzzles").unwrap().iter().map(|item| item.level as usize).max().unwrap_or(0);
     let badges_count = grouped_items.get("badge").and_then(|bdgs| Some(bdgs.len())).unwrap_or(0);
     let game_state = db_control.get_game_state_by_puzzles()?;
     let allowed = skip::is_allowed(max_puzzle_level, badges_count, game_state)?;
