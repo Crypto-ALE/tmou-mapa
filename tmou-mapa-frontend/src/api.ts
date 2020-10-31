@@ -1,4 +1,4 @@
-import {TeamState, Node, way, DiscoveryEvent, TeamPosition, MessageWithTimestamp, OutgoingMessage, MessageType, Standings, TeamStanding} from './types';
+import {TeamState, Node, way, DiscoveryEvent, TeamPosition, MessageWithTimestamp, OutgoingMessage, MessageType, Standings, TeamStanding, Bonus} from './types';
 
 export async function getTeamState(secretPhrase?: string): Promise<TeamState> {
   const url = secretPhrase ? `/game/${secretPhrase}` : '/game';
@@ -46,6 +46,34 @@ export async function moveTeam(nodeId: string, secretPhrase?: string): Promise<T
     return parseJson(await res.json());
 }
 
+export async function checkSkip(secretPhrase?: string): Promise<boolean> {
+  const url = secretPhrase ? `/game/${secretPhrase}/dead` : '/game/dead';
+  const res = await fetch(url);
+
+  if (!res.ok) {
+    throw new Error("Skip check is not working, is game running?");
+  }
+
+  return (await res.json());
+}
+
+export async function skip(verified: boolean, secretPhrase?: string): Promise<DiscoveryEvent> {
+  const url = secretPhrase ? `/game/${secretPhrase}/dead` : '/game/dead';
+  const res = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json;charset=utf-8'
+      },
+      body: JSON.stringify({verified})
+    });
+
+  if (!res.ok) {
+    throw new Error("Skip check is not working, is game running?");
+  }
+
+  return (await res.json());
+}
+
 export async function discover(secretPhrase?: string): Promise<DiscoveryEvent> {
   const url = secretPhrase ? `/game/${secretPhrase}/discover` : '/game/discover';
   const res = await fetch(url);
@@ -66,6 +94,22 @@ export async function fetchMessages(secretPhrase?: string, limit?: number): Prom
   const messages = await res.json();
 
   return timestampMapper(messages);
+}
+
+export async function fetchBonuses(secretPhrase?: string): Promise<Bonus[]> {
+  try {
+    const url = '/game/bonuses';
+    const res = await fetch(url);
+
+    if (!res.ok) {
+      return [];
+    }
+    return (await res.json());
+  } catch (e) {
+    console.error(e);
+
+    return [];
+  }
 }
 
 export async function sendMessage(data: FormData, secretPhrase?: string) {

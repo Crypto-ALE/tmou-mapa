@@ -37,15 +37,24 @@
     <div id="panel">
       <div class="section" id="puzzles">
         <h2>Zadání šifer</h2>
-        <div id="puzzles-list">
-        <p>Zadání si musíte nejdříve vyzvednout.</p>
+        <div id="puzzles-list" class="items">
+          <p>Zatím jste si žádné zadání nevyzvedli.</p>
+        </div>
+      </div>
+      <div class="section" id="bonuses">
+        <h2>Zadání bonusů</h2>
+        <div id="bonuses-list" class="items">
+          <p>Žádný bonus ještě nebyl zveřejněn.</p>
         </div>
       </div>
 
       <div class="section" id="navigation">
         <div>
           <h2>Akce</h2>
-          <button id="discover"{% if gameFinished %} disabled="disabled" {% endif %}>Zkusit štěstí</button>
+          <div id="control">
+            <button id="discover"{% if gameFinished %} disabled="disabled" {% endif %}>Zkusit štěstí</button>
+            <button id="skip" class="disabled" disabled="disabled" >Přeskočit šifru</button>
+          </div>
         </div>
         <div>
           <h2>Změnit mapu</h2>
@@ -58,14 +67,14 @@
       </div>
 
       <div class="section">
-        <h2>Získané odznáčky</h2>
-        <div id="badges">
+        <h2>Zprávy</h2>
+        <div id="messages">
         </div>
       </div>
 
       <div class="section">
-        <h2>Zprávy</h2>
-        <div id="messages">
+        <h2>Získané odznáčky</h2>
+        <div id="badges">
         </div>
       </div>
 

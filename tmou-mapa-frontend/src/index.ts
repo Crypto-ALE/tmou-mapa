@@ -7,8 +7,8 @@ import {
   LeafletMouseEvent,
   Polyline
 } from "leaflet";
-import {Item, Node, way, MessageWithTimestamp} from './types';
-import {discover, getTeamState, moveTeam, fetchMessages} from './api';
+import {Item, Node, way, MessageWithTimestamp, Bonus} from './types';
+import {discover, getTeamState, moveTeam, fetchMessages, fetchBonuses, skip, checkSkip} from './api';
 
 const mapInstance = getMap('map', [49.195, 16.609], 15);
 
@@ -21,10 +21,44 @@ async function run() {
 
   messagesHandler();
   setInterval(messagesHandler, 10000);
+  bonusesHandler();
+  setInterval(bonusesHandler, 60000);
+  checkSkipHandler();
+  setInterval(checkSkipHandler, 60000);
+
+  async function checkSkipHandler() {
+    // TODO where to display current limit? Or remaining limit? Or something else?
+    let skipRes: boolean;
+    try {
+      skipRes = await checkSkip(secretPhrase);
+    } catch (e) {
+      console.error(e);
+    }
+    // TODO update based on the BE return type
+    updateSkipControl(skipRes);
+  }
+
+  function updateSkipControl(enable: boolean) {
+    const skipEl = document.getElementById("skip");
+    if (enable) {
+      skipEl.removeAttribute('disabled');
+      skipEl.classList.remove('disabled');
+      skipEl.classList.add('enabled');
+    } else {
+      skipEl.setAttribute('disabled', 'disabled');
+      skipEl.classList.remove('enabled');
+      skipEl.classList.add('disabled');
+    }
+  }
 
   async function messagesHandler() {
     const messages = await fetchMessages(secretPhrase);
     drawMessages(messages);
+  }
+
+  async function bonusesHandler() {
+    const bonuses = await fetchBonuses(secretPhrase);
+    drawBonuses(bonuses);
   }
 
   document.getElementById("mapSelectorMO").onclick = switchToMapyCzOutdoor;
@@ -34,6 +68,7 @@ async function run() {
   document.getElementById('discover').onclick = async () => {
     try {
     const {event, newItems} = await discover(secretPhrase);
+    // TODO adjust messages based on the discover updates
     switch (event) {
       case "nothing": {
         showPopup('Bohužel...', 'Na toto místo žádná šifra nevede, zkuste to jinde.', 'shrug');
@@ -46,6 +81,8 @@ async function run() {
         } else {
           showPopup('No...', 'Jste tu správně, ale buď jste tu už byli nebo už jste v jiném levelu, takže nic nedostanete.', 'shrug');
         }
+        // badge can trigger lower limit for skip, check it
+        checkSkipHandler();
         break;
       }
       case "checkpoint-visited": {
@@ -62,6 +99,23 @@ async function run() {
     drawInventory(items);
     } catch (e) {
       console.info(e);
+    }
+  }
+  document.getElementById('skip').onclick = async () => {
+    const validate = window.confirm("Opravdu chcete přeskočit šifru?");
+    if (validate) {
+      // skip puzzle
+      try {
+        // TODO check server response
+        await skip(validate, secretPhrase);
+      } catch (e) {
+        console.error(e);
+      }
+      // get new items
+      let {items} = await getTeamState(secretPhrase);
+      drawInventory(items);
+      // skip used, disable control
+      updateSkipControl(false);
     }
   }
 
@@ -223,7 +277,6 @@ async function run() {
       .map(({level, description, timestamp}) => {
         return `<div class="badge lvl${level}">
             <span class="time">${formatTimestamp(timestamp)}</span>
-            <span class="label">${description.slice(-2)}</span>
           </div>`
       })
       .join('');
@@ -232,6 +285,14 @@ async function run() {
     if (puzzles.length) {
       document.querySelector('#puzzles>#puzzles-list').innerHTML = `<ul>${puzzles.join('')}</ul>`;
     }
+
+  }
+
+  function drawBonuses(items: Bonus[]) {
+    const bonuses = items
+      .map(({url, label}) => `<li><a href="${url}" target="_blank">${label}</a>`);
+
+    document.querySelector('#bonuses>#bonuses-list').innerHTML = `<ul>${bonuses.join('')}</ul>`;
 
   }
 

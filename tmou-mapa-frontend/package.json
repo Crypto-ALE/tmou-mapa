@@ -5,19 +5,21 @@
   "main": "index.js",
   "dependencies": {},
   "devDependencies": {
-    "@rollup/plugin-commonjs": "^13.0.0",
-    "@rollup/plugin-node-resolve": "^8.1.0",
-    "@rollup/plugin-typescript": "^5.0.1",
-    "@types/leaflet": "^1.5.16",
-    "rollup": "^2.21.0",
+    "@rollup/plugin-commonjs": "^13.0.2",
+    "@rollup/plugin-node-resolve": "^8.4.0",
+    "@rollup/plugin-typescript": "^5.0.2",
+    "@types/leaflet": "^1.5.19",
+    "rollup": "^2.32.1",
     "rollup-plugin-copy": "^3.3.0",
     "rollup-plugin-terser": "^6.1.0",
-    "tslib": "^2.0.0",
-    "typescript": "^3.9.6",
+    "tslib": "^2.0.3",
+    "typescript": "^3.9.7",
     "xml2js": "^0.4.23"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build:watch": "rollup -c rollup.config.js -w",
+    "build": "rollup -c rollup.config.js"
   },
   "author": "",
   "license": "ISC"

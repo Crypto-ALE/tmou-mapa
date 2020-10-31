@@ -88,21 +88,33 @@ a{
   margin-top:0px;
 }
 
-#panel ul{
+#panel .items > ul {
   margin: 0px 0px;
-  padding-left:25px;
+  padding-left: 25px;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: start;
 }
 
-#panel ul li {
+#panel .items > ul li {
   line-height: 1.5;
   font-size: larger;
+  list-style-type: none;
+  padding: 5px;
+}
+
+
+#panel #messages {
+  height: 20vh;
+  overflow: auto;
 }
 
 .message{
   border-radius: 0.5vw;
   padding:0px 10px;
-  margin-bottom:15px;
-  font-weight:300;
+  margin-bottom: 15px;
+  font-weight: 300;
   display: flex;
   justify-content: space-between;
 }
@@ -145,13 +157,32 @@ a{
   font-size: bigger;
 }
 
+#control {
+  display: flex;
+  justify-content: space-between;
+}
+
+#control>button {
+  width: 48%;
+  height: 50px;
+  border: 2px solid white;
+  font-size: 18px;
+  margin: 0px 0px 0px 0px;
+}
+
 button#discover{
-  width:50%;
-  height:50px;
-  border:2px solid white;
-  font-size:18px;
-  margin:0px 0px 0px 0px;
   background-color:#FFEC01;
+}
+
+button#skip.disabled {
+  cursor: default;
+  background-color:#f5f5f5;
+}
+
+button#skip.enabled {
+
+  cursor: pointer;
+  background-color:#EA6060aa;
 }
 
 #navigation{
@@ -162,8 +193,7 @@ button#discover{
 }
 
 #navigation > div {
-  width: 50%;
-  min-width: 130px;
+  width: 46%;
 }
 .debug{
   display:block; /*change to display:none in production*/
@@ -179,18 +209,17 @@ button#discover{
 #panel #badges{
   display: flex;
   flex-direction: row;
-  flex-wrap: wrap;
   margin-bottom:-10px; /*cancel margin-bottom of last row of badges*/
 
 }
 
 #panel #badges .badge{
   display:block;
-  margin:0px 15px 15px 0px;
+  margin:0px 5px 5px 0px;
   background-repeat: no-repeat;
   background-size:contain;
-  width:80px;
-  height:98px;
+  width: 3vw;
+  height: 10vh;
   }
 
 .large_badge{
@@ -202,7 +231,6 @@ button#discover{
   height:196px;
   float:left;
 }
-
 
 .header_badge {
   background-repeat: no-repeat;
@@ -249,19 +277,8 @@ button#discover{
   color:black;
   font-weight:300;
   display:inline-block;
-  font-size:16px;
-  margin-top: 5px;
-}
-
-.badge span.label{
-  width:100%;
-  text-align:center;
-  color:black;
-  /*font-size: 42px;*/
-  font-weight:300;
-  display:inline-block;
-  line-height:55px;
-  font-size:45px;
+  font-size:18px;
+  margin-top: 12px;
 }
 
 .large_badge span.time{
