@@ -430,7 +430,7 @@ impl<'a, 'r> FromRequest<'a, 'r> for db_models::Team {
 // On: returns true
 // Off: returns false
 // Auto: checks the time condition provided as a comparison closure comp_fn
-// time format: YYYY-MM-DDThh:mm:ss+/-offset, e. g. 2020-10-11-17:00:00+02:00
+// time format: YYYY-MM-DDThh:mm:ss+/-offset, e. g. 2020-10-11-17T00:00+02:00
 fn check_game_state<CompFn>(comp_fn: CompFn) -> bool
 where CompFn: Fn(DateTime<FixedOffset>,DateTime<FixedOffset>)->bool {
     match env::var("TMOU_GAME_EXECUTION_MODE").as_ref().map(String::as_str) {
