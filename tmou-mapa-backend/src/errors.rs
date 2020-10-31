@@ -70,5 +70,14 @@ impl From<std::env::VarError> for TmouError
     }
 }
 
+impl From<diesel::ConnectionError> for TmouError
+{
+    fn from(err:diesel::ConnectionError) -> Self
+    {
+        TmouError{message: err.to_string(), response: 404}
+    }
+}
+
+
 
 pub type TmouResult<T> = Result<T, TmouError>;
