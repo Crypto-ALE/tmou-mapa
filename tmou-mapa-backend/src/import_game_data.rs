@@ -113,7 +113,7 @@ fn import_bonuses(conn: & mut PgConnection, bonuses_node: &roxmltree::Node) -> T
             Err(e) => println!("malformed node {}: {}, moving on", n.tag_name().name(), e.message)
         }
     }
-
+    
     println!("Inserting {} bonuses into db", db_bonuses.len());
     match insert_into(bonuses::bonuses).values(db_bonuses).execute(conn)
     {
