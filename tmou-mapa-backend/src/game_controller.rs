@@ -53,9 +53,10 @@ pub fn get_info(db_control: &impl DbControl, team: db::Team) -> TmouResult<api::
     Ok(api::TeamInfo{state: state, pois: pois, items: items})
 }
 
-
-
-
+pub fn get_bonuses(db_control: &impl DbControl) -> TmouResult<Vec<api::Bonus>> {
+    let db_bonuses = db_control.get_bonuses()?;
+    Ok(db_bonuses.iter().map_into().collect())
+}
 
 pub fn go_to_node(db_control: & mut impl DbControl, team: db::Team, pos: i64) -> TmouResult<api::TeamInfo>
 {
@@ -144,6 +145,18 @@ impl From<&db::Node> for api::Node
             x:value.lon.clone(),
             r#type:value.type_.clone(),
             data: "<none>".to_string()
+        }
+    }
+}
+
+impl From<&db::Bonus> for api::Bonus
+{
+    fn from(value: &db::Bonus) -> Self
+    {
+        api::Bonus{
+            url: value.url.clone(),
+            label: value.label.clone(),
+            description: value.description.clone(),
         }
     }
 }

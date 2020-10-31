@@ -11,6 +11,7 @@ use super::schema::nodes::dsl as nodes;
 use super::schema::ways_nodes::dsl as ways_nodes;
 use super::schema::nodes_items::dsl as nodes_items;
 use super::schema::items::dsl as items;
+use super::schema::bonuses::dsl as bonuses;
 use super::schema::teams_items::dsl as teams_items;
 use super::db_controller::{DbControl, MessagesDbControl};
 use super::db_models;
@@ -197,6 +198,15 @@ fn get_badge_labels(&self) -> std::result::Result<Vec<String>, errors::TmouError
     Ok(badges)
 }
 
+fn get_bonuses(&self) -> std::result::Result<std::vec::Vec<db_models::Bonus>, errors::TmouError> {
+    let bonuses = bonuses::bonuses
+        .filter(bonuses::display_time.lt(diesel::dsl::now))
+        .select((bonuses::url, bonuses::label, bonuses::description.nullable(), bonuses::display_time))
+        .order_by(bonuses::display_time)
+        .load(&*self.conn)?;
+
+    Ok(bonuses)
+}
 
 }
 //

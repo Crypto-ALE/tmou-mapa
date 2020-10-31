@@ -1,4 +1,14 @@
 table! {
+    bonuses (id) {
+        id -> Int4,
+        url -> Varchar,
+        label -> Varchar,
+        display_time -> Timestamptz,
+        description -> Nullable<Text>,
+    }
+}
+
+table! {
     items (name) {
         #[sql_name = "type"]
         type_ -> Varchar,
@@ -76,6 +86,7 @@ joinable!(teams_items -> items (item_name));
 joinable!(teams_items -> teams (team_id));
 
 allow_tables_to_appear_in_same_query!(
+    bonuses,
     items,
     messages,
     messages_teams,

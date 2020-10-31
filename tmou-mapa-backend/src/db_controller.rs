@@ -19,6 +19,7 @@ pub trait DbControl
     fn get_badge_labels(&self) -> TmouResult<Vec<String>>;
     fn get_teams_badges(&self) -> TmouResult<std::vec::Vec<TeamBadge>>;
     fn get_items_teams(&self) -> TmouResult<std::vec::Vec<ItemTeam>>;
+    fn get_bonuses(&self) -> TmouResult<std::vec::Vec<Bonus>>;
 }
 
 pub trait MessagesDbControl

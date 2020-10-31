@@ -41,7 +41,7 @@ mod schema;
 mod discovery;
 mod datetime_operators;
 
-use api_models::{NodeAction, TeamInfo, DiscoveryEvent, TeamPosition, Message, IncomingMessage, Standings, PuzzlesStats};
+use api_models::{NodeAction, TeamInfo, DiscoveryEvent, TeamPosition, Message, IncomingMessage, Standings, PuzzlesStats, Bonus};
 use postgres_db_controller::PostgresDbControl;
 
 embed_migrations!("./migrations/");
@@ -194,6 +194,18 @@ fn discover(
     }
 }
 
+#[get("/game/bonuses")]
+fn bonuses(
+    _started: GameWasStarted,
+    conn: PostgresDbConn,
+) -> Result<Json<Vec<Bonus>>, Status> {
+    let db_ctrl = PostgresDbControl::new(conn);
+    match game_controller::get_bonuses(&db_ctrl) {
+        Ok(bonuses) => Ok(Json(bonuses)),
+        Err(_) => Err(Status::InternalServerError),
+    }
+}
+
 /* ----------
  * ADMIN
  ------------ */
@@ -328,7 +340,7 @@ fn rocket() -> rocket::Rocket {
         .mount("/static", StaticFiles::from(static_dir))
         .mount(
             "/",
-            routes![index_cookie, index_redirect, team_index, info_cookie, info_phrase, messages_cookie, messages_phrase, go_cookie, go_phrase, discover_cookie,
+            routes![index_cookie, index_redirect, team_index, info_cookie, info_phrase, messages_cookie, messages_phrase, go_cookie, go_phrase, discover_cookie, bonuses,
                 discover_phrase, admin, admin_positions, admin_send_message, admin_standings, puzzles_stats],
         )
 }
