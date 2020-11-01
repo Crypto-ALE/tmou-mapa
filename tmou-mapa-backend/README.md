@@ -45,6 +45,8 @@ Postup:
 
 ## Stavový automat objevování uzlů
 
+**OBSOLETE**
+
 legenda:
 * Bxy - badge levelu x číslo y
 * Px - puzzles levelu x
