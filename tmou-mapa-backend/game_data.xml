@@ -9,47 +9,38 @@
       <node id="6196861828"/> <!-- MHD Podveska -->
 	    <node id="1433264722"/> <!-- MHD Podveska -->
 	    <node id="6196861827"/> <!-- MHD Podveska -->
-			<node id="1280463264"/> <!--Dzelady a paovce-->
 		</item>
     <item name="puzzles-1b" type="puzzles" description="šifra 1b" url="" level="1">
 	    <node id="300806310"/> <!--Ulice Podlesi-->
-			<node id="1280463264"/> <!--Dzelady a paovce-->
 		</item>
     <item name="puzzles-1c" type="puzzles" description="šifra 1c" url="" level="1">
 	    <node id="2188851998"/> <!--Turisticky pristresek Kozi Hora-->
 	    <node id="550471938"/> <!--Turisticky pristresek Kozi Hora-->
-			<node id="1280463264"/> <!--Dzelady a paovce-->
 		</item>
     <item name="puzzles-1d" type="puzzles" description="šifra 1d" url="" level="1">
 	    <node id="4467743910"/> <!--Technicka Jih-->
 	    <node id="247224257"/> <!--Technicka Jih-->
-			<node id="1280463264"/> <!--Dzelady a paovce-->
 		</item>
     <item name="puzzles-1e" type="puzzles" description="šifra 1d" url="" level="1">
 	    <node id="5911236701"/> <!--Slovinska U kavarny-->
-			<node id="1280463264"/> <!--Dzelady a paovce-->
 		</item>
     <item name="puzzles-1f" type="puzzles" description="šifra 1f" url="" level="1">
 	    <node id="496831101"/> <!--Privrat x Topolky-->
-			<node id="1280463264"/> <!--Dzelady a paovce-->
 		</item>
     <item name="puzzles-1g" type="puzzles" description="šifra 1g" url="" level="1">
 	    <node id="5679722662"/> <!--Dubova jih-->
 	    <node id="300804164"/> <!--Dubova jih-->
 	    <node id="5679722677"/> <!--Dubova jih-->
       <node id="5679722690"/> <!--Dubova jih-->
-			<node id="1280463264"/> <!--Dzelady a paovce-->
 		</item>
     <item name="puzzles-1h" type="puzzles" description="šifra 1g" url="" level="1">
 			<node id="654588693"/> <!--Holedna-->
-			<node id="1280463264"/> <!--Dzelady a paovce-->
 		</item>
     <item name="puzzles-1i" type="puzzles" description="šifra 1i" url="" level="1">
 	    <node id="3381802034"/> <!--Horova Z-->
 	    <node id="3381802028"/> <!--Horova Z-->
 	    <node id="7218108294"/> <!--Horova Z-->
 	    <node id="4829022722"/> <!--Horova Z-->
-			<node id="1280463264"/> <!--Dzelady a paovce-->
 		</item>
     <item name="puzzles-1j" type="puzzles" description="šifra 1j" url="" level="1">
 	    <node id="524156243"/> <!--Rakovec tocna-->
@@ -58,10 +49,42 @@
 	    <node id="524156242"/> <!--Rakovec tocna-->
 	    <node id="149002485"/> <!--Rakovec tocna-->
 	    <node id="524156255"/> <!--Rakovec tocna-->
+		</item>
+
+    <!--Fake puzzles-->
+		<item name="puzzles-1a-fake" type="puzzles-fake" description="šifra 1a" url="" level="1">
 			<node id="1280463264"/> <!--Dzelady a paovce-->
 		</item>
+    <item name="puzzles-1b-fake" type="puzzles-fake" description="šifra 1b" url="" level="1">
+			<node id="1280463264"/> <!--Dzelady a paovce-->
+		</item>
+    <item name="puzzles-1c-fake" type="puzzles-fake" description="šifra 1c" url="" level="1">
+			<node id="1280463264"/> <!--Dzelady a paovce-->
+		</item>
+    <item name="puzzles-1d-fake" type="puzzles-fake" description="šifra 1d" url="" level="1">
+			<node id="1280463264"/> <!--Dzelady a paovce-->
+		</item>
+    <item name="puzzles-1e-fake" type="puzzles-fake" description="šifra 1d" url="" level="1">
+			<node id="1280463264"/> <!--Dzelady a paovce-->
+		</item>
+    <item name="puzzles-1f-fake" type="puzzles-fake" description="šifra 1f" url="" level="1">
+			<node id="1280463264"/> <!--Dzelady a paovce-->
+		</item>
+    <item name="puzzles-1g-fake" type="puzzles-fake" description="šifra 1g" url="" level="1">
+			<node id="1280463264"/> <!--Dzelady a paovce-->
+		</item>
+    <item name="puzzles-1h-fake" type="puzzles-fake" description="šifra 1g" url="" level="1">
+			<node id="1280463264"/> <!--Dzelady a paovce-->
+		</item>
+    <item name="puzzles-1i-fake" type="puzzles-fake" description="šifra 1i" url="" level="1">
+			<node id="1280463264"/> <!--Dzelady a paovce-->
+		</item>
+    <item name="puzzles-1j-fake" type="puzzles-fake" description="šifra 1j" url="" level="1">
+			<node id="1280463264"/> <!--Dzelady a paovce-->
+		</item>
+
     <!--Reseni sifer ze startu-->
-    <item name="checkpoint-start" type="checkpoint" description="reseni sifer ze startu" url="" level="0">
+    <item name="checkpoint-start" type="checkpoint-start" description="reseni sifer ze startu" url="" level="0">
 			<node id="1280463264"/> <!--Dzelady a paovce-->
 		</item>
 		<!--Sifry na trase-->
@@ -132,34 +155,34 @@
 		<item name="dead-12" type="dead" description="dead na sifru 12" url="" level="12" />
 		<item name="dead-13" type="dead" description="dead na sifru 13" url="" level="13" />
 		<item name="dead-14" type="dead" description="dead na sifru 14" url="" level="14" />
-    <item name="badge-bonus-1" type="badge" description="high adventure" url="" level="0">
+    <item name="badge-bonus-1" type="badge" description="high adventure" url="" level="-1">
 	    <node id=""/> <!--????-->
 		</item>
-    <item name="badge-bonus-2" type="badge" description="tl;tr" url="" level="0">
+    <item name="badge-bonus-2" type="badge" description="tl;tr" url="" level="-1">
 	    <node id=""/> <!--????-->
 		</item>
-    <item name="badge-bonus-3" type="badge" description="QR" url="" level="0">
+    <item name="badge-bonus-3" type="badge" description="QR" url="" level="-1">
 	    <node id="335351415"/> <!--Liliova zvonec-->
 	    <node id="335351386"/> <!--Liliova zvonec-->
 		</item>
-    <item name="badge-bonus-4" type="badge" description="I" url="" level="0">
+    <item name="badge-bonus-4" type="badge" description="I" url="" level="-1">
 	    <node id="300813110"/> <!--49.2128N 16.6293E-->
 		</item>
-    <item name="badge-bonus-5" type="badge" description="Barvy" url="" level="0">
+    <item name="badge-bonus-5" type="badge" description="Barvy" url="" level="-1">
 			<node id=""/> <!--????-->
 		</item>
-    <item name="badge-bonus-6" type="badge" description="Sloucenina" url="" level="0">
+    <item name="badge-bonus-6" type="badge" description="Sloucenina" url="" level="-1">
 			<node id=""/> <!--Parnas-->
 		</item>
-    <item name="badge-bonus-7" type="badge" description="Koralky" url="" level="0">
+    <item name="badge-bonus-7" type="badge" description="Koralky" url="" level="-1">
 			<node id="5859584280"/> <!--Amfiteatr Lesna-->
 			<node id="588566725"/> <!--Amfiteatr Lesna-->
 			<node id="3721292005"/> <!--Amfiteatr Lesna-->
 		</item>
-    <item name="badge-bonus-8" type="badge" description="Centimetro" url="" level="0">
+    <item name="badge-bonus-8" type="badge" description="Centimetro" url="" level="-1">
 			<node id=""/> <!--Nam Londyn-->
 		</item>
-    <item name="badge-bonus-9" type="badge" description="Zatopek" url="" level="0">
+    <item name="badge-bonus-9" type="badge" description="Zatopek" url="" level="-1">
 			<node id="837559122"/> <!--Sokolsky stadion pod schody-->
 			<node id="837558897"/> <!--Sokolsky stadion pod schody-->
 		</item>

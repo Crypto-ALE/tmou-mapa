@@ -25,10 +25,7 @@
             "problemMatcher": [
                 "$rustc"
             ],
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            },
+            "group": "build",
             "label": "Rust: cargo test"
         },
         {
@@ -55,6 +52,16 @@
             "command": "cargo test --no-run",
             "label": "Rust: cargo build tests",
             "group": "build"
+        },
+        {
+            "type": "shell",
+            "command": "cargo test -- --skip admin_is_protected_by_password",
+            "label": "Rust: cargo test without failing admin",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": []
         }
     ]
 }

@@ -5,6 +5,7 @@ use super::db_controller::{DbControl};
 use super::errors::*;
 use itertools::*;
 use super::discovery as disc;
+use chrono::Utc;
 use super::skip;
 
 // const FILLOVA_X_BROZIKOVA_NODE_ID: i64 = 3750367566;
@@ -74,7 +75,8 @@ fn event_to_api_event(event: &disc::EventType) -> String
 {
     match event
     {
-        disc::EventType::CheckpointVisited => "checkpoint-visited".to_string(),
+        disc::EventType::CheckpointStartVisited => "checkpoint-start-visited".to_string(),
+        disc::EventType::PuzzlesFound=> "puzzles-found".to_string(),
         disc::EventType::BadgeFound => "badge-found".to_string(),
         disc::EventType::Nothing => "nothing".to_string()
     }
@@ -84,10 +86,10 @@ pub fn discover_node(db_control: & mut impl DbControl, team: db::Team) -> TmouRe
 {
     let node_contents = db_control.get_items_in_node(team.position)?;
     let team_inventory = db_control.get_team_items(team.id)?;
-    let evt = disc::discover_node(&team_inventory, &node_contents)?;
+    let evt = disc::discover_node(Utc::now(), &team_inventory, &node_contents)?;
     db_control.put_team_items(team.id, evt.updated_inventory)?;
     let api_event = event_to_api_event(&evt.event);
-    let api_newly_discovered_items = items_to_api_items(&evt.newly_discovered_items) ;
+    let api_newly_discovered_items = items_to_api_items(&evt.newly_discovered_items);
     Ok(api::DiscoveryEvent{event: api_event, newItems: api_newly_discovered_items})
 }
 
