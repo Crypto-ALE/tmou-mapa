@@ -8,7 +8,7 @@ import {
   Polyline
 } from "leaflet";
 import {Item, Node, way, MessageWithTimestamp, Bonus} from './types';
-import {discover, getTeamState, moveTeam, fetchMessages, fetchBonuses, skip, checkSkip} from './api';
+import {discover, getTeamState, moveTeam, fetchMessages, fetchBonuses, skip, checkSkip, skipStartPuzzle} from './api';
 
 const mapInstance = getMap('map', [49.195, 16.609], 15);
 
@@ -31,6 +31,7 @@ async function run() {
     try {
       ({allowed} = await checkSkip(secretPhrase));
     } catch (e) {
+      alert("Došlo k chybě. Zkuste to znovu a případně kontaktuje organizátory.");
       console.error(e);
     }
     updateSkipControl(allowed);
@@ -50,8 +51,13 @@ async function run() {
   }
 
   async function messagesHandler() {
-    const messages = await fetchMessages(secretPhrase);
-    drawMessages(messages);
+    try {
+      const messages = await fetchMessages(secretPhrase);
+      drawMessages(messages);
+    } catch (e) {
+        alert("Došlo k chybě při získávání zpráv. Obnovte stránku a případně kontaktujte organizátory.");
+        console.error(e);
+    }
   }
 
   async function bonusesHandler() {
@@ -66,10 +72,9 @@ async function run() {
   document.getElementById('discover').onclick = async () => {
     try {
     const {event, newItems} = await discover(secretPhrase);
-    // TODO adjust messages based on the discover updates
     switch (event) {
       case "nothing": {
-        showPopup('Bohužel...', 'Na toto místo žádná šifra nevede, zkuste to jinde.', 'shrug');
+        showTextPopup('Bohužel...', 'Na toto místo žádná šifra nevede, zkuste to jinde.', 'shrug');
         break;
       }
       case "badge-found": {
@@ -77,18 +82,25 @@ async function run() {
           const {level, description} = newItems[0];
           showBadgePopup(level.toString(), description.slice(-2));
         } else {
-          showPopup('No...', 'Jste tu správně, ale buď jste tu už byli nebo už jste v jiném levelu, takže nic nedostanete.', 'shrug');
+          showTextPopup('No...', 'Jste tu správně, ale odznáček už máte.', 'shrug');
         }
         // badge can trigger lower limit for skip, check it
         checkSkipHandler();
         break;
       }
-      case "checkpoint-visited": {
-        const items = newItems.filter((item) => item.type != "checkpoint");
-        if (items.length) {
-          showPopup('Hurá!', 'Organizátoři vám dali nové šifry.', 'get_puzzle');
+      case "puzzles-found": {
+        if (newItems.length) {
+          showTextPopup('Hurá!', 'Jste tu správně!', 'get_puzzle');
         } else {
-          showPopup('Bohužel...', 'Tentokrát jste od organizátorů nic nedostali.', 'shrug');
+          showTextPopup('No...', 'Jste tu sice správně, ale už jste tu získali všechno, co šlo.', 'shrug');
+        }
+        break;
+      }
+      case "checkpoint-start-visited": {
+        if (newItems.length) {
+          showSelectPopup('Jaké řešení byste chtěli?', newItems, 'get_puzzle');
+        } else {
+          showTextPopup('Bohužel...', 'Teď žádné řešení nedostanete.', 'shrug');
         }
         break;
       }
@@ -96,7 +108,8 @@ async function run() {
     let {items} = await getTeamState(secretPhrase);
     drawInventory(items);
     } catch (e) {
-      console.info(e);
+        alert("Došlo k chybě. Zkuste to znovu a případně kontaktujte organizátory.");
+        console.error(e);
     }
   }
   document.getElementById('skip').onclick = async () => {
@@ -107,6 +120,7 @@ async function run() {
         // TODO check server response
         await skip(validate, secretPhrase);
       } catch (e) {
+        alert("Došlo k chybě. Zkuste to znovu a případně kontaktujte organizátory.");
         console.error(e);
       }
       // get new items
@@ -142,20 +156,46 @@ async function run() {
     const badgeClass = (lvl ? `lvl${lvl}` : 'shrug') as BadgeClass;
     document.querySelector('#popup .large_badge > .label').innerHTML = label;
     const message = lvl === '5' ? 'Gratulujeme k dokončení kvalifikace a budeme se na vás (nejspíš) těšit na startu TMOU.' : 'Řešení je správně, získali jste za něj odznáček.';
-    showPopup('Hurá!', message, badgeClass);
+    showTextPopup('Hurá!', message, badgeClass);
   }
 
   type BadgeClass = 'lvl1' | 'lvl2' | 'lvl3' | 'lvl4' | 'lvl5' | 'shrug' | 'get_puzzle';
 
-  function showPopup(heading: string, text: string, badgeClass: BadgeClass) {
+  function showSelectPopup(heading: string, options: Item[],badgeClass: BadgeClass) {
+    const opts = options.map((opt) => `<option value='${opt.name}'>${opt.description}</option>`);
+    const form = `<form method='POST' id='skipStartPuzzle'><select name="puzzleName">${opts.join('')}</select></form>`;
+    const clickHandler = async (e: Event) => {
+      e.preventDefault();
+      const formEl = document.getElementById("skipStartPuzzle") as HTMLFormElement;
+      const data = new FormData(formEl);
+      try {
+        const newItems = await skipStartPuzzle(data, secretPhrase);
+        drawInventory(newItems);
+      } catch (e) {
+        alert("Došlo k chybě. Zkuste to znovu a případně kontaktujte organizátory.");
+        console.error(e);
+      }
+  }
+
+    showPopup(heading, form, badgeClass, clickHandler);
+  }
+
+  function showTextPopup(heading: string, text: string, badgeClass: BadgeClass) {
+    showPopup(heading, `<p>${text}</p>`, badgeClass);
+  }
+
+  function showPopup(heading: string, content: string, badgeClass: BadgeClass, clickHandler?: (e: Event) => void) {
     document.querySelector('.popup_text>h2').textContent = heading;
-    document.querySelector('.popup_text>p').innerHTML = text;
+    document.querySelector('.popup_text>div').innerHTML = content;
     document.querySelector('#popup .large_badge').classList.add(badgeClass);
     document.getElementById('popup').classList.remove('popup__hidden');
     document.getElementById('overlay').classList.remove('overlay__hidden');
     document.getElementById('popup').classList.add('popup__visible');
     document.getElementById('overlay').classList.add('overlay__visible');
 
+    if (clickHandler) {
+      document.querySelector('.popup #continue').addEventListener('click', clickHandler);
+    }
     document.querySelector('.popup #continue').addEventListener('click', hidePopup);
     document.addEventListener('keyup', hidePopup);
 
@@ -172,6 +212,7 @@ async function run() {
       document.removeEventListener('keyup', hidePopup);
     }
   }
+
 
   function drawNodesAndWays(nodes: Map<string, Node>, ways: Map<string, way>) {
     storeNodesAndWays(nodes, ways);
@@ -265,9 +306,9 @@ async function run() {
 
   function drawInventory(items: Item[]) {
     const puzzles = items
-      .filter((item) => item.type === "puzzles")
+      .filter((item) => item.type === "puzzles" || item.type === "puzzles-fake")
       .sort((a, b) => a.level - b.level)
-      .map(({url, level}) => `<li><a href="${url}" target="_blank">Level ${level}</a>`);
+      .map(({url, description}) => `<li><a href="${url}" target="_blank">${description}</a>`);
 
     const badges = items
       .filter((item) => item.type === "badge")
