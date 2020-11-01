@@ -3,6 +3,7 @@ use super::db_models as db;
 use chrono::prelude::*;
 use chrono::{Utc,Duration};
 use super::skip::get_skips_limits;
+use std::env;
 
 #[derive(PartialEq, Debug)]
 pub enum EventType {CheckpointStartVisited, PuzzlesFound, BadgeFound, Nothing}
@@ -26,26 +27,26 @@ fn contains_real(inventory: &Items, fake_name: &String) -> bool
     inventory.iter().any(|i| (i.name.clone() + "-fake").eq(fake_name))
 }
 
-fn get_game_start() -> DateTime<Utc>
+fn get_game_start() -> TmouResult<DateTime<FixedOffset>>
 {
     // TODO: do timezoning properly
-    // TODO: read game start time from somewhere (env variables do not work locally)
-    Utc.ymd(2020, 11, 06).and_hms(20, 0, 0) - Duration::hours(1)
+    let time_str = env::var("TMOU_GAME_START")?;
+    DateTime::parse_from_rfc3339(time_str.as_str()).or_else(|e| Err(e.into()))
 }
 
 // every 30 minutes starting Friday 21:00, a new fake is available
-fn is_eligible_for_fake(time: DateTime<Utc>, inventory: &Items) -> bool
+fn is_eligible_for_fake(time: DateTime<Utc>, inventory: &Items) -> TmouResult<bool>
 {
     let fake_count= inventory.iter().filter(|i| i.type_ =="puzzles-fake".to_string()).count();
-    let eligible_time = get_game_start() + Duration::minutes(60 + 30 * fake_count as i64);
-    time >= eligible_time
+    let eligible_time = get_game_start()? + Duration::minutes(60 + 30 * fake_count as i64);
+    Ok(time >= eligible_time)
 }
 
 
 // return all fakes that are not in inventory in real or fake form (if time allows)
-fn get_fake_puzzles(time: DateTime<Utc>, level: i16, inventory: &Items, it: &db::Item, checkpoint_content: &Items) -> Items
+fn get_fake_puzzles(time: DateTime<Utc>, level: i16, inventory: &Items, it: &db::Item, checkpoint_content: &Items) -> TmouResult<Items>
 {
-    if !is_eligible_for_fake(time, &inventory) || (it.level > level)  { Vec::new() } else 
+    let res = if !is_eligible_for_fake(time, &inventory)? || (it.level > level)  { Vec::new() } else 
     {
         checkpoint_content.iter()
         .filter(|i| (i.level <= level+1) 
@@ -53,8 +54,8 @@ fn get_fake_puzzles(time: DateTime<Utc>, level: i16, inventory: &Items, it: &db:
                     && !inventory.contains(i))
                     && !contains_real(inventory, &i.name))
         .cloned().collect()
-  
-    }
+    };
+    Ok(res)
 }
 
 fn is_eligible_for_puzzle(level: i16, inventory: &Items, it: &db::Item) -> bool
@@ -107,7 +108,7 @@ pub fn discover_node(time: DateTime<Utc>, inventory: &Items, node_contents: &Ite
             {
                 event = EventType::CheckpointStartVisited;
                 // pass all fake puzzles to the function
-                let new_items = get_fake_puzzles(time, player_level, &current_inventory, item, &node_contents);
+                let new_items = get_fake_puzzles(time, player_level, &current_inventory, item, &node_contents)?;
                 // not included in inventory
                 newly_discovered_items.extend(new_items);
             }
@@ -135,7 +136,7 @@ pub fn discover_fake_puzzle(
     let checkpoint = node_contents.iter()
       .find(|i| i.type_ == String::from("checkpoint-start"))
       .ok_or(TmouError{message:String::from("not on checkpoint"), response:404})?;
-    let puzzles = get_fake_puzzles(time, player_level, inventory, &checkpoint, &node_contents);
+    let puzzles = get_fake_puzzles(time, player_level, inventory, &checkpoint, &node_contents)?;
     match puzzles.iter().find(|i| i.name.eq(puzzle_name))
     {
         Some(p) =>
