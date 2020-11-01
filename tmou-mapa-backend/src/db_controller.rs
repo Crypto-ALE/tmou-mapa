@@ -20,6 +20,7 @@ pub trait DbControl
     fn get_teams_badges(&self) -> TmouResult<std::vec::Vec<TeamBadge>>;
     fn get_items_teams(&self) -> TmouResult<std::vec::Vec<ItemTeam>>;
     fn get_bonuses(&self) -> TmouResult<std::vec::Vec<Bonus>>;
+    fn get_game_state_by_puzzles(&self) -> TmouResult<std::vec::Vec<i64>>;
 }
 
 pub trait MessagesDbControl

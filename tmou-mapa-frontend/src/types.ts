@@ -80,3 +80,7 @@ interface Message {
   content: string;
   type: MessageType;
 }
+
+export interface Skip {
+  allowed: boolean;
+}

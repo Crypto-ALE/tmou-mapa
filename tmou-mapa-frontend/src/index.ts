@@ -27,15 +27,13 @@ async function run() {
   setInterval(checkSkipHandler, 60000);
 
   async function checkSkipHandler() {
-    // TODO where to display current limit? Or remaining limit? Or something else?
-    let skipRes: boolean;
+    let allowed: boolean;
     try {
-      skipRes = await checkSkip(secretPhrase);
+      ({allowed} = await checkSkip(secretPhrase));
     } catch (e) {
       console.error(e);
     }
-    // TODO update based on the BE return type
-    updateSkipControl(skipRes);
+    updateSkipControl(allowed);
   }
 
   function updateSkipControl(enable: boolean) {
