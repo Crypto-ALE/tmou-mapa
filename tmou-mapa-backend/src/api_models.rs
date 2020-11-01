@@ -31,6 +31,13 @@ pub struct Item
 }
 
 #[derive(Serialize, Deserialize)]
+pub struct PuzzleName
+{
+   pub puzzleName: String
+}
+
+
+#[derive(Serialize, Deserialize)]
 pub struct Bonus
 {
     pub url: String,

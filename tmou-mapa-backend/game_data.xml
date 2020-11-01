@@ -21,7 +21,7 @@
 	    <node id="4467743910"/> <!--Technicka Jih-->
 	    <node id="247224257"/> <!--Technicka Jih-->
 		</item>
-    <item name="puzzles-1e" type="puzzles" description="šifra 1d" url="" level="1">
+    <item name="puzzles-1e" type="puzzles" description="šifra 1e" url="" level="1">
 	    <node id="5911236701"/> <!--Slovinska U kavarny-->
 		</item>
     <item name="puzzles-1f" type="puzzles" description="šifra 1f" url="" level="1">
@@ -33,7 +33,7 @@
 	    <node id="5679722677"/> <!--Dubova jih-->
       <node id="5679722690"/> <!--Dubova jih-->
 		</item>
-    <item name="puzzles-1h" type="puzzles" description="šifra 1g" url="" level="1">
+    <item name="puzzles-1h" type="puzzles" description="šifra 1h" url="" level="1">
 			<node id="654588693"/> <!--Holedna-->
 		</item>
     <item name="puzzles-1i" type="puzzles" description="šifra 1i" url="" level="1">

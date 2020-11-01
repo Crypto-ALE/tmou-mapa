@@ -13,7 +13,7 @@ use super::db_models as db;
 #[allow(unused_imports)]
 use chrono::prelude::*;
 #[allow(unused_imports)]
-use chrono::Utc;
+use chrono::{Utc, Duration};
 
 
 #[allow(unused)]
@@ -354,7 +354,7 @@ fn discovery_returns_fakes_on_checkpoint_when_eligible_nothing_owned()->TmouResu
         item("puzzles-fake", 1, "puzzles-1b-fake")
         ];
     
-    let time = Utc.ymd(2020, 11, 06).and_hms(21, 0, 0);
+    let time = Utc.ymd(2020, 11, 06).and_hms(21, 0, 0) - Duration::hours(1);
     let evt = dis::discover_node(time, &inventory, &node_contents)?;
     assert_eq!(evt.event, dis::EventType::CheckpointStartVisited);
     assert_eq!(evt.updated_inventory, inventory);
@@ -375,7 +375,7 @@ fn discovery_returns_nothing_on_checkpoint_when_not_eligible_nothing_owned()->Tm
         item("puzzles-fake", 1, "puzzles-1b-fake")
         ];
    
-    let time = Utc.ymd(2020, 11, 06).and_hms(20, 59, 59);
+    let time = Utc.ymd(2020, 11, 06).and_hms(20, 59, 59) - Duration::hours(1);
     let evt = dis::discover_node(time, &inventory, &node_contents)?;
     assert_eq!(evt.event, dis::EventType::CheckpointStartVisited);
     assert_eq!(evt.updated_inventory, inventory);
@@ -408,7 +408,7 @@ fn discovery_returns_subset_on_checkpoint_when_eligible_some_owned()->TmouResult
         item("puzzles-fake", 1, "puzzles-1d-fake")
         ];
     
-    let time = Utc.ymd(2020, 11, 06).and_hms(22, 30, 0);
+    let time = Utc.ymd(2020, 11, 06).and_hms(22, 30, 0) - Duration::hours(1);
     let evt = dis::discover_node(time, &inventory, &node_contents)?;
     assert_eq!(evt.event, dis::EventType::CheckpointStartVisited);
     assert_eq!(evt.updated_inventory, inventory);
@@ -437,10 +437,118 @@ fn discovery_returns_nothing_on_checkpoint_when_not_eligible_some_owned()->TmouR
         ];
 
    
-    let time = Utc.ymd(2020, 11, 06).and_hms(22, 29, 59);
+    let time = Utc.ymd(2020, 11, 06).and_hms(22, 29, 59) - Duration::hours(1);
     let evt = dis::discover_node(time, &inventory, &node_contents)?;
     assert_eq!(evt.event, dis::EventType::CheckpointStartVisited);
     assert_eq!(evt.updated_inventory, inventory);
     assert_eq!(evt.newly_discovered_items, Vec::new());
+    Ok(())
+}
+
+#[test]
+fn format_skip_limit_honors_declinations()->TmouResult<()>
+{
+    assert_eq!(dis::format_skip_limit(0,7,200), String::from(" 0 bonusů: 200 týmů;"));
+    assert_eq!(dis::format_skip_limit(1,7,200), String::from(" 1 bonus: 200 týmů;"));
+    assert_eq!(dis::format_skip_limit(2,7,200), String::from(" 2 bonusy: 200 týmů;"));
+    assert_eq!(dis::format_skip_limit(3,7,200), String::from(" 3 bonusy: 200 týmů;"));
+    assert_eq!(dis::format_skip_limit(4,7,200), String::from(" 4 bonusy: 200 týmů;"));
+    assert_eq!(dis::format_skip_limit(5,7,200), String::from(" 5 bonusů: 200 týmů;"));
+    assert_eq!(dis::format_skip_limit(6,7,200), String::from(" 6 bonusů: 200 týmů;"));
+    assert_eq!(dis::format_skip_limit(7,7,200), String::from(" 7 a více bonusů: 200 týmů;"));
+    Ok(())
+}
+
+#[test]
+fn get_puzzle_welcome_message_returns_nonskippable_before_start()->TmouResult<()>
+{
+    let game_state = vec!(100, 90, 80, 70);
+    let inventory = Vec::new();
+    let msg = dis::get_puzzle_welcome_message(game_state, inventory).unwrap();
+    assert_eq!(msg, String::from("Jste tu 100. Tuto šifru nelze přeskočit."));
+    Ok(())
+}
+
+#[test]
+fn get_puzzle_welcome_message_returns_nonskippable_on_start()->TmouResult<()>
+{
+    let game_state = vec!(100, 90, 80, 70);
+    let inventory = vec![item("puzzles", 0, "puzzles-0")];
+    let msg = dis::get_puzzle_welcome_message(game_state, inventory).unwrap();
+    assert_eq!(msg, String::from("Jste tu 100. Tuto šifru nelze přeskočit."));
+    Ok(())
+}
+
+#[test]
+fn get_puzzle_welcome_message_returns_skip_sequence_on_1()->TmouResult<()>
+{
+    let game_state = vec!(100, 90, 80, 70);
+    let inventory = vec![item("puzzles", 0, "puzzles-0"), item("puzzles", 1, "puzzles-1")];
+    let msg = dis::get_puzzle_welcome_message(game_state, inventory).unwrap();
+    assert_eq!(msg, String::from("Jste tu 90. K přeskočení šifry potřebujete, aby šifrou prošlo pro: \
+                                  0 bonusů: 300 týmů; 1 a více bonusů: 200 týmů;"));
+    Ok(())
+}
+
+#[test]
+fn discover_fake_puzzle_succeeds_when_eligible_some_owned()->TmouResult<()> 
+{
+    let inventory = vec![
+        item("puzzles", 0, "puzzles-0"),
+        item("puzzles", 1, "puzzles-1a"),
+        item("puzzles-fake", 1, "puzzles-1b-fake"),
+        item("puzzles-fake", 1, "puzzles-1e-fake"),
+        item("puzzles-fake", 1, "puzzles-1f-fake")
+        ];
+
+    // checkpoint with puzzles
+    let node_contents = vec![
+        item("checkpoint-start", 0, "checkpoint-start"),
+        item("puzzles-fake", 1, "puzzles-1a-fake"),
+        item("puzzles-fake", 1, "puzzles-1b-fake"),
+        item("puzzles-fake", 1, "puzzles-1c-fake"),
+        item("puzzles-fake", 1, "puzzles-1d-fake"),
+        ];
+
+    let expected_inventory = vec![
+        item("puzzles", 0, "puzzles-0"),
+        item("puzzles", 1, "puzzles-1a"),
+        item("puzzles-fake", 1, "puzzles-1b-fake"),
+        item("puzzles-fake", 1, "puzzles-1e-fake"),
+        item("puzzles-fake", 1, "puzzles-1f-fake"),
+        item("puzzles-fake", 1, "puzzles-1d-fake")
+        ];
+        
+    let time = Utc.ymd(2020, 11, 06).and_hms(22, 30, 0) - Duration::hours(1);
+    let updated_inventory = dis::discover_fake_puzzle(time, &inventory, 
+        &node_contents, &String::from("puzzles-1d-fake"))?;
+    assert_eq!(updated_inventory, expected_inventory);
+    Ok(())
+}
+
+#[test]
+fn discover_fake_puzzle_fails_on_checkpoint_when_not_eligible_some_owned()->TmouResult<()> 
+{
+    let inventory = vec![
+        item("puzzles", 0, "puzzles-0"),
+        item("puzzles", 1, "puzzles-1a"),
+        item("puzzles-fake", 1, "puzzles-1b-fake"),
+        item("puzzles-fake", 1, "puzzles-1e-fake"),
+        item("puzzles-fake", 1, "puzzles-1f-fake")
+        ];
+
+    // checkpoint with puzzles
+    let node_contents = vec![
+        item("checkpoint-start", 0, "checkpoint-start"),
+        item("puzzles-fake", 1, "puzzles-1a-fake"),
+        item("puzzles-fake", 1, "puzzles-1b-fake"),
+        item("puzzles-fake", 1, "puzzles-1c-fake"),
+        item("puzzles-fake", 1, "puzzles-1d-fake"),
+        ];
+
+    let time = Utc.ymd(2020, 11, 06).and_hms(22, 29, 0) - Duration::hours(1);
+    let updated_inventory = dis::discover_fake_puzzle(time, &inventory, 
+        &node_contents, &String::from("puzzles-1d-fake"));
+    assert!(!updated_inventory.is_ok());
     Ok(())
 }

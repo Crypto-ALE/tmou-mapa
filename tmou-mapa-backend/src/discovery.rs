@@ -2,6 +2,7 @@ use super::errors::*;
 use super::db_models as db;
 use chrono::prelude::*;
 use chrono::{Utc,Duration};
+use super::skip::get_skips_limits;
 
 #[derive(PartialEq, Debug)]
 pub enum EventType {CheckpointStartVisited, PuzzlesFound, BadgeFound, Nothing}
@@ -25,11 +26,18 @@ fn contains_real(inventory: &Items, fake_name: &String) -> bool
     inventory.iter().any(|i| (i.name.clone() + "-fake").eq(fake_name))
 }
 
+fn get_game_start() -> DateTime<Utc>
+{
+    // TODO: do timezoning properly
+    // TODO: read game start time from somewhere (env variables do not work locally)
+    Utc.ymd(2020, 11, 06).and_hms(20, 0, 0) - Duration::hours(1)
+}
+
 // every 30 minutes starting Friday 21:00, a new fake is available
 fn is_eligible_for_fake(time: DateTime<Utc>, inventory: &Items) -> bool
 {
     let fake_count= inventory.iter().filter(|i| i.type_ =="puzzles-fake".to_string()).count();
-    let eligible_time = Utc.ymd(2020, 11, 06).and_hms(21, 0, 0) + Duration::minutes(30 * fake_count as i64);
+    let eligible_time = get_game_start() + Duration::minutes(60 + 30 * fake_count as i64);
     time >= eligible_time
 }
 
@@ -51,7 +59,8 @@ fn get_fake_puzzles(time: DateTime<Utc>, level: i16, inventory: &Items, it: &db:
 
 fn is_eligible_for_puzzle(level: i16, inventory: &Items, it: &db::Item) -> bool
 {
-      (it.level == level+1) && !inventory.contains(it)
+    // can take the same or next level
+    (it.level == level || it.level == level + 1) && !inventory.contains(it)
 }
 
 
@@ -111,4 +120,70 @@ pub fn discover_node(time: DateTime<Utc>, inventory: &Items, node_contents: &Ite
         event, 
         newly_discovered_items: newly_discovered_items,
         updated_inventory: current_inventory})
+}
+
+// time parameter added for unit testing
+// returns updated inventory
+pub fn discover_fake_puzzle(
+    time: DateTime<Utc>, 
+    inventory: &Items, 
+    node_contents: &Items,
+    puzzle_name: &String) -> TmouResult<Items>
+{
+    // player-level is the maximum level of any item, or -1 at start (eligible for puzzles level 0)
+    let player_level = inventory.iter().map(|item| item.level).max().unwrap_or(-1);
+    let checkpoint = node_contents.iter()
+      .find(|i| i.type_ == String::from("checkpoint-start"))
+      .ok_or(TmouError{message:String::from("not on checkpoint"), response:404})?;
+    let puzzles = get_fake_puzzles(time, player_level, inventory, &checkpoint, &node_contents);
+    match puzzles.iter().find(|i| i.name.eq(puzzle_name))
+    {
+        Some(p) =>
+        {
+            let mut updated_inventory = inventory.clone();
+            updated_inventory.push(p.clone());
+            Ok(updated_inventory)
+        }
+        None => Err(TmouError{message:String::from("not eligible for this fake puzzle"), response:404})
+    }
+}
+
+
+
+
+pub fn format_skip_limit(badges:usize, max_badges: usize, limit: i64) -> String
+{
+    let badges = match badges
+    {
+        x if x == max_badges => format!("{} a více bonusů", x),
+        0 => String::from("0 bonusů"),
+        1 => String::from("1 bonus"),
+        x if x>=2 && x <=4 => format!("{} bonusy", x),
+        x => format!("{} bonusů", x),
+    };
+
+    format!(" {}: {} týmů;", badges, limit)
+}
+
+pub fn get_puzzle_welcome_message(
+    game_state: Vec<i64>, 
+    inventory: Items) -> TmouResult<String>
+{
+    let max_puzzle_level = inventory.iter().map(|item| item.level as usize).max().unwrap_or(0);
+    let ranking = match max_puzzle_level
+    {
+        x if x >= game_state.len() => 1,
+        x => game_state[x]
+    };
+    let skips_limits = get_skips_limits(max_puzzle_level);
+    let bonus_line = match skips_limits
+    {
+        Some(limits) => limits.iter().enumerate()
+          .fold(String::from("K přeskočení šifry potřebujete, aby šifrou prošlo pro:"), 
+          |acc, (i, l)| acc + &format_skip_limit(i,limits.len() - 1, *l)),
+  
+        None => String::from("Tuto šifru nelze přeskočit.")
+    };
+    
+    Ok(format!("Jste tu {}. {}", ranking, bonus_line))
 }

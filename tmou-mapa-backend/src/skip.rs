@@ -1,4 +1,5 @@
 use super::errors::*;
+use lazy_static::lazy_static;
 
 // Function for determination whether the skip is allowed.
 //
@@ -10,6 +11,29 @@ use super::errors::*;
 //
 // Assumption: there is level 0, which is start. If not, whole functionality needs to be shifted
 
+
+// skip limits table
+// source https://docs.google.com/spreadsheets/d/1WmDUIM449LT_mrxuotBnOs9MqBU5z2FhK6LawGPz-58/edit#gid=0
+lazy_static! {
+static ref SKIPS_LIMITS: Vec<Vec<i64>> = vec![
+    vec![std::i64::MAX], //level 0 is start, cannot be skipped
+    vec![300, 200],
+    vec![250, 200, 150],
+    vec![250, 225, 200, 150],
+    vec![200, 180, 160, 140, 120],
+    vec![200, 180, 160, 140, 120, 100],
+    vec![200, 180, 160, 140, 120, 100, 80],
+    vec![200, 180, 160, 140, 120, 100, 80, 75],
+    vec![150, 140, 130, 120, 110, 100, 90, 80, 70],
+    vec![150, 140, 130, 120, 110, 100, 90, 80, 70, 65],
+    vec![150, 140, 130, 120, 110, 100, 90, 80, 70, 65, 60],
+    vec![150, 140, 130, 120, 110, 100, 90, 80, 70, 60, 50],
+    vec![100, 90, 80, 70, 60, 55, 50, 45, 40, 35, 30],
+    vec![50, 48, 45, 42, 40, 38, 35, 33, 30, 28, 25],
+    vec![20, 18, 16, 14, 12, 10, 9, 8, 7, 6, 5],
+];
+}
+
 pub fn is_allowed(level: usize, badges: usize, game_state: Vec<i64>) -> TmouResult<bool> {
     // check if game_state is correct - number of acquired puzzles per level, i.e. sorted DESC
     let mut rev = game_state.clone();
@@ -20,30 +44,12 @@ pub fn is_allowed(level: usize, badges: usize, game_state: Vec<i64>) -> TmouResu
             response: 500,
         });
     }
-    // source https://docs.google.com/spreadsheets/d/1WmDUIM449LT_mrxuotBnOs9MqBU5z2FhK6LawGPz-58/edit#gid=0
-    let skips_limits = vec![
-        vec![std::i64::MAX], //level 0 is start, cannot be skipped
-        vec![300, 200],
-        vec![250, 200, 150],
-        vec![250, 225, 200, 150],
-        vec![200, 180, 160, 140, 120],
-        vec![200, 180, 160, 140, 120, 100],
-        vec![200, 180, 160, 140, 120, 100, 80],
-        vec![200, 180, 160, 140, 120, 100, 80, 75],
-        vec![150, 140, 130, 120, 110, 100, 90, 80, 70],
-        vec![150, 140, 130, 120, 110, 100, 90, 80, 70, 65],
-        vec![150, 140, 130, 120, 110, 100, 90, 80, 70, 65, 60],
-        vec![150, 140, 130, 120, 110, 100, 90, 80, 70, 60, 50],
-        vec![100, 90, 80, 70, 60, 55, 50, 45, 40, 35, 30],
-        vec![50, 48, 45, 42, 40, 38, 35, 33, 30, 28, 25],
-        vec![20, 18, 16, 14, 12, 10, 9, 8, 7, 6, 5],
-    ];
 
-    if level >= skips_limits.len() {
+    if level >= SKIPS_LIMITS.len() {
         return Ok(false);
     }
 
-    let skips_for_level = &skips_limits[level];
+    let skips_for_level = &SKIPS_LIMITS[level];
     let limit = match badges >= skips_for_level.len() {
         true => skips_for_level.last().unwrap_or(&0),
         false => &skips_for_level[badges],
@@ -54,6 +60,17 @@ pub fn is_allowed(level: usize, badges: usize, game_state: Vec<i64>) -> TmouResu
         false => false,
     });
 }
+
+pub fn get_skips_limits(level: usize) -> Option<Vec<i64>> {
+    match level
+    {
+        0 => None,
+        x if x >= SKIPS_LIMITS.len() => None,
+        x => Some(SKIPS_LIMITS[x].clone())
+    }
+}
+
+
 
 #[cfg(test)]
 mod tests {
