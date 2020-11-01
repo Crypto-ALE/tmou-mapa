@@ -88,9 +88,9 @@ fn has_new_puzzle(items: & disc::Items) -> bool
     items.iter().any(|i| i.type_ == "puzzles".to_string())
 }
 
-fn send_puzzle_welcome_message<T: DbControl + MessagesDbControl>( 
+fn send_puzzle_welcome_message<T: DbControl + MessagesDbControl>(
     db_control: & mut T,
-    inventory: disc::Items, 
+    inventory: disc::Items,
     team:db::Team) -> TmouResult<()>
 {
     let game_state = db_control.get_game_state_by_puzzles()?;
@@ -130,7 +130,7 @@ pub fn discover_post(
     Ok(api_updated)
 }
 
-pub fn is_skip_allowed(db_control: & impl DbControl, team: db::Team) -> TmouResult<api::Skip> {
+pub fn is_skip_allowed(db_control: & impl DbControl, team: &db::Team) -> TmouResult<api::Skip> {
     let team_items = db_control.get_team_items(team.id)?;
     let grouped_items = team_items.iter().map(|item| (item.type_.clone(), item)).into_group_map();
     // TODO what about puzzles fakes?
@@ -142,6 +142,24 @@ pub fn is_skip_allowed(db_control: & impl DbControl, team: db::Team) -> TmouResu
     return Ok(api::Skip {
         allowed,
     })
+}
+
+pub fn skip_current_puzzle(db_control: &mut impl DbControl, team: db::Team) -> TmouResult<api::SkipResult> {
+
+    match is_skip_allowed(db_control, &team)?.into() {
+        false => Err(TmouError{message: "Skip is not allowed".to_string(), response: 400}),
+        true => {
+            // TODO is it a time to extract to common function?
+            let mut items = db_control.get_team_items(team.id)?;
+            // assumption: puzzles always have the highest level
+            let player_level = items.iter().map(|item| item.level).max().unwrap_or(-1);
+            let dead_item = db_control.get_dead_item_for_level(player_level)?;
+            items.push(dead_item);
+            let updated_items = items.iter().map_into().collect();
+            db_control.put_team_items(team.id, items)?;
+            Ok(api::SkipResult{newItems: updated_items})
+        }
+    }
 }
 
 ////////////////////////////////////////////////////////////////////
@@ -212,5 +230,13 @@ impl From<&db::Bonus> for api::Bonus
             label: value.label.clone(),
             description: value.description.clone(),
         }
+    }
+}
+
+impl From<api::Skip> for bool
+{
+    fn from(value: api::Skip) -> Self
+    {
+        value.allowed
     }
 }

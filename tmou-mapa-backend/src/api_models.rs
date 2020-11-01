@@ -157,3 +157,15 @@ pub struct Skip
 {
     pub allowed: bool
 }
+
+#[derive(Serialize, Deserialize)]
+pub struct SkipResult
+{
+    pub newItems: Vec<Item>
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct SkipAction
+{
+    pub verified: bool
+}
