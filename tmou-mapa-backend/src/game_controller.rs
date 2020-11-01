@@ -88,7 +88,7 @@ pub fn discover_node(db_control: & mut impl DbControl, team: db::Team) -> TmouRe
     let evt = disc::discover_node(Utc::now(), &team_inventory, &node_contents)?;
     db_control.put_team_items(team.id, evt.updated_inventory)?;
     let api_event = event_to_api_event(&evt.event);
-    let api_newly_discovered_items = items_to_api_items(&evt.newly_discovered_items) ;
+    let api_newly_discovered_items = items_to_api_items(&evt.newly_discovered_items);
     Ok(api::DiscoveryEvent{event: api_event, newItems: api_newly_discovered_items})
 }
 

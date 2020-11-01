@@ -64,7 +64,7 @@ fn is_eligible_for_badge(level: i16, inventory: &Items, it: &db::Item) -> bool
 pub fn discover_node(time: DateTime<Utc>, inventory: &Items, node_contents: &Items) -> TmouResult<DiscoveryEvent>
 {
     // player-level is the maximum level of any item, or -1 at start (eligible for puzzles level 0)
-    let player_level = inventory.iter().map(|item| item.level).max().or(Some(-1)).unwrap();
+    let player_level = inventory.iter().map(|item| item.level).max().unwrap_or(-1);
 
     // intermediate collections, accumulated during discovery of all items in node
     let mut event = EventType::Nothing; // last event wins - should be only one
