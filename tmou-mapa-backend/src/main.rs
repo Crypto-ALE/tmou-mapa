@@ -113,7 +113,10 @@ fn skip(
     let db_ctrl = PostgresDbControl::new(conn);
     match game_controller::is_skip_allowed(&db_ctrl, &team) {
         Ok(skip) => Ok(Json(skip)),
-        Err(_) => Err(Status::NotFound)
+        Err(e) => {
+            warn!("Skip check failed: {}", e.message);
+            Err(Status::InternalServerError)
+        }
     }
 }
 
