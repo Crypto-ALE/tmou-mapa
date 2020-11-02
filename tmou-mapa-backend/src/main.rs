@@ -470,6 +470,8 @@ fn rocket() -> rocket::Rocket {
                 bonuses,
                 skip_cookie,
                 skip_phrase,
+                proceed_skip_cookie,
+                proceed_skip_phrase,
                 admin,
                 admin_positions,
                 admin_send_message,
