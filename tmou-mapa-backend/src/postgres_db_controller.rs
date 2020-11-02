@@ -218,6 +218,15 @@ fn get_game_state_by_puzzles(&self) -> std::result::Result<std::vec::Vec<i64>, e
 
     Ok(game_state.iter().map(|c| c.unwrap_or(0)).collect())
 }
+
+fn get_dead_item_for_level(&self, level: i16) -> std::result::Result<db_models::Item, errors::TmouError> {
+    let dead = items::items
+        .filter(items::level.eq(level).and(items::type_.eq("dead")))
+        .limit(1)
+        .first(&*self.conn)?;
+
+    Ok(dead)
+}
 }
 //
 // messages for this team id are broadcasted to all the teams
