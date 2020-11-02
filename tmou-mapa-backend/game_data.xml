@@ -164,9 +164,9 @@
 		<item name="dead-9" type="dead" description="dead na sifru 9" url="https://mapy.cz/s/retenehore" level="9" />
 		<item name="dead-10" type="dead" description="dead na sifru 10" url="https://mapy.cz/s/lojugoheba" level="10" />
 		<item name="dead-11" type="dead" description="dead na sifru 11" url="https://mapy.cz/s/rahopucure" level="11" />
-		<item name="dead-12" type="dead" description="dead na sifru 12" url="https://mapy.cz/s/jerevuheco" level="12" />  <!--TODO Chce overit vuci nodum-->
-		<item name="dead-13" type="dead" description="dead na sifru 13" url="https://mapy.cz/s/fulusapuba" level="13" />  <!--TODO Chce overit vuci nodum-->
-		<item name="dead-14" type="dead" description="dead na sifru 14" url="https://mapy.cz/s/hapulovubo" level="14" />  <!--TODO Chce overit vuci nodum-->
+		<item name="dead-12" type="dead" description="dead na sifru 12" url="https://mapy.cz/s/jerevuheco" level="12" />
+		<item name="dead-13" type="dead" description="dead na sifru 13" url="https://mapy.cz/s/fulusapuba" level="13" />
+		<item name="dead-14" type="dead" description="dead na sifru 14" url="https://mapy.cz/s/puhafonuta" level="14" />
     <item name="badge-bonus-1" type="badge" description="high adventure" url="" level="-1">
 	    <node id=""/> <!--????-->
 		</item>
