@@ -31,6 +31,13 @@ pub struct Item
 }
 
 #[derive(Serialize, Deserialize)]
+pub struct PuzzleName
+{
+   pub puzzleName: String
+}
+
+
+#[derive(Serialize, Deserialize)]
 pub struct Bonus
 {
     pub url: String,
@@ -149,4 +156,16 @@ pub struct PuzzlesStats
 pub struct Skip
 {
     pub allowed: bool
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct SkipResult
+{
+    pub newItems: Vec<Item>
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct SkipAction
+{
+    pub verified: bool
 }

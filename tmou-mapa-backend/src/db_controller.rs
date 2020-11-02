@@ -21,6 +21,7 @@ pub trait DbControl
     fn get_items_teams(&self) -> TmouResult<std::vec::Vec<ItemTeam>>;
     fn get_bonuses(&self) -> TmouResult<std::vec::Vec<Bonus>>;
     fn get_game_state_by_puzzles(&self) -> TmouResult<std::vec::Vec<i64>>;
+    fn get_dead_item_for_level(&self, level: i16) -> TmouResult<Item>;
 }
 
 pub trait MessagesDbControl

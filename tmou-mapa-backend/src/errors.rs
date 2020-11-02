@@ -78,6 +78,14 @@ impl From<diesel::ConnectionError> for TmouError
     }
 }
 
+impl From<chrono::format::ParseError> for TmouError
+{
+    fn from(err:chrono::format::ParseError) -> Self
+    {
+        TmouError{message: err.to_string(), response: 500}
+    }
+}
+
 
 
 pub type TmouResult<T> = Result<T, TmouError>;

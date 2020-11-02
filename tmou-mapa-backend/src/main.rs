@@ -43,7 +43,7 @@ mod discovery;
 mod datetime_operators;
 mod skip;
 
-use api_models::{NodeAction, TeamInfo, DiscoveryEvent, TeamPosition, Message, IncomingMessage, Standings, PuzzlesStats, Bonus, Skip};
+use api_models::*;
 use postgres_db_controller::PostgresDbControl;
 
 embed_migrations!("./migrations/");
@@ -111,9 +111,53 @@ fn skip(
     conn: PostgresDbConn
 ) -> Result<Json<Skip>, Status> {
     let db_ctrl = PostgresDbControl::new(conn);
-    match game_controller::is_skip_allowed(&db_ctrl, team) {
+    match game_controller::is_skip_allowed(&db_ctrl, &team) {
         Ok(skip) => Ok(Json(skip)),
-        Err(_) => Err(Status::NotFound)
+        Err(e) => {
+            warn!("Skip check failed: {}", e.message);
+            Err(Status::InternalServerError)
+        }
+    }
+}
+
+#[post("/game/skip", data="<action>")]
+fn proceed_skip_cookie(
+    _started: GameWasStarted,
+    team: db_models::Team,
+    action: Json<SkipAction>,
+    conn: PostgresDbConn
+) -> Result<Json<SkipResult>, Status> {
+    proceed_skip(action, team, conn)
+}
+
+#[post("/game/<secret_phrase>/skip", data="<action>")]
+fn proceed_skip_phrase(
+    _started: GameWasStarted,
+    secret_phrase: &RawStr,
+    action: Json<SkipAction>,
+    conn: PostgresDbConn
+) -> Result<Json<SkipResult>, Status> {
+    match postgres_db_controller::get_team_by_phrase(&*conn, &secret_phrase.to_string())
+    {
+        Some(team) => proceed_skip(action, team, conn),
+        None => Err(Status::NotFound)
+    }
+}
+
+fn proceed_skip(
+    action: Json<SkipAction>,
+    team: db_models::Team,
+    conn: PostgresDbConn,
+) -> Result<Json<SkipResult>, Status> {
+    match action.verified {
+       false => Err(Status::BadRequest),
+       true => {
+            let mut db_ctrl = PostgresDbControl::new(conn);
+            match game_controller::skip_current_puzzle(&mut db_ctrl, team) {
+                Ok(skip) => Ok(Json(skip)),
+                Err(_) => Err(Status::NotFound)
+            }
+        }
     }
 }
 
@@ -223,6 +267,46 @@ fn discover(
         Err(_) => Err(Status::NotFound),
     }
 }
+
+
+#[post("/game/discover", data = "<puzzle_name>")]
+fn discover_post_cookie(
+    _running: GameIsRunning,
+    team: db_models::Team,
+    conn: PostgresDbConn,
+    puzzle_name: Json<PuzzleName>
+) -> Result<Json<Vec<Item>>, Status> {
+    discover_post(team, conn, puzzle_name)
+}
+
+#[post("/game/<secret_phrase>/discover", data = "<puzzle_name>")]
+fn discover_post_phrase(
+    _running: GameIsRunning,
+    secret_phrase: &RawStr,
+    conn: PostgresDbConn,
+    puzzle_name: Json<PuzzleName>
+) -> Result<Json<Vec<Item>>, Status> {
+    match postgres_db_controller::get_team_by_phrase(&*conn, &secret_phrase.to_string())
+    {
+        Some(team) => discover_post(team, conn, puzzle_name),
+        None => Err(Status::NotFound)
+    }
+}
+
+
+//#[post("/game/<secret_phrase>/discover")]
+fn discover_post(
+    team: db_models::Team,
+    conn: PostgresDbConn,
+    puzzle_name: Json<PuzzleName>
+) -> Result<Json<Vec<Item>>, Status> {
+    let mut db_ctrl = PostgresDbControl::new(conn);
+    match game_controller::discover_post(& mut db_ctrl, team, &puzzle_name.puzzleName) {
+        Ok(nc) => Ok(Json(nc)),
+        Err(_) => Err(Status::NotFound),
+    }
+}
+
 
 #[get("/game/bonuses")]
 fn bonuses(
@@ -370,7 +454,29 @@ fn rocket() -> rocket::Rocket {
         .mount("/static", StaticFiles::from(static_dir))
         .mount(
             "/",
-            routes![index_cookie, index_redirect, team_index, info_cookie, info_phrase, messages_cookie, messages_phrase, go_cookie, go_phrase, discover_cookie, discover_phrase, bonuses, skip_cookie, skip_phrase, admin, admin_positions, admin_send_message, admin_standings, puzzles_stats],
+            routes![index_cookie,
+                index_redirect,
+                team_index,
+                info_cookie,
+                info_phrase,
+                messages_cookie,
+                messages_phrase,
+                go_cookie,
+                go_phrase,
+                discover_cookie,
+                discover_phrase,
+                discover_post_cookie,
+                discover_post_phrase,
+                bonuses,
+                skip_cookie,
+                skip_phrase,
+                proceed_skip_cookie,
+                proceed_skip_phrase,
+                admin,
+                admin_positions,
+                admin_send_message,
+                admin_standings,
+                puzzles_stats],
         )
 }
 
