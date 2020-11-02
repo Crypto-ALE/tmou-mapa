@@ -1,12 +1,13 @@
 
 use super::api_models as api;
 use super::db_models as db;
-use super::db_controller::{DbControl};
+use super::db_controller::{DbControl, MessagesDbControl};
 use super::errors::*;
 use itertools::*;
 use super::discovery as disc;
 use chrono::Utc;
 use super::skip;
+use super::message_controller::send_message_to_team;
 
 // const FILLOVA_X_BROZIKOVA_NODE_ID: i64 = 3750367566;
 
@@ -82,22 +83,58 @@ fn event_to_api_event(event: &disc::EventType) -> String
     }
 }
 
-pub fn discover_node(db_control: & mut impl DbControl, team: db::Team) -> TmouResult<api::DiscoveryEvent>
+fn has_new_puzzle(items: & disc::Items) -> bool
+{
+    items.iter().any(|i| i.type_ == "puzzles".to_string())
+}
+
+fn send_puzzle_welcome_message<T: DbControl + MessagesDbControl>( 
+    db_control: & mut T,
+    inventory: disc::Items, 
+    team:db::Team) -> TmouResult<()>
+{
+    let game_state = db_control.get_game_state_by_puzzles()?;
+    let msg = disc::get_puzzle_welcome_message(game_state, inventory)?;
+    let api_msg = api::Message{content: msg, r#type: String::from("info"), timestamp:None};
+    send_message_to_team(db_control, team, api_msg)
+}
+
+pub fn discover_node<T: DbControl + MessagesDbControl>(
+    db_control: & mut T,
+    team: db::Team) -> TmouResult<api::DiscoveryEvent>
 {
     let node_contents = db_control.get_items_in_node(team.position)?;
     let team_inventory = db_control.get_team_items(team.id)?;
     let evt = disc::discover_node(Utc::now(), &team_inventory, &node_contents)?;
+    let inventory = evt.updated_inventory.clone();
     db_control.put_team_items(team.id, evt.updated_inventory)?;
+    if has_new_puzzle(&evt.newly_discovered_items)
+    {
+        send_puzzle_welcome_message(db_control, inventory, team)?;
+    }
     let api_event = event_to_api_event(&evt.event);
     let api_newly_discovered_items = items_to_api_items(&evt.newly_discovered_items);
     Ok(api::DiscoveryEvent{event: api_event, newItems: api_newly_discovered_items})
+}
+
+pub fn discover_post(
+    db_control: & mut impl DbControl,
+    team: db::Team,
+    puzzle_name: &String) -> TmouResult<Vec<api::Item>>
+{
+    let node_contents = db_control.get_items_in_node(team.position)?;
+    let team_inventory = db_control.get_team_items(team.id)?;
+    let updated = disc::discover_fake_puzzle(Utc::now(), &team_inventory, &node_contents, &puzzle_name)?;
+    db_control.put_team_items(team.id, updated.clone())?;
+    let api_updated = items_to_api_items(&updated);
+    Ok(api_updated)
 }
 
 pub fn is_skip_allowed(db_control: & impl DbControl, team: db::Team) -> TmouResult<api::Skip> {
     let team_items = db_control.get_team_items(team.id)?;
     let grouped_items = team_items.iter().map(|item| (item.type_.clone(), item)).into_group_map();
     // TODO what about puzzles fakes?
-    let max_puzzle_level = grouped_items.get("puzzles").unwrap().iter().map(|item| item.level as usize).max().unwrap_or(0);
+    let max_puzzle_level = grouped_items.get("puzzles").unwrap_or(&Vec::new()).iter().map(|item| item.level as usize).max().unwrap_or(0);
     let badges_count = grouped_items.get("badge").and_then(|bdgs| Some(bdgs.len())).unwrap_or(0);
     let game_state = db_control.get_game_state_by_puzzles()?;
     let allowed = skip::is_allowed(max_puzzle_level, badges_count, game_state)?;
