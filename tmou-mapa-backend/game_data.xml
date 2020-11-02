@@ -2,47 +2,47 @@
 <game name="iTmou">
   <items>
 		<!--Start a casti prvni sifry-->
-		<item name="puzzles-0" type="puzzles" description="šifry startu" url="" level="0">
+		<item name="puzzles-0" type="puzzles" description="šifry startu" url="https://drive.google.com/file/d/1aL7M_-E6Vuw8RGJGHpiLQdB9Jyfe159K/view?usp=sharing" level="0">
 			<node id="1514002375"/> <!--Vstup do ZOO-->
 		</item>
-		<item name="puzzles-1a" type="puzzles" description="šifra 1a" url="" level="1">
+		<item name="puzzles-1a" type="puzzles" description="šifra 1a" url="https://drive.google.com/file/d/1c0ZWkxsd1V2VVP8OoPF_rZxNQucQHU4V/view?usp=sharing" level="1">
       <node id="6196861828"/> <!-- MHD Podveska -->
 	    <node id="1433264722"/> <!-- MHD Podveska -->
 	    <node id="6196861827"/> <!-- MHD Podveska -->
 		</item>
-    <item name="puzzles-1b" type="puzzles" description="šifra 1b" url="" level="1">
+    <item name="puzzles-1b" type="puzzles" description="šifra 1b" url="https://drive.google.com/file/d/1_4U1rnTjvQNfoYxw9NquVRgRSZEUSJvP/view?usp=sharing" level="1">
 	    <node id="300806310"/> <!--Ulice Podlesi-->
 		</item>
-    <item name="puzzles-1c" type="puzzles" description="šifra 1c" url="" level="1">
+    <item name="puzzles-1c" type="puzzles" description="šifra 1c" url="https://drive.google.com/file/d/18rBB1wKEaLVLMxY36aAj33Caslxz1Rwo/view?usp=sharing" level="1">
 	    <node id="2188851998"/> <!--Turisticky pristresek Kozi Hora-->
 	    <node id="550471938"/> <!--Turisticky pristresek Kozi Hora-->
 		</item>
-    <item name="puzzles-1d" type="puzzles" description="šifra 1d" url="" level="1">
+    <item name="puzzles-1d" type="puzzles" description="šifra 1d" url="https://drive.google.com/file/d/1M2gKqe7u5sGEbvDugCJOp2EyppZyhlIZ/view?usp=sharing" level="1">
 	    <node id="4467743910"/> <!--Technicka Jih-->
 	    <node id="247224257"/> <!--Technicka Jih-->
 		</item>
-    <item name="puzzles-1e" type="puzzles" description="šifra 1e" url="" level="1">
+    <item name="puzzles-1e" type="puzzles" description="šifra 1e" url="https://drive.google.com/file/d/1mFHC3gNBRGO7EBIh0jKJFhJWTKXgdsGz/view?usp=sharing" level="1">
 	    <node id="5911236701"/> <!--Slovinska U kavarny-->
 		</item>
-    <item name="puzzles-1f" type="puzzles" description="šifra 1f" url="" level="1">
+    <item name="puzzles-1f" type="puzzles" description="šifra 1f" url="https://drive.google.com/file/d/122FN1DfkNgI2Uv0RdKDCJU7ZTdtgRc0x/view?usp=sharing" level="1">
 	    <node id="496831101"/> <!--Privrat x Topolky-->
 		</item>
-    <item name="puzzles-1g" type="puzzles" description="šifra 1g" url="" level="1">
+    <item name="puzzles-1g" type="puzzles" description="šifra 1g" url="https://drive.google.com/file/d/1_khSEbfaeJVK65YHt-y5lbWrd2lEwBfA/view?usp=sharing" level="1">
 	    <node id="5679722662"/> <!--Dubova jih-->
 	    <node id="300804164"/> <!--Dubova jih-->
 	    <node id="5679722677"/> <!--Dubova jih-->
       <node id="5679722690"/> <!--Dubova jih-->
 		</item>
-    <item name="puzzles-1h" type="puzzles" description="šifra 1h" url="" level="1">
+    <item name="puzzles-1h" type="puzzles" description="šifra 1h" url="https://drive.google.com/file/d/1PRBpTYXFiGGd4ECrgFURekADZUhDsvln/view?usp=sharing" level="1">
 			<node id="654588693"/> <!--Holedna-->
 		</item>
-    <item name="puzzles-1i" type="puzzles" description="šifra 1i" url="" level="1">
+    <item name="puzzles-1i" type="puzzles" description="šifra 1i" url="https://drive.google.com/file/d/13CBkVUx2j_Ma-rX1xtypqKAfcqRyxGqw/view?usp=sharing" level="1">
 	    <node id="3381802034"/> <!--Horova Z-->
 	    <node id="3381802028"/> <!--Horova Z-->
 	    <node id="7218108294"/> <!--Horova Z-->
 	    <node id="4829022722"/> <!--Horova Z-->
 		</item>
-    <item name="puzzles-1j" type="puzzles" description="šifra 1j" url="" level="1">
+    <item name="puzzles-1j" type="puzzles" description="šifra 1j" url="https://drive.google.com/file/d/15Y29uLNsEn8X2dukwUEsSe5E51nXPIIh/view?usp=sharing" level="1">
 	    <node id="524156243"/> <!--Rakovec tocna-->
 	    <node id="149002476"/> <!--Rakovec tocna-->
 	    <node id="3343440903"/> <!--Rakovec tocna-->
@@ -88,53 +88,65 @@
 			<node id="1280463264"/> <!--Dzelady a paovce-->
 		</item>
 		<!--Sifry na trase-->
-    <item name="puzzles-2" type="puzzles" description="šifra 2" url="" level="2">
-	    <node id=""/> <!--?????-->
+    <item name="puzzles-2" type="puzzles" description="šifra 2" url="https://drive.google.com/file/d/1rd9fUt3NNnLpCgUAOZ-IEl2g3JZWIgPR/view?usp=sharing" level="2">
+	    <node id="449442784"/> <!--mapy.cz/s/bajukelupa-->
+	    <node id="449442776"/> <!--mapy.cz/s/bajukelupa-->
+	    <node id="449442785"/> <!--mapy.cz/s/bajukelupa-->
+	    <node id="449442775"/> <!--mapy.cz/s/bajukelupa-->
 		</item>
-    <item name="puzzles-3" type="puzzles" description="šifra 3" url="" level="3">
+    <item name="puzzles-3" type="puzzles" description="šifra 3" url="https://drive.google.com/file/d/18pmSx5GS092wiL9CYKtq49QOClReHoAW/view?usp=sharing" level="3">
 	    <node id="440885619"/> <!--Netopyrky pomnik-->
 		</item>
-    <item name="puzzles-4" type="puzzles" description="šifra 4" url="" level="4">
-	    <node id=""/> <!--BABA-->
+    <item name="puzzles-4" type="puzzles" description="šifra 4" url="https://drive.google.com/file/d/1sBWjHteOfGLxnbs2AchqM8x3CO2io1ya/view?usp=sharing" level="4">
+	    <node id="1605280440"/> <!--BOSNE-->
+	    <node id="1605280467"/> <!--BOSNE-->
+	    <node id="1605280479"/> <!--BOSNE-->
+	    <node id="1605280515"/> <!--BOSNE-->
 		</item>
-    <item name="puzzles-5" type="puzzles" description="šifra 5" url="" level="5">
-	    <node id=""/> <!--někde v České-->
+    <item name="puzzles-5" type="puzzles" description="šifra 5" url="https://drive.google.com/file/d/1AqYuvXywKjgr3od9ibHWJNe6-TVpOXX0/view?usp=sharing" level="5">
+	    <node id="3912016903"/> <!--NA NADRAZI CESKA-->
+	    <node id="3909580319"/> <!--NA NADRAZI CESKA-->
+	    <node id="3909580313"/> <!--NA NADRAZI CESKA-->
+	    <node id="6021233620"/> <!--NA NADRAZI CESKA-->
+	    <node id="5984588784"/> <!--NA NADRAZI CESKA-->
+	    <node id="5984589785"/> <!--NA NADRAZI CESKA-->
 		</item>
-    <item name="puzzles-6" type="puzzles" description="šifra 6" url="" level="6">
+    <item name="puzzles-6" type="puzzles" description="šifra 6" url="https://drive.google.com/file/d/19Ccv2YmPcuIZtNkLgOEXJQtxXvN86AsO/view?usp=sharing" level="6">
 	    <node id="388841885"/> <!--U LESA/U MLÝNA pomnik-->
 			<node id="1389926926"/> <!--U LESA/U MLÝNA pomnik-->
 		</item>
-    <item name="puzzles-7" type="puzzles" description="šifra 7" url="" level="7">
-	    <node id=""/> <!--Zamilec-->
+    <item name="puzzles-7" type="puzzles" description="šifra 7" url="https://drive.google.com/file/d/11mDp5RTok9CFx-O8IrdE4xkZtjrDcHPr/view?usp=sharing" level="7">
+	    <node id="344272007"/> <!--Zamilec restuarace-->
 		</item>
-    <item name="puzzles-8" type="puzzles" description="šifra 8" url="" level="8">
-	    <node id=""/> <!--V jecne-->
+    <item name="puzzles-8" type="puzzles" description="šifra 8" url="https://drive.google.com/file/d/1zF2vAfHoq_nZYdBB_eMUs3iUIStZF2Nk/view?usp=sharing" level="8">
+	    <node id="21673279"/> <!--V jecne-->
 		</item>
-    <item name="puzzles-9" type="puzzles" description="šifra 9" url="" level="9">
-	    <node id=""/> <!--Kocianka-->
+    <item name="puzzles-9" type="puzzles" description="šifra 9" url="https://drive.google.com/file/d/1IhZ_Pd19oPrhsN6Kb_uzjHV0Y8iqSDKz/view?usp=sharing" level="9">
+	    <node id="1603482906"/> <!--JEZIRKO KOCIANKA VYCH KONEC-->
 		</item>
-    <item name="puzzles-10" type="puzzles" description="šifra 10" url="" level="10">
+    <item name="puzzles-10" type="puzzles" description="šifra 10" url="https://drive.google.com/file/d/1bnbpNxZHE1WMNlIUxzAUdX2DwkZDTV0W/view?usp=sharing" level="10">
 	    <node id="7253725760"/> <!--Sady národního odboje pomník-->
 		</item>
-    <item name="puzzles-11" type="puzzles" description="šifra 11" url="" level="11">
+    <item name="puzzles-11" type="puzzles" description="šifra 11" url="https://drive.google.com/file/d/1mMbZRGFZSmPKM88dviYlptdk3bvcMjui/view?usp=sharing" level="11">
 			<node id="1526309910"/> <!--KOSTELJZ (Kravi Hora)-->
 			<node id="3889079085"/> <!--KOSTELJZ (Kravi Hora)-->
 			<node id="1390744652"/> <!--KOSTELJZ (Kravi Hora)-->
 		</item>
-    <item name="puzzles-12a" type="puzzles" description="šifra 12a" url="" level="12">
+    <item name="puzzles-12a" type="puzzles" description="šifra 12a" url="https://drive.google.com/file/d/1h9UiZiTvQpioczV6Data3kLQdSVWDnzp/view?usp=sharing" level="12">
 			<node id="361171495"/> <!--TAM KDE ZAČINALA KULATA TMOU (Velodrom)-->
 		</item>
-    <item name="puzzles-12b" type="puzzles" description="šifra 12b" url="" level="12">
+    <item name="puzzles-12b" type="puzzles" description="šifra 12b" url="https://drive.google.com/file/d/1HITYb1jt6CFjTMfnAfsmq_ZygdVWB6Ko/view?usp=sharing" level="12">
 			<node id="6086439192"/> <!--TAM KDE ZAČINALA KULATA TMOU (Vystaviste)-->
 		</item>
-    <item name="puzzles-13" type="puzzles" description="šifra 13" url="" level="13">
+    <item name="puzzles-13" type="puzzles" description="šifra 13" url="https://drive.google.com/file/d/1BQPAWTPrAW483rYoJoWVb7K1hCXXFSYQ/view?usp=sharing" level="13">
 	    <node id="379107095"/> <!--Uvoz schody-->
 	    <node id="3720411796"/> <!--Uvoz schody-->
 	    <node id="379107066"/> <!--Uvoz schody-->
 	    <node id="379107059"/> <!--Uvoz schody-->
 		</item>
-    <item name="puzzles-14" type="puzzles" description="šifra 14" url="" level="14">
-	    <node id=""/> <!--centrum-->
+    <item name="puzzles-14" type="puzzles" description="šifra 14" url="https://drive.google.com/file/d/1NikkMlTL6v7zAy0WVBfUP1iHS2T665J1/view?usp=sharing" level="14">
+	    <node id="164990742"/> <!--Cesta x Řeka, vede na most na Vídeňské-->
+	    <node id="164990756"/> <!--Cesta x Řeka, vede na most na Vídeňské-->
 		</item>
     <item name="badge-final" type="badge" description="projití hry" url="" level="0">
 	    <node id="4272994197"/> <!--Hlavni nadrazi-->
@@ -189,15 +201,16 @@
   </items>
   <bonuses>  <!--Bonusy-->
     <!-- WARNING: time offset (+01:00) is ignored-->
-		<bonus label="bonus-1"  description="bonus 1" url="" display-time="2020-11-06T21:00:00+01:00"/>
+		<bonus label="bonus-1"  description="bonus 1" url="https://drive.google.com/file/d/1b2aa3gfQqJ0ViIo7j4x9Z8HIdbN0okOA/view?usp=sharing" display-time="2020-11-06T21:00:00+01:00"/>
 		<bonus label="bonus-2"  description="bonus 2" url="" display-time="2020-11-06T22:00:00+01:00"/>
-		<bonus label="bonus-3"  description="bonus 3" url="" display-time="2020-11-06T23:00:00+01:00"/>
-		<bonus label="bonus-4"  description="bonus 4" url="" display-time="2020-11-07T00:00:00+01:00"/>
-		<bonus label="bonus-5"  description="bonus 5" url="" display-time="2020-11-07T01:00:00+01:00"/>
-		<bonus label="bonus-6"  description="bonus 6" url="" display-time="2020-11-07T02:00:00+01:00"/>
+		<bonus label="bonus-3"  description="bonus 3" url="https://drive.google.com/file/d/14sOlmxcqV6VEZhSrOg_GfneW3kiECgac/view?usp=sharing" display-time="2020-11-06T23:00:00+01:00"/>
+		<bonus label="bonus-4"  description="bonus 4" url="https://drive.google.com/file/d/1zY_v9IGXg7EIXzMTZeBxk2DAVZ23bIhe/view?usp=sharing" display-time="2020-11-07T00:00:00+01:00"/>
+		<bonus label="bonus-5"  description="bonus 5" url="https://drive.google.com/file/d/1eGPmC6KYDnXSVm5E9FW9uJN3-u42SDOE/view?usp=sharing" display-time="2020-11-07T01:00:00+01:00"/>
+		<bonus label="bonus-6"  description="bonus 6" url="https://drive.google.com/file/d/1Vb8XOiw5Gv7qS6LucEI9gS3at_jx6Ja3/view?usp=sharing" display-time="2020-11-07T02:00:00+01:00"/>
 		<bonus label="bonus-7"  description="bonus 7" url="" display-time="2020-11-07T03:00:00+01:00"/>
-		<bonus label="bonus-8"  description="bonus 8" url="" display-time="2020-11-07T04:00:00+01:00"/>
+		<bonus label="bonus-8"  description="bonus 8" url="https://drive.google.com/file/d/1h7TwvLjg3UFu0mKKYOifNhi1YSuTVgU4/view?usp=sharing" display-time="2020-11-07T04:00:00+01:00"/>
 		<bonus label="bonus-9"  description="bonus 9" url="" display-time="2020-11-07T05:00:00+01:00"/>
 		<bonus label="bonus-10"  description="bonus 10" url="" display-time="2020-11-07T06:00:00+01:00"/>
   </bonuses>
 </game>
+	
