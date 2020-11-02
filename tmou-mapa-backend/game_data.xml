@@ -52,34 +52,34 @@
 		</item>
 
     <!--Fake puzzles-->
-		<item name="puzzles-1a-fake" type="puzzles-fake" description="šifra 1a" url="" level="1">
+		<item name="puzzles-1a-fake" type="puzzles-fake" description="šifra 1a" url="https://drive.google.com/file/d/1c0ZWkxsd1V2VVP8OoPF_rZxNQucQHU4V/view?usp=sharing" level="1">
 			<node id="1280463264"/> <!--Dzelady a paovce-->
 		</item>
-    <item name="puzzles-1b-fake" type="puzzles-fake" description="šifra 1b" url="" level="1">
+    <item name="puzzles-1b-fake" type="puzzles-fake" description="šifra 1b" url="https://drive.google.com/file/d/1_4U1rnTjvQNfoYxw9NquVRgRSZEUSJvP/view?usp=sharing" level="1">
 			<node id="1280463264"/> <!--Dzelady a paovce-->
 		</item>
-    <item name="puzzles-1c-fake" type="puzzles-fake" description="šifra 1c" url="" level="1">
+    <item name="puzzles-1c-fake" type="puzzles-fake" description="šifra 1c" url="https://drive.google.com/file/d/18rBB1wKEaLVLMxY36aAj33Caslxz1Rwo/view?usp=sharing" level="1">
 			<node id="1280463264"/> <!--Dzelady a paovce-->
 		</item>
-    <item name="puzzles-1d-fake" type="puzzles-fake" description="šifra 1d" url="" level="1">
+    <item name="puzzles-1d-fake" type="puzzles-fake" description="šifra 1d" url="https://drive.google.com/file/d/1M2gKqe7u5sGEbvDugCJOp2EyppZyhlIZ/view?usp=sharing" level="1">
 			<node id="1280463264"/> <!--Dzelady a paovce-->
 		</item>
-    <item name="puzzles-1e-fake" type="puzzles-fake" description="šifra 1d" url="" level="1">
+    <item name="puzzles-1e-fake" type="puzzles-fake" description="šifra 1e" url="https://drive.google.com/file/d/1mFHC3gNBRGO7EBIh0jKJFhJWTKXgdsGz/view?usp=sharing" level="1">
 			<node id="1280463264"/> <!--Dzelady a paovce-->
 		</item>
-    <item name="puzzles-1f-fake" type="puzzles-fake" description="šifra 1f" url="" level="1">
+    <item name="puzzles-1f-fake" type="puzzles-fake" description="šifra 1f" url="https://drive.google.com/file/d/122FN1DfkNgI2Uv0RdKDCJU7ZTdtgRc0x/view?usp=sharing" level="1">
 			<node id="1280463264"/> <!--Dzelady a paovce-->
 		</item>
-    <item name="puzzles-1g-fake" type="puzzles-fake" description="šifra 1g" url="" level="1">
+    <item name="puzzles-1g-fake" type="puzzles-fake" description="šifra 1g" url="https://drive.google.com/file/d/1_khSEbfaeJVK65YHt-y5lbWrd2lEwBfA/view?usp=sharing" level="1">
 			<node id="1280463264"/> <!--Dzelady a paovce-->
 		</item>
-    <item name="puzzles-1h-fake" type="puzzles-fake" description="šifra 1g" url="" level="1">
+    <item name="puzzles-1h-fake" type="puzzles-fake" description="šifra 1h" url="https://drive.google.com/file/d/1PRBpTYXFiGGd4ECrgFURekADZUhDsvln/view?usp=sharing" level="1">
 			<node id="1280463264"/> <!--Dzelady a paovce-->
 		</item>
-    <item name="puzzles-1i-fake" type="puzzles-fake" description="šifra 1i" url="" level="1">
+    <item name="puzzles-1i-fake" type="puzzles-fake" description="šifra 1i" url="https://drive.google.com/file/d/13CBkVUx2j_Ma-rX1xtypqKAfcqRyxGqw/view?usp=sharing" level="1">
 			<node id="1280463264"/> <!--Dzelady a paovce-->
 		</item>
-    <item name="puzzles-1j-fake" type="puzzles-fake" description="šifra 1j" url="" level="1">
+    <item name="puzzles-1j-fake" type="puzzles-fake" description="šifra 1j" url="https://drive.google.com/file/d/15Y29uLNsEn8X2dukwUEsSe5E51nXPIIh/view?usp=sharing" level="1">
 			<node id="1280463264"/> <!--Dzelady a paovce-->
 		</item>
 
@@ -213,4 +213,3 @@
 		<bonus label="bonus-10"  description="bonus 10" url="" display-time="2020-11-07T06:00:00+01:00"/>
   </bonuses>
 </game>
-	
