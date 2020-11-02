@@ -1,4 +1,4 @@
-import {TeamState, Node, way, DiscoveryEvent, TeamPosition, MessageWithTimestamp, OutgoingMessage, MessageType, Standings, TeamStanding, Bonus, Skip, Item} from './types';
+import {TeamState, Node, way, DiscoveryEvent, TeamPosition, MessageWithTimestamp, OutgoingMessage, MessageType, Standings, TeamStanding, Bonus, Skip, Item, SkipResult} from './types';
 
 export async function getTeamState(secretPhrase?: string): Promise<TeamState> {
   const url = secretPhrase ? `/game/${secretPhrase}` : '/game';
@@ -77,8 +77,8 @@ export async function checkSkip(secretPhrase?: string): Promise<Skip> {
   return (await res.json());
 }
 
-export async function skip(verified: boolean, secretPhrase?: string): Promise<DiscoveryEvent> {
-  const url = secretPhrase ? `/game/${secretPhrase}/dead` : '/game/dead';
+export async function skip(verified: boolean, secretPhrase?: string): Promise<SkipResult> {
+  const url = secretPhrase ? `/game/${secretPhrase}/skip` : '/game/skip';
   const res = await fetch(url, {
       method: 'POST',
       headers: {

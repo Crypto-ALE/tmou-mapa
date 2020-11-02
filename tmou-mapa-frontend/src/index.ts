@@ -117,17 +117,14 @@ async function run() {
     if (validate) {
       // skip puzzle
       try {
-        // TODO check server response
-        await skip(validate, secretPhrase);
+        let {newItems} = await skip(validate, secretPhrase);
+        drawInventory(newItems);
+        // skip used, disable control
+        updateSkipControl(false);
       } catch (e) {
         alert("Došlo k chybě. Zkuste to znovu a případně kontaktujte organizátory.");
         console.error(e);
       }
-      // get new items
-      let {items} = await getTeamState(secretPhrase);
-      drawInventory(items);
-      // skip used, disable control
-      updateSkipControl(false);
     }
   }
 
