@@ -1,6 +1,6 @@
 use super::db_models::Team;
 use diesel::prelude::*;
-use diesel::dsl::{sql, count};
+use diesel::dsl::{sql};
 use diesel::insert_into;
 use rocket_contrib::databases::diesel;
 
@@ -210,9 +210,10 @@ fn get_bonuses(&self) -> std::result::Result<std::vec::Vec<db_models::Bonus>, er
 
 fn get_game_state_by_puzzles(&self) -> std::result::Result<std::vec::Vec<i64>, errors::TmouError> {
    let game_state: Vec<Option<i64>> = items::items
-       .left_join(teams_items::teams_items.on(items::name.eq(teams_items::item_name).and(items::type_.eq("puzzles"))))
+       .left_join(teams_items::teams_items.on(items::name.eq(teams_items::item_name)))
+       .filter(items::type_.eq("puzzles"))
        .group_by(items::level)
-       .select(count(teams_items::team_id).nullable())
+       .select(sql("COUNT (DISTINCT teams_items.team_id)"))
        .order_by(items::level)
        .load(&*self.conn)?;
 

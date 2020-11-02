@@ -6,7 +6,7 @@ export interface Info {
 }
 
 export interface Item {
-  type: "puzzles" | "badge" | "message" | "checkpoint" | "dead" | "puzzles-fake" | "checkpoint-start",
+  type: "puzzles" | "badge" | "message" | "dead" | "puzzles-fake" | "checkpoint-start",
   url: String,
   level: number,
   name: String,
@@ -36,7 +36,7 @@ export interface TeamState {
 }
 
 export interface DiscoveryEvent {
-  event: "badge-found" | "checkpoint-visited" | "nothing";
+  event: "badge-found" | "puzzles-found" | "nothing" | "checkpoint-start-visited";
   newItems: Item[];
 }
 

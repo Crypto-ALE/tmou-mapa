@@ -106,7 +106,8 @@ a{
 
 
 #panel #messages {
-  height: 20vh;
+  min-height: 20vh;
+  max-height: 40vh;
   overflow: auto;
 }
 
@@ -210,7 +211,6 @@ button#skip.enabled {
   display: flex;
   flex-direction: row;
   margin-bottom:-10px; /*cancel margin-bottom of last row of badges*/
-
 }
 
 #panel #badges .badge{
@@ -352,6 +352,14 @@ button#skip.enabled {
 
 .popup__hidden{
   display: none;
+}
+
+#skipStartPuzzle {
+  margin: 20px 0;
+}
+
+#skipStartPuzzle > select {
+  width: 100%;
 }
 
 button#continue{

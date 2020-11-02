@@ -1,4 +1,4 @@
-import {TeamState, Node, way, DiscoveryEvent, TeamPosition, MessageWithTimestamp, OutgoingMessage, MessageType, Standings, TeamStanding, Bonus, Skip} from './types';
+import {TeamState, Node, way, DiscoveryEvent, TeamPosition, MessageWithTimestamp, OutgoingMessage, MessageType, Standings, TeamStanding, Bonus, Skip, Item} from './types';
 
 export async function getTeamState(secretPhrase?: string): Promise<TeamState> {
   const url = secretPhrase ? `/game/${secretPhrase}` : '/game';
@@ -44,6 +44,26 @@ export async function moveTeam(nodeId: string, secretPhrase?: string): Promise<T
   }
 
     return parseJson(await res.json());
+}
+
+export async function skipStartPuzzle(data: FormData, secretPhrase?: string): Promise<Item[]> {
+  const url = secretPhrase ? `/game/${secretPhrase}/discover` : '/game/discover';
+  const payload = {
+    puzzleName: data.get('puzzleName').toString(),
+  }
+  const res = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json;charset=utf-8'
+      },
+      body: JSON.stringify(payload)
+    });
+
+  if (!res.ok) {
+    throw new Error("Skip puzzle doesn't work, has game started?");
+  }
+
+    return await res.json();
 }
 
 export async function checkSkip(secretPhrase?: string): Promise<Skip> {
@@ -92,6 +112,10 @@ export async function fetchMessages(secretPhrase?: string, limit?: number): Prom
   }
   const res = await fetch(url.toString());
   const messages = await res.json();
+
+  if (!res.ok) {
+    throw new Error("Discover not working, is game running?");
+  }
 
   return timestampMapper(messages);
 }
