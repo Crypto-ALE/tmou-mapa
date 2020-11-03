@@ -211,7 +211,7 @@ fn get_bonuses(&self) -> std::result::Result<std::vec::Vec<db_models::Bonus>, er
 fn get_game_state_by_puzzles(&self) -> std::result::Result<std::vec::Vec<i64>, errors::TmouError> {
    let game_state: Vec<Option<i64>> = items::items
        .left_join(teams_items::teams_items.on(items::name.eq(teams_items::item_name)))
-       .filter(items::type_.eq("puzzles"))
+       .filter(items::type_.eq("puzzles").or(items::type_.eq("puzzles-fake")))
        .group_by(items::level)
        .select(sql("COUNT (DISTINCT teams_items.team_id)"))
        .order_by(items::level)
