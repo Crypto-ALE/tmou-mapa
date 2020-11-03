@@ -270,8 +270,12 @@ impl MessagesDbControl for PostgresDbControl
 
 
 
-pub fn get_team_by_phrase(connection: &diesel::PgConnection, phr:&String) -> Option<Team> {
-    match teams::teams.filter(teams::phrase.eq(phr))
+pub fn get_team_by_phrase(connection: &diesel::PgConnection, phr:&String, testers_only: bool) -> Option<Team> {
+    let mut query = teams::teams.into_boxed().filter(teams::phrase.eq(phr));
+    if testers_only {
+        query = query.filter(teams::is_tester.eq(true));
+    }
+    match query
         .limit(1)
         .first::<Team>(connection) {
             Ok(team) => Some(team),
@@ -279,9 +283,14 @@ pub fn get_team_by_phrase(connection: &diesel::PgConnection, phr:&String) -> Opt
         }
 }
 
-pub fn get_team_by_external_id(connection: &diesel::PgConnection, id: i32) -> std::option::Option<db_models::Team>
+pub fn get_team_by_external_id(connection: &diesel::PgConnection, id: i32, testers_only: bool) -> std::option::Option<db_models::Team>
 {
-    match teams::teams.filter(teams::team_id.eq(id))
+    let mut query = teams::teams.into_boxed().filter(teams::team_id.eq(id));
+    if testers_only {
+        query = query.filter(teams::is_tester.eq(true));
+    }
+
+    match query
         .limit(1)
         .first::<Team>(connection) {
             Ok(team) => Some(team),

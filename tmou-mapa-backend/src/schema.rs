@@ -60,6 +60,7 @@ table! {
         name -> Varchar,
         phrase -> Varchar,
         position -> Int8,
+        is_tester -> Bool,
     }
 }
 

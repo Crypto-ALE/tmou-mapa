@@ -69,6 +69,7 @@ pub struct Team {
     pub name: String,
     pub phrase: String,
     pub position: i64,
+    pub is_tester: bool,
 }
 
 #[derive(Serialize, Deserialize, Clone, Default, Queryable, Insertable, Debug, PartialEq)]
