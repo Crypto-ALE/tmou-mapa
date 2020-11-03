@@ -18,9 +18,9 @@ use lazy_static::lazy_static;
 lazy_static! {
 static ref SKIPS_LIMITS: Vec<Vec<i64>> = vec![
     vec![std::i64::MAX], //level 0 is start, cannot be skipped
-    vec![300, 200],
-    vec![250, 200, 150],
-    vec![250, 225, 200, 150],
+    vec![250, 200],
+    vec![250, 200, 175],
+    vec![250, 225, 175, 150],
     vec![200, 180, 160, 140, 120],
     vec![200, 180, 160, 140, 120, 100],
     vec![200, 180, 160, 140, 120, 100, 80],
