@@ -387,3 +387,11 @@ button#continue{
   margin: auto 0;
   font-size: xxx-large;
 }
+
+#team {
+  display: inline-block;
+  width: 20vw;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
