@@ -25,6 +25,7 @@ use serde::{Deserialize, Serialize};
 use slugify::slugify;
 use log::{info, warn};
 use chrono::{DateTime,FixedOffset};
+use rocket::config::Environment;
 
 mod api_models;
 mod postgres_db_controller;
@@ -386,7 +387,7 @@ fn puzzles_stats(_admin: Admin, conn: PostgresDbConn) -> Result<Json<PuzzlesStat
 }
 
 #[get("/")]
-fn index_cookie(team: db_models::Team, started: Option<GameWasStarted>, running: Option<GameIsRunning>) -> Template {
+fn index_cookie(_forced_https: ForcedHttps, team: db_models::Team, started: Option<GameWasStarted>, running: Option<GameIsRunning>) -> Template {
     let mut context = std::collections::HashMap::<String, String>::new();
     context.insert("teamName".to_string(), team.name);
     index(context, started, running)
@@ -399,7 +400,7 @@ fn index_redirect() -> Redirect {
 }
 
 #[get("/<secret_phrase>")]
-fn team_index(started: Option<GameWasStarted>, running: Option<GameIsRunning>, secret_phrase: &RawStr, conn: PostgresDbConn) -> Result<Template, Redirect> {
+fn team_index(_forced_https: ForcedHttps, started: Option<GameWasStarted>, running: Option<GameIsRunning>, secret_phrase: &RawStr, conn: PostgresDbConn) -> Result<Template, Redirect> {
     let mut context = std::collections::HashMap::<String, String>::new();
     match postgres_db_controller::get_team_by_phrase(&*conn, &secret_phrase.to_string()) {
         Some(team) => {
@@ -447,7 +448,7 @@ fn rocket() -> rocket::Rocket {
     };
 
     rocket::ignite()
-        .register(catchers![not_auth])
+        .register(catchers![not_auth, force_https])
         .attach(PostgresDbConn::fairing())
         .attach(AdHoc::on_attach("Database Migrations", run_migrations))
         .attach(Template::fairing())
@@ -500,6 +501,11 @@ fn not_auth(_req: &Request) -> BasicAuthResponder {
             value: "Basic".into(),
         },
     }
+}
+
+#[catch(505)]
+fn force_https(request: &Request) -> Redirect {
+    Redirect::permanent(format!("https://{}{}", env::var("HOST").unwrap_or("i.tmou.cz".to_string()), request.uri().path()))
 }
 
 struct Admin {}
@@ -612,5 +618,21 @@ impl <'a, 'r> FromRequest<'a, 'r> for GameWasStarted {
         {  rocket::Outcome::Success(GameWasStarted{})}
         else
         {  rocket::Outcome::Failure((rocket::http::Status::Forbidden, ())) }
+    }
+}
+
+struct ForcedHttps {}
+
+impl <'a, 'r> FromRequest<'a, 'r> for ForcedHttps {
+    type Error = ();
+
+    fn from_request(request: &'a Request<'r>) -> Outcome<ForcedHttps, Self::Error> {
+        let is_prod = Environment::active().and_then(|env| Ok(env.is_prod())).unwrap_or(false);
+        match (is_prod, request.headers().get_one("X-Forwarded-Proto")) {
+            (true, Some("http")) => {
+                rocket::Outcome::Failure((Status::HttpVersionNotSupported, ()))
+            },
+            _ => rocket::Outcome::Success(ForcedHttps{})
+        }
     }
 }
