@@ -67,7 +67,7 @@ fn info_phrase(
     secret_phrase: &RawStr,
     conn: PostgresDbConn
 ) -> Result<Json<TeamInfo>, Status> {
-    match postgres_db_controller::get_team_by_phrase(&*conn, &secret_phrase.to_string())
+    match postgres_db_controller::get_team_by_phrase(&*conn, &secret_phrase.to_string(), get_game_execution_mode() == "Test")
     {
         Some(team) => info(team, conn),
         None => Err(Status::NotFound)
@@ -100,7 +100,7 @@ fn skip_phrase(
     secret_phrase: &RawStr,
     conn: PostgresDbConn
 ) -> Result<Json<Skip>, Status> {
-    match postgres_db_controller::get_team_by_phrase(&*conn, &secret_phrase.to_string())
+    match postgres_db_controller::get_team_by_phrase(&*conn, &secret_phrase.to_string(), get_game_execution_mode() == "Test")
     {
         Some(team) => skip(team, conn),
         None => Err(Status::NotFound)
@@ -138,7 +138,7 @@ fn proceed_skip_phrase(
     action: Json<SkipAction>,
     conn: PostgresDbConn
 ) -> Result<Json<SkipResult>, Status> {
-    match postgres_db_controller::get_team_by_phrase(&*conn, &secret_phrase.to_string())
+    match postgres_db_controller::get_team_by_phrase(&*conn, &secret_phrase.to_string(), get_game_execution_mode() == "Test")
     {
         Some(team) => proceed_skip(action, team, conn),
         None => Err(Status::NotFound)
@@ -180,7 +180,7 @@ fn messages_phrase(
     conn: PostgresDbConn,
     limit: Option<i64>
 ) -> Result<Json<Vec<Message>>, Status> {
-    match postgres_db_controller::get_team_by_phrase(&*conn, &secret_phrase.to_string())
+    match postgres_db_controller::get_team_by_phrase(&*conn, &secret_phrase.to_string(), get_game_execution_mode() == "Test")
     {
         Some(team) => messages(team, conn, limit),
         None => Err(Status::NotFound)
@@ -214,7 +214,7 @@ fn go_phrase(
     action: Json<NodeAction>,
     conn: PostgresDbConn
 ) -> Result<Json<TeamInfo>, Status> {
-    match postgres_db_controller::get_team_by_phrase(&*conn, &secret_phrase.to_string())
+    match postgres_db_controller::get_team_by_phrase(&*conn, &secret_phrase.to_string(), get_game_execution_mode() == "Test")
     {
         Some(team) => go(action, team, conn),
         None => Err(Status::NotFound)
@@ -249,7 +249,7 @@ fn discover_phrase(
     secret_phrase: &RawStr,
     conn: PostgresDbConn
 ) -> Result<Json<DiscoveryEvent>, Status> {
-    match postgres_db_controller::get_team_by_phrase(&*conn, &secret_phrase.to_string())
+    match postgres_db_controller::get_team_by_phrase(&*conn, &secret_phrase.to_string(), get_game_execution_mode() == "Test")
     {
         Some(team) => discover(team, conn),
         None => Err(Status::NotFound)
@@ -287,7 +287,7 @@ fn discover_post_phrase(
     conn: PostgresDbConn,
     puzzle_name: Json<PuzzleName>
 ) -> Result<Json<Vec<Item>>, Status> {
-    match postgres_db_controller::get_team_by_phrase(&*conn, &secret_phrase.to_string())
+    match postgres_db_controller::get_team_by_phrase(&*conn, &secret_phrase.to_string(), get_game_execution_mode() == "Test")
     {
         Some(team) => discover_post(team, conn, puzzle_name),
         None => Err(Status::NotFound)
@@ -402,7 +402,7 @@ fn index_redirect() -> Redirect {
 #[get("/<secret_phrase>")]
 fn team_index(_forced_https: ForcedHttps, started: Option<GameWasStarted>, running: Option<GameIsRunning>, secret_phrase: &RawStr, conn: PostgresDbConn) -> Result<Template, Redirect> {
     let mut context = std::collections::HashMap::<String, String>::new();
-    match postgres_db_controller::get_team_by_phrase(&*conn, &secret_phrase.to_string()) {
+    match postgres_db_controller::get_team_by_phrase(&*conn, &secret_phrase.to_string(), get_game_execution_mode() == "Test") {
         Some(team) => {
                 context.insert("teamName".to_string(), team.name);
                 context.insert("secretPhrase".to_string(), secret_phrase.to_string());
@@ -536,6 +536,8 @@ impl<'a, 'r> FromRequest<'a, 'r> for db_models::Team {
             tna: String
         }
         let conn = request.guard::<PostgresDbConn>()?;
+        let testers_only = get_game_execution_mode() == "Test";
+
         request
             .cookies()
             .get("TMOU_SSO_JWT")
@@ -549,7 +551,7 @@ impl<'a, 'r> FromRequest<'a, 'r> for db_models::Team {
             .and_then(|team_web| {
                 let team_id: i32 = team_web.claims.tid;
                 let team_name = team_web.claims.tna;
-                postgres_db_controller::get_team_by_external_id(&*conn, team_id)
+                postgres_db_controller::get_team_by_external_id(&*conn, team_id, testers_only)
                     .or_else(|| {
                         info!("Inserting team {}", &team_name);
                         let new_team = db_models::WebTeam {
@@ -558,13 +560,22 @@ impl<'a, 'r> FromRequest<'a, 'r> for db_models::Team {
                             team_id,
                         };
                         match postgres_db_controller::put_team(&*conn, new_team) {
-                            Ok(team) => Some(team),
+                            // when GAME MODE is TEST, cookie teams are inserted, but don't have an
+                            //access
+                            Ok(team) => match !testers_only {
+                                true => Some(team),
+                                false => None,
+                            }
                             Err(err) => {warn!("Failed to insert team with error: {:?}", err); None}
                         }
                     })
             })
             .or_forward(())
     }
+}
+
+fn get_game_execution_mode () -> String {
+    env::var("TMOU_GAME_EXECUTION_MODE").unwrap_or("Off".to_string())
 }
 
 // when TMOU_GAME_EXECUTION_MODE is:
@@ -574,9 +585,9 @@ impl<'a, 'r> FromRequest<'a, 'r> for db_models::Team {
 // time format: YYYY-MM-DDThh:mm:ss+/-offset, e. g. 2020-10-11-17T00:00+02:00
 fn check_game_state<CompFn>(comp_fn: CompFn) -> bool
 where CompFn: Fn(DateTime<FixedOffset>,DateTime<FixedOffset>)->bool {
-    match env::var("TMOU_GAME_EXECUTION_MODE").as_ref().map(String::as_str) {
-        Ok("On") => true,
-        Ok("Auto") =>
+    match get_game_execution_mode().as_ref() {
+        "On" => true,
+        "Auto" | "Test" =>
         {
             let from = env::var("TMOU_GAME_START")
                         .or_else(|_| panic!("Game mode is set to auto, but TMOU_GAME_START is not set"))

@@ -486,7 +486,7 @@ fn get_puzzle_welcome_message_returns_skip_sequence_on_1()->TmouResult<()>
     let inventory = vec![item("puzzles", 0, "puzzles-0"), item("puzzles", 1, "puzzles-1")];
     let msg = dis::get_puzzle_welcome_message(game_state, inventory).unwrap();
     assert_eq!(msg, String::from("Jste tu 90. K přeskočení šifry potřebujete, aby šifrou prošlo pro: \
-                                  0 bonusů: 300 týmů; 1 a více bonusů: 200 týmů;"));
+                                  0 bonusů: 250 týmů; 1 a více bonusů: 200 týmů;"));
     Ok(())
 }
 

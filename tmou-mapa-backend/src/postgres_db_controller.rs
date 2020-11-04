@@ -211,7 +211,7 @@ fn get_bonuses(&self) -> std::result::Result<std::vec::Vec<db_models::Bonus>, er
 fn get_game_state_by_puzzles(&self) -> std::result::Result<std::vec::Vec<i64>, errors::TmouError> {
    let game_state: Vec<Option<i64>> = items::items
        .left_join(teams_items::teams_items.on(items::name.eq(teams_items::item_name)))
-       .filter(items::type_.eq("puzzles"))
+       .filter(items::type_.eq("puzzles").or(items::type_.eq("puzzles-fake")))
        .group_by(items::level)
        .select(sql("COUNT (DISTINCT teams_items.team_id)"))
        .order_by(items::level)
@@ -270,8 +270,12 @@ impl MessagesDbControl for PostgresDbControl
 
 
 
-pub fn get_team_by_phrase(connection: &diesel::PgConnection, phr:&String) -> Option<Team> {
-    match teams::teams.filter(teams::phrase.eq(phr))
+pub fn get_team_by_phrase(connection: &diesel::PgConnection, phr:&String, testers_only: bool) -> Option<Team> {
+    let mut query = teams::teams.into_boxed().filter(teams::phrase.eq(phr));
+    if testers_only {
+        query = query.filter(teams::is_tester.eq(true));
+    }
+    match query
         .limit(1)
         .first::<Team>(connection) {
             Ok(team) => Some(team),
@@ -279,9 +283,14 @@ pub fn get_team_by_phrase(connection: &diesel::PgConnection, phr:&String) -> Opt
         }
 }
 
-pub fn get_team_by_external_id(connection: &diesel::PgConnection, id: i32) -> std::option::Option<db_models::Team>
+pub fn get_team_by_external_id(connection: &diesel::PgConnection, id: i32, testers_only: bool) -> std::option::Option<db_models::Team>
 {
-    match teams::teams.filter(teams::team_id.eq(id))
+    let mut query = teams::teams.into_boxed().filter(teams::team_id.eq(id));
+    if testers_only {
+        query = query.filter(teams::is_tester.eq(true));
+    }
+
+    match query
         .limit(1)
         .first::<Team>(connection) {
             Ok(team) => Some(team),
