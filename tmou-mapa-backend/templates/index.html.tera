@@ -3,6 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <title>TMOU</title>
+      <link rel="apple-touch-icon" sizes="180x180" href="/static/apple-touch-icon.png">
+      <link rel="icon" type="image/png" sizes="32x32" href="/static/favicon-32x32.png">
+      <link rel="icon" type="image/png" sizes="16x16" href="/static/favicon-16x16.png">
+      <link rel="manifest" href="/static/site.webmanifest">
         <link rel="stylesheet" href="/static/tmou.css">
         <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css"
               integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
@@ -52,7 +56,7 @@
         <div>
           <h2>Akce</h2>
           <div id="control">
-            <button id="discover"{% if gameFinished %} disabled="disabled" {% endif %}>Zkusit štěstí</button>
+            <button id="discover"{% if gameFinished %} disabled="disabled" {% endif %}>Prohledat okolí</button>
             <button id="skip" class="disabled" disabled="disabled" >Přeskočit šifru</button>
           </div>
         </div>
@@ -83,6 +87,7 @@
   <!-- ADD POPUP - CHANGE TO DISPLAY:NONE WHEN HIDDEN-->
   <div class="overlay overlay__hidden" id="overlay"></div>
     <div class="popup popup__hidden" id="popup">
+      <div id="close">X</div>
       <div class="large_badge">
         <!-- <span class="time">00:00</span> -->
         <span class="label"></span>

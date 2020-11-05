@@ -106,8 +106,7 @@ a{
 
 
 #panel #messages {
-  min-height: 20vh;
-  max-height: 40vh;
+  height: 18vh;
   overflow: auto;
 }
 
@@ -210,6 +209,8 @@ button#skip.enabled {
 #panel #badges{
   display: flex;
   flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: flex-start;
   margin-bottom:-10px; /*cancel margin-bottom of last row of badges*/
 }
 
@@ -218,13 +219,13 @@ button#skip.enabled {
   margin:0px 5px 5px 0px;
   background-repeat: no-repeat;
   background-size:contain;
-  width: 3vw;
-  height: 10vh;
+  width: 5vw;
+  height: 7vh;
   }
 
 .large_badge{
   display:block;
-  margin:0px 15px 0px 0px;
+  margin: 0 15px 0px 0px;
   background-repeat: no-repeat;
   background-size:contain;
   width:160px;
@@ -246,20 +247,39 @@ button#skip.enabled {
   display: inline-block;
 }
 
-.badge.lvl1, .large_badge.lvl1, .header_badge.lvl1{
-  background-image: url("./img/badge1_yellow.png")
+.badge-bonus-1{
+  background-image: url("./img/badge-bonus-1.png")
   }
-.badge.lvl2, .large_badge.lvl2, .header_badge.lvl2{
-  background-image: url("./img/badge2_green.png")
+
+.badge-bonus-2{
+  background-image: url("./img/badge-bonus-2.png")
   }
-.badge.lvl3, .large_badge.lvl3, .header_badge.lvl3{
-  background-image: url("./img/badge3_blue.png")
+.badge-bonus-3{
+  background-image: url("./img/badge-bonus-3.png")
   }
-.badge.lvl4, .large_badge.lvl4, .header_badge.lvl4{
-  background-image: url("./img/badge4_red.png")
+.badge-bonus-4{
+  background-image: url("./img/badge-bonus-4.png")
   }
-.badge.lvl5, .large_badge.lvl5, .header_badge.lvl5{
-  background-image: url("./img/badge5_purple.png")
+.badge-bonus-5{
+  background-image: url("./img/badge-bonus-5.png")
+  }
+.badge-bonus-6{
+  background-image: url("./img/badge-bonus-6.png")
+  }
+.badge-bonus-7{
+  background-image: url("./img/badge-bonus-7.png")
+  }
+.badge-bonus-8{
+  background-image: url("./img/badge-bonus-8.png")
+  }
+.badge-bonus-9{
+  background-image: url("./img/badge-bonus-9.png")
+  }
+.badge-bonus-10{
+  background-image: url("./img/badge-bonus-10.png")
+  }
+.badge-bonus-11{
+  background-image: url("./img/badge-bonus-11.png")
   }
 
 .large_badge.shrug{
@@ -270,35 +290,6 @@ button#skip.enabled {
   background-image: url("./img/panacek_sifra.png")
   }
 
-
-.badge span.time{
-  width:100%;
-  text-align:center;
-  color:black;
-  font-weight:300;
-  display:inline-block;
-  font-size:18px;
-  margin-top: 12px;
-}
-
-.large_badge span.time{
-  width:100%;
-  text-align:center;
-  color:black;
-  font-weight:300;
-  display:inline-block;
-  font-size:32px;
-}
-
-.large_badge span.label{
-  width:100%;
-  text-align:center;
-  color:black;
-  font-weight:300;
-  display:inline-block;
-  line-height:90px;
-  font-size:90px;
-}
 
 .large_badge.shrug span{
   display:none;
@@ -333,6 +324,14 @@ button#skip.enabled {
   z-index:2000;
   padding:15px;
   position:relative;
+}
+
+.popup #close {
+  width: 1em;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: large;
+  text-align: center;
 }
 
 .popup h2{
@@ -389,7 +388,7 @@ button#continue{
 }
 
 #team {
-  display: inline-block;
+  display: inline-flex;
   width: 20vw;
   white-space: nowrap;
   overflow: hidden;

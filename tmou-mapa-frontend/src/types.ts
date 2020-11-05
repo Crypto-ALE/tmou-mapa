@@ -7,10 +7,10 @@ export interface Info {
 
 export interface Item {
   type: "puzzles" | "badge" | "message" | "dead" | "puzzles-fake" | "checkpoint-start",
-  url: String,
+  url: string,
   level: number,
-  name: String,
-  description: String,
+  name: string,
+  description: string,
   timestamp: unix_timestamp,
 }
 
@@ -23,7 +23,7 @@ export interface Items {
 export interface Node {
   latLng: LatLngLiteral,
   type: "ordinary" | "junction",
-  data?: String,
+  data?: string,
 }
 
 export type way = LatLngLiteral[][];
@@ -51,9 +51,9 @@ export interface MessageWithTimestamp extends Message {
 }
 
 export interface Bonus {
-  url: String,
-  label: String,
-  description: String,
+  url: string,
+  label: string,
+  description: string,
 }
 
 export type MessageType = "success" | "fail" | "info";

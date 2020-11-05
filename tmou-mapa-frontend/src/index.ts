@@ -79,8 +79,8 @@ async function run() {
       }
       case "badge-found": {
         if (newItems.length) {
-          const {level, description} = newItems[0];
-          showBadgePopup(level.toString(), description.slice(-2));
+          const {name} = newItems[0];
+          showBadgePopup(name);
         } else {
           showTextPopup('No...', 'Jste tu správně, ale odznáček už máte.', 'shrug');
         }
@@ -149,14 +149,12 @@ async function run() {
   drawInventory(items);
   drawNodesAndWays(nodes, ways);
 
-  function showBadgePopup(lvl: string, label: string) {
-    const badgeClass = (lvl ? `lvl${lvl}` : 'shrug') as BadgeClass;
-    document.querySelector('#popup .large_badge > .label').innerHTML = label;
-    const message = lvl === '5' ? 'Gratulujeme k dokončení kvalifikace a budeme se na vás (nejspíš) těšit na startu TMOU.' : 'Řešení je správně, získali jste za něj odznáček.';
-    showTextPopup('Hurá!', message, badgeClass);
+  function showBadgePopup(name: string) {
+    const message = 'Řešení je správně, získali jste za něj odznáček.';
+    showTextPopup('Hurá!', message, name as BadgeClass);
   }
 
-  type BadgeClass = 'lvl1' | 'lvl2' | 'lvl3' | 'lvl4' | 'lvl5' | 'shrug' | 'get_puzzle';
+  type BadgeClass = 'badge' | 'shrug' | 'get_puzzle';
 
   function showSelectPopup(heading: string, options: Item[],badgeClass: BadgeClass) {
     const opts = options.map((opt) => `<option value='${opt.name}'>${opt.description}</option>`);
@@ -194,6 +192,7 @@ async function run() {
       document.querySelector('.popup #continue').addEventListener('click', clickHandler);
     }
     document.querySelector('.popup #continue').addEventListener('click', hidePopup);
+    document.querySelector('.popup #close').addEventListener('click', hidePopup);
     document.addEventListener('keyup', hidePopup);
 
     function hidePopup(e: Event) {
@@ -205,7 +204,11 @@ async function run() {
       document.getElementById('popup').classList.add('popup__hidden');
       document.getElementById('overlay').classList.add('overlay__hidden');
       document.querySelector('#popup .large_badge').classList.value = 'large_badge';
-      e.target.removeEventListener('click', hidePopup);
+      if (clickHandler) {
+        e.target.removeEventListener('click', clickHandler);
+      }
+      document.querySelector('.popup #continue').removeEventListener('click', hidePopup);
+      document.querySelector('.popup #close').removeEventListener('click', hidePopup);
       document.removeEventListener('keyup', hidePopup);
     }
   }
@@ -303,17 +306,15 @@ async function run() {
 
   function drawInventory(items: Item[]) {
     const puzzles = items
-      .filter((item) => item.type === "puzzles" || item.type === "puzzles-fake")
+      .filter((item) => item.type === "puzzles" || item.type === "puzzles-fake" || item.type === "dead")
       .sort((a, b) => a.level - b.level)
       .map(({url, description}) => `<li><a href="${url}" target="_blank">${description}</a>`);
 
     const badges = items
       .filter((item) => item.type === "badge")
       .sort((a, b) => a.timestamp - b.timestamp)
-      .map(({level, description, timestamp}) => {
-        return `<div class="badge lvl${level}">
-            <span class="time">${formatTimestamp(timestamp)}</span>
-          </div>`
+      .map(({name}) => {
+        return `<div class="badge ${name}"></div>`
       })
       .join('');
 
