@@ -154,7 +154,7 @@ a{
 
 #panel .section > form select,input {
   height: 2em;
-  font-size: bigger;
+  font-size: larger;
 }
 
 #control {
@@ -393,4 +393,5 @@ button#continue{
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  justify-content: end;
 }

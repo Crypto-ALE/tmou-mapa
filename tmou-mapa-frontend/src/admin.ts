@@ -26,8 +26,8 @@ async function updateTeamsPositions() {
 
 
 async function updateStandings() {
-    const standings = await getStandings();
-    drawStandings(standings);
+    //const standings = await getStandings();
+    //drawStandings(standings);
 }
 
 

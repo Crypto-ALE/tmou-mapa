@@ -38,7 +38,7 @@
             <select name="recipient" id="recipient">
               <option value={{broadcast_team_id}}>VŠECHNY TÝMY</option>
               {% for any in teams %}
-                <option value={{any.id}}>{{any.name}}</option>
+                <option value={{any.id}}>{{any.name | truncate(length=50)}}</option>
               {% endfor %}
             </select>
           </div>
