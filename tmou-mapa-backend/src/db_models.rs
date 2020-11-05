@@ -117,6 +117,17 @@ pub struct TeamItem {
 }
 
 #[derive(Clone, Default, Debug, PartialEq, Queryable)]
+pub struct TeamStandingsItem {
+    pub team_name: String,
+    pub type_: Option<String>, // puzzles | badge | message
+    pub level: Option<i16>,
+    pub name: Option<String>,
+    pub description: Option<String>,
+    pub timestamp: Option<chrono::NaiveDateTime>
+}
+
+
+#[derive(Clone, Default, Debug, PartialEq, Queryable)]
 pub struct TeamPosition {
     pub team_name: String,
     pub lat: f32,

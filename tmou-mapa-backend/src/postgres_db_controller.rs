@@ -121,12 +121,17 @@ fn get_team_items_with_timestamps(&self, team_id: i32) -> std::result::Result<st
     Ok(team_items)
 }
 
-fn get_teams_badges(&self) -> std::result::Result<std::vec::Vec<db_models::TeamBadge>, errors::TmouError>
+
+
+fn get_teams_items(&self) -> std::result::Result<std::vec::Vec<db_models::TeamStandingsItem>, errors::TmouError>
 {
-    let items:Vec<db_models::TeamBadge> = teams::teams
-        .left_join(teams_items::teams_items.inner_join(items::items.on(items::name.eq(teams_items::item_name).and(items::type_.eq("badge")))))
+    let items:Vec<db_models::TeamStandingsItem> = teams::teams
+        .left_join(teams_items::teams_items.inner_join(items::items.on(items::name.eq(teams_items::item_name))))
         .select((teams::name,
+                 items::type_.nullable(),
+                 items::level.nullable(),
                  items::name.nullable(),
+                 items::description.nullable(),
                  teams_items::timestamp.nullable()))
         .load(&*self.conn)?;
     Ok(items)
@@ -144,7 +149,6 @@ fn get_items_teams(&self) -> std::result::Result<std::vec::Vec<db_models::ItemTe
         .load(&*self.conn)?;
     Ok(items)
 }
-
 
 
 fn put_team_items(&mut self, team_id: i32, items: std::vec::Vec<db_models::Item>) -> std::result::Result<(), errors::TmouError>

@@ -38,7 +38,15 @@ fn get_game_start() -> TmouResult<DateTime<FixedOffset>>
 fn is_eligible_for_fake(time: DateTime<Utc>, inventory: &Items) -> TmouResult<bool>
 {
     let fake_count= inventory.iter().filter(|i| i.type_ =="puzzles-fake".to_string()).count();
-    let eligible_time = get_game_start()? + Duration::minutes(60 + 30 * fake_count as i64);
+    let minutes = match fake_count
+    {
+        0 => 60, 
+        1 => 60 + 30, 2 => 60 + 60,
+        3 => 120 + 20, 4 => 120 + 40 , 5 => 120 + 60,
+        6 => 180 + 15, 7 => 180 + 30 , 8 => 180 + 45, 9 => 180 + 60,
+        _ => 9999 /* doesn't happen */ 
+    };
+    let eligible_time = get_game_start()? + Duration::minutes(minutes);
     Ok(time >= eligible_time)
 }
 
@@ -56,18 +64,6 @@ fn get_fake_puzzles(time: DateTime<Utc>, level: i16, inventory: &Items, it: &db:
         .cloned().collect()
     };
     Ok(res)
-}
-
-fn is_eligible_for_puzzle(level: i16, inventory: &Items, it: &db::Item) -> bool
-{
-    // can take the same or next level
-    (it.level == level || it.level == level + 1) && !inventory.contains(it)
-}
-
-
-fn is_eligible_for_badge(level: i16, inventory: &Items, it: &db::Item) -> bool
-{
-    (it.level <= level) && !inventory.contains(it)
 }
 
 // time parameter added for unit testing
@@ -88,8 +84,12 @@ pub fn discover_node(time: DateTime<Utc>, inventory: &Items, node_contents: &Ite
         {
             "puzzles" => 
             {
-                event = EventType::PuzzlesFound;
-                if is_eligible_for_puzzle(player_level, &current_inventory, item)
+                // all puzzles up to level+1 are visible
+                let visible= item.level <= player_level + 1;
+                //but only those at least your level are active
+                let active = item.level >= player_level;
+                event = if visible {EventType::PuzzlesFound} else {EventType::Nothing};
+                if visible && active && !current_inventory.contains(item)
                 {
                     current_inventory.push(item.clone());
                     newly_discovered_items.push(item.clone());
@@ -97,8 +97,10 @@ pub fn discover_node(time: DateTime<Utc>, inventory: &Items, node_contents: &Ite
             }
             "badge" => 
             {
-                event = EventType::BadgeFound;
-                if is_eligible_for_badge(player_level, &current_inventory, item)
+                // badge on same or lower level is visible
+                let visible = item.level <= player_level;
+                event = if visible {EventType::BadgeFound} else {EventType::Nothing};
+                if visible && !current_inventory.contains(item)
                 {
                     current_inventory.push(item.clone());
                     newly_discovered_items.push(item.clone());
@@ -170,7 +172,17 @@ pub fn get_puzzle_welcome_message(
     game_state: Vec<i64>, 
     inventory: Items) -> TmouResult<String>
 {
-    let max_puzzle_level = inventory.iter().map(|item| item.level as usize).max().unwrap_or(0);
+    let max_puzzle = inventory.iter().max_by_key(|i| i.level);
+    let (welcome, max_puzzle_level) :(String, usize) = match max_puzzle
+    {
+        None => (String::from("Vítejte před hrou!"), 0), // defensive; this should not happen
+        Some(x) => match x.level as usize
+        {
+            0 => (String::from("Vítejte na startu!"), 0),
+            l => (format!("Vítejte na další šifře! V inventáři vám přibyla {}.", x.name), l)
+        }
+    };
+
     let ranking = match max_puzzle_level
     {
         x if x >= game_state.len() => 1,
@@ -186,5 +198,5 @@ pub fn get_puzzle_welcome_message(
         None => String::from("Tuto šifru nelze přeskočit.")
     };
     
-    Ok(format!("Jste tu {}. {}", ranking, bonus_line))
+    Ok(format!("{} Jste tu {}. {}", welcome, ranking, bonus_line))
 }

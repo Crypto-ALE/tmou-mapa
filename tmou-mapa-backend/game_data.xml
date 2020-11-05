@@ -37,10 +37,18 @@
 			<node id="654588693"/> <!--Holedna-->
 		</item>
     <item name="puzzles-1i" type="puzzles" description="šifra 1i" url="https://drive.google.com/file/d/13CBkVUx2j_Ma-rX1xtypqKAfcqRyxGqw/view?usp=sharing" level="1">
-	    <node id="3381802034"/> <!--Horova Z-->
+	    <node id="2188851967"/> <!--Horova Z-->
+	    <node id="2189030292"/> <!--Horova Z-->
+	    <node id="2189030295"/> <!--Horova Z-->
+	    <node id="3302271996"/> <!--Horova Z-->
+	    <node id="3381802012"/> <!--Horova Z-->
+	    <node id="3381802017"/> <!--Horova Z-->
+	    <node id="3381802025"/> <!--Horova Z-->
 	    <node id="3381802028"/> <!--Horova Z-->
-	    <node id="7218108294"/> <!--Horova Z-->
+	    <node id="3381802034"/> <!--Horova Z-->
+	    <node id="4829022721"/> <!--Horova Z-->
 	    <node id="4829022722"/> <!--Horova Z-->
+	    <node id="7218108294"/> <!--Horova Z-->
 		</item>
     <item name="puzzles-1j" type="puzzles" description="šifra 1j" url="https://drive.google.com/file/d/15Y29uLNsEn8X2dukwUEsSe5E51nXPIIh/view?usp=sharing" level="1">
 	    <node id="524156243"/> <!--Rakovec tocna-->
@@ -148,7 +156,7 @@
 	    <node id="164990742"/> <!--Cesta x Řeka, vede na most na Vídeňské-->
 	    <node id="164990756"/> <!--Cesta x Řeka, vede na most na Vídeňské-->
 		</item>
-    <item name="badge-final" type="badge" description="projití hry" url="" level="0">
+    <item name="badge-final" type="badge" description="projití hry" url="" level="14">
 	    <node id="4272994197"/> <!--Hlavni nadrazi-->
 	    <node id="4272994195"/> <!--Hlavni nadrazi-->
 		</item>

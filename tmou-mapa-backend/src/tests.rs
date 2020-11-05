@@ -210,6 +210,45 @@ fn discovery_returns_level_1_puzzles_when_in_level_0()->TmouResult<()>
 }
 
 #[test]
+fn discovery_returns_level_4_puzzles_when_in_level_4()->TmouResult<()> 
+{
+    let inventory = vec![
+        item("puzzles", 4, "puzzles-4a")];
+
+    // checkpoint with puzzles
+    let node_contents = vec![
+        item("puzzles", 4, "puzzles-4b")];
+
+    let expected_inventory = vec![
+        item("puzzles", 4, "puzzles-4a"),
+        item("puzzles", 4, "puzzles-4b")];
+
+    let evt = dis::discover_node(Utc::now(), &inventory, &node_contents)?;
+    assert_eq!(evt.event, dis::EventType::PuzzlesFound);
+    assert_eq!(evt.updated_inventory, expected_inventory);
+    assert_eq!(evt.newly_discovered_items, vec![item("puzzles", 4, "puzzles-4b")]);
+    Ok(())
+}
+
+#[test]
+fn discovery_returns_empty_when_puzzle_level_4_found_and_in_level_5()->TmouResult<()> 
+{
+    let inventory = vec![
+        item("puzzles", 5, "puzzles-5")];
+
+    // checkpoint with puzzles
+    let node_contents = vec![
+        item("puzzles", 4, "puzzles-4b")];
+
+    let evt = dis::discover_node(Utc::now(), &inventory, &node_contents)?;
+    assert_eq!(evt.event, dis::EventType::PuzzlesFound);
+    assert_eq!(evt.updated_inventory, inventory);
+    assert_eq!(evt.newly_discovered_items, Vec::new());
+    Ok(())
+}
+
+ 
+#[test]
 fn discovery_returns_nothing_on_level_1_puzzles_at_start()->TmouResult<()> 
 {
     let inventory = Vec::new();
@@ -219,7 +258,7 @@ fn discovery_returns_nothing_on_level_1_puzzles_at_start()->TmouResult<()>
         item("puzzles", 1, "puzzles-1")];
 
     let evt = dis::discover_node(Utc::now(), &inventory, &node_contents)?;
-    assert_eq!(evt.event, dis::EventType::PuzzlesFound);
+    assert_eq!(evt.event, dis::EventType::Nothing);
     assert_eq!(evt.updated_inventory, inventory);
     assert_eq!(evt.newly_discovered_items, Vec::new());
     Ok(())
@@ -335,6 +374,45 @@ fn discovery_returns_nothing_when_inventory_already_contains_badge()->TmouResult
     assert_eq!(evt.newly_discovered_items, Vec::new());
     Ok(())
 }
+
+#[test]
+fn discovery_returns_final_badge_when_on_proper_level()->TmouResult<()> 
+{
+    // ready for a new badge
+    let inventory = vec![item("puzzles", 14, "puzzles-14")];
+
+    // new badge
+    let node_contents = vec![item("badge", 14, "final-badge")];
+
+    let expected_inventory = vec![
+        item("puzzles", 14, "puzzles-14"),
+        item("badge", 14, "final-badge")];
+
+    let evt = dis::discover_node(Utc::now(), &inventory, &node_contents)?;
+    assert_eq!(evt.event, dis::EventType::BadgeFound);
+    assert_eq!(evt.updated_inventory, expected_inventory);
+    assert_eq!(evt.newly_discovered_items, vec![item("badge", 14, "final-badge")]);
+    Ok(())
+}
+
+
+#[test]
+fn discovery_returns_nothing_when_on_badge_but_insufficient_level()->TmouResult<()> 
+{
+    // ready for a new badge
+    let inventory = vec![item("puzzles", 13, "puzzles-13")];
+
+    // new badge
+    let node_contents = vec![item("badge", 14, "final-badge")];
+
+    let evt = dis::discover_node(Utc::now(), &inventory, &node_contents)?;
+    assert_eq!(evt.event, dis::EventType::Nothing);
+    assert_eq!(evt.updated_inventory, inventory);
+    assert_eq!(evt.newly_discovered_items, Vec::new());
+    Ok(())
+}
+
+
 
 #[test]
 fn discovery_returns_fakes_on_checkpoint_when_eligible_nothing_owned()->TmouResult<()> 
@@ -465,7 +543,7 @@ fn get_puzzle_welcome_message_returns_nonskippable_before_start()->TmouResult<()
     let game_state = vec!(100, 90, 80, 70);
     let inventory = Vec::new();
     let msg = dis::get_puzzle_welcome_message(game_state, inventory).unwrap();
-    assert_eq!(msg, String::from("Jste tu 100. Tuto šifru nelze přeskočit."));
+    assert_eq!(msg, String::from("Vítejte před hrou! Jste tu 100. Tuto šifru nelze přeskočit."));
     Ok(())
 }
 
@@ -473,9 +551,9 @@ fn get_puzzle_welcome_message_returns_nonskippable_before_start()->TmouResult<()
 fn get_puzzle_welcome_message_returns_nonskippable_on_start()->TmouResult<()>
 {
     let game_state = vec!(100, 90, 80, 70);
-    let inventory = vec![item("puzzles", 0, "puzzles-0")];
+    let inventory = vec![item("puzzles", 0, "šifra 0a")];
     let msg = dis::get_puzzle_welcome_message(game_state, inventory).unwrap();
-    assert_eq!(msg, String::from("Jste tu 100. Tuto šifru nelze přeskočit."));
+    assert_eq!(msg, String::from("Vítejte na startu! Jste tu 100. Tuto šifru nelze přeskočit."));
     Ok(())
 }
 
@@ -483,9 +561,9 @@ fn get_puzzle_welcome_message_returns_nonskippable_on_start()->TmouResult<()>
 fn get_puzzle_welcome_message_returns_skip_sequence_on_1()->TmouResult<()>
 {
     let game_state = vec!(100, 90, 80, 70);
-    let inventory = vec![item("puzzles", 0, "puzzles-0"), item("puzzles", 1, "puzzles-1")];
+    let inventory = vec![item("puzzles", 0, "puzzles-0"), item("puzzles", 1, "šifra 1")];
     let msg = dis::get_puzzle_welcome_message(game_state, inventory).unwrap();
-    assert_eq!(msg, String::from("Jste tu 90. K přeskočení šifry potřebujete, aby šifrou prošlo pro: \
+    assert_eq!(msg, String::from("Vítejte na další šifře! V inventáři vám přibyla šifra 1. Jste tu 90. K přeskočení šifry potřebujete, aby šifrou prošlo pro: \
                                   0 bonusů: 250 týmů; 1 a více bonusů: 200 týmů;"));
     Ok(())
 }
@@ -519,7 +597,7 @@ fn discover_fake_puzzle_succeeds_when_eligible_some_owned()->TmouResult<()>
         item("puzzles-fake", 1, "puzzles-1d-fake")
         ];
         
-    let time = Utc.ymd(2020, 11, 06).and_hms(22, 30, 0) - Duration::hours(1);
+    let time = Utc.ymd(2020, 11, 06).and_hms(22, 20, 0) - Duration::hours(1);
     let updated_inventory = dis::discover_fake_puzzle(time, &inventory, 
         &node_contents, &String::from("puzzles-1d-fake"))?;
     assert_eq!(updated_inventory, expected_inventory);
@@ -546,7 +624,7 @@ fn discover_fake_puzzle_fails_on_checkpoint_when_not_eligible_some_owned()->Tmou
         item("puzzles-fake", 1, "puzzles-1d-fake"),
         ];
 
-    let time = Utc.ymd(2020, 11, 06).and_hms(22, 29, 0) - Duration::hours(1);
+    let time = Utc.ymd(2020, 11, 06).and_hms(22, 19, 0) - Duration::hours(1);
     let updated_inventory = dis::discover_fake_puzzle(time, &inventory, 
         &node_contents, &String::from("puzzles-1d-fake"));
     assert!(!updated_inventory.is_ok());
