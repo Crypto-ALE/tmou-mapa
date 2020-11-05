@@ -120,17 +120,24 @@ pub struct IncomingMessage
 }
 
 #[derive(Debug, Serialize, Deserialize)]
+pub struct PuzzleResult
+{
+    pub solved: bool,
+    pub timestamp: chrono::NaiveDateTime
+}
+
+#[derive(Debug, Serialize, Deserialize)]
 pub struct TeamStanding
 {
    pub rank: u16,
    pub name: String,
-   pub badge_timestamps: HashMap<String, chrono::NaiveDateTime>
+   pub puzzles: HashMap<u16, PuzzleResult>,
+   pub badge_count: u16 
 }
 
 #[derive(Serialize, Deserialize)]
 pub struct Standings
 {
-    pub badge_labels: Vec<String>,
     pub standings: Vec<TeamStanding>
 }
 
