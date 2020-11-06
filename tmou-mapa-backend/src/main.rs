@@ -64,6 +64,7 @@ fn info_cookie(
 
 #[get("/game/<secret_phrase>")]
 fn info_phrase(
+    _admin: Admin,
     _started: GameWasStarted,
     secret_phrase: &RawStr,
     conn: PostgresDbConn
@@ -97,6 +98,7 @@ fn skip_cookie(
 
 #[get("/game/<secret_phrase>/skip")]
 fn skip_phrase(
+    _admin: Admin,
     _started: GameWasStarted,
     secret_phrase: &RawStr,
     conn: PostgresDbConn
@@ -134,6 +136,7 @@ fn proceed_skip_cookie(
 
 #[post("/game/<secret_phrase>/skip", data="<action>")]
 fn proceed_skip_phrase(
+    _admin: Admin,
     _started: GameWasStarted,
     secret_phrase: &RawStr,
     action: Json<SkipAction>,
@@ -176,6 +179,7 @@ fn messages_cookie(
 
 #[get("/messages/<secret_phrase>?<limit>")]
 fn messages_phrase(
+    _admin: Admin,
     _started: GameWasStarted,
     secret_phrase: &RawStr,
     conn: PostgresDbConn,
@@ -210,6 +214,7 @@ fn go_cookie(
 
 #[post("/game/<secret_phrase>", data = "<action>")]
 fn go_phrase(
+    _admin: Admin,
     _started: GameWasStarted,
     secret_phrase: &RawStr,
     action: Json<NodeAction>,
@@ -246,6 +251,7 @@ fn discover_cookie(
 
 #[get("/game/<secret_phrase>/discover")]
 fn discover_phrase(
+    _admin: Admin,
     _running: GameIsRunning,
     secret_phrase: &RawStr,
     conn: PostgresDbConn
@@ -283,6 +289,7 @@ fn discover_post_cookie(
 
 #[post("/game/<secret_phrase>/discover", data = "<puzzle_name>")]
 fn discover_post_phrase(
+    _admin: Admin,
     _running: GameIsRunning,
     secret_phrase: &RawStr,
     conn: PostgresDbConn,
@@ -401,7 +408,7 @@ fn index_redirect() -> Redirect {
 }
 
 #[get("/<secret_phrase>")]
-fn team_index(_forced_https: ForcedHttps, started: Option<GameWasStarted>, running: Option<GameIsRunning>, secret_phrase: &RawStr, conn: PostgresDbConn) -> Result<Template, Redirect> {
+fn team_index(_admin: Admin, _forced_https: ForcedHttps, started: Option<GameWasStarted>, running: Option<GameIsRunning>, secret_phrase: &RawStr, conn: PostgresDbConn) -> Result<Template, Redirect> {
     let mut context = std::collections::HashMap::<String, String>::new();
     match postgres_db_controller::get_team_by_phrase(&*conn, &secret_phrase.to_string(), get_game_execution_mode() == "Test") {
         Some(team) => {
