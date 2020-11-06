@@ -43,7 +43,7 @@ function drawStandings(standings: Standings) {
       const ts = t.puzzles[j];
       if (j == 1) {
     const start_score = `${t.start_puzzles_solved}/10`;
-        s += `<td title="${ts.dead ? start_score : ts ? formatTimestamp(ts.timestamp) : ''}">${ ts.dead ? '💀' : start_score}</td>`;
+        s += `<td title="${ts?.dead ? start_score : ts ? formatTimestamp(ts.timestamp) : ''}">${ ts?.dead ? '💀' : start_score}</td>`;
       } else {
       s += `<td title="${ts ? formatTimestamp(ts.timestamp) : ''}">${ ts ? (ts.dead ? '💀' : '✓') : '✗'}</td>`;
       }
