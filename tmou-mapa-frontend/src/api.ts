@@ -187,7 +187,7 @@ export async function getStandings(): Promise<Standings> {
     for (const [k, v] of Object.entries(s.puzzles)) {
       puzzles[parseInt(k, 10)] = {
         dead: (v as any).dead,
-        timestamp: timestampMapper([{timestamp: (v as any).timestamp}])[0] //disgusting hack
+        timestamp: Date.parse((v as any).timestamp+"+00:00")//disgusting hack
       }
     }
     return {
@@ -197,6 +197,11 @@ export async function getStandings(): Promise<Standings> {
       badge_count: s.badge_count,
       start_puzzles_solved: s.start_puzzles_solved,
     }
+  }).sort((a, b) => {
+    if (a.rank == b.rank) {
+      return a.start_puzzles_solved - b.start_puzzles_solved;
+    }
+    return a.rank - b.rank;
   })
   return {standings};
 }
