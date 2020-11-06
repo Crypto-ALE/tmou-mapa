@@ -261,40 +261,40 @@
     </items>
     <bonuses>  <!--Bonusy-->
         <!-- WARNING: time offset (+01:00) is ignored-->
-        <bonus label="bonus-1" description="bonus 1"
+        <bonus label="bonus-1" description="bonus 21:00"
                url="https://drive.google.com/file/d/1b2aa3gfQqJ0ViIo7j4x9Z8HIdbN0okOA/view?usp=sharing"
                display-time="2020-11-06T21:00:00+01:00"/>
-        <bonus label="bonus-2" description="bonus 2"
+        <bonus label="bonus-2" description="bonus 22:00"
                url="https://drive.google.com/file/d/1Unr6hiQt56NlARXsJjPr9PVz95eIoXsr/view?usp=sharing"
                display-time="2020-11-06T22:00:00+01:00"/>
-        <bonus label="bonus-3" description="bonus 3"
+        <bonus label="bonus-3" description="bonus 23:00"
                url="https://drive.google.com/file/d/14sOlmxcqV6VEZhSrOg_GfneW3kiECgac/view?usp=sharing"
                display-time="2020-11-06T23:00:00+01:00"/>
-        <bonus label="bonus-4" description="bonus 4"
+        <bonus label="bonus-4" description="bonus 00:00"
                url="https://drive.google.com/file/d/1zY_v9IGXg7EIXzMTZeBxk2DAVZ23bIhe/view?usp=sharing"
                display-time="2020-11-07T00:00:00+01:00"/>
-        <bonus label="bonus-5" description="bonus 5"
+        <bonus label="bonus-5" description="bonus 01:00"
                url="https://drive.google.com/file/d/1eGPmC6KYDnXSVm5E9FW9uJN3-u42SDOE/view?usp=sharing"
                display-time="2020-11-07T01:00:00+01:00"/>
-        <bonus label="bonus-6" description="bonus 6"
+        <bonus label="bonus-6" description="bonus 02:00"
                url="https://drive.google.com/file/d/1Vb8XOiw5Gv7qS6LucEI9gS3at_jx6Ja3/view?usp=sharing"
                display-time="2020-11-07T02:00:00+01:00"/>
-        <bonus label="bonus-7" description="bonus 7"
+        <bonus label="bonus-7" description="bonus 03:00"
                url="https://drive.google.com/file/d/1CTruj0K5KH3csOxkbVRLnu6tNsHy5SIB/view?usp=sharing"
                display-time="2020-11-07T03:00:00+01:00"/>
-        <bonus label="bonus-8" description="bonus 8"
+        <bonus label="bonus-8" description="bonus 04:00"
                url="https://drive.google.com/file/d/1h7TwvLjg3UFu0mKKYOifNhi1YSuTVgU4/view?usp=sharing"
                display-time="2020-11-07T04:00:00+01:00"/>
-        <bonus label="bonus-9" description="bonus 9"
+        <bonus label="bonus-9" description="bonus 05:00"
                url="https://drive.google.com/file/d/1SGw2lnMaqRIg2iXOlSfYyfT_Vz34oGKy/view?usp=sharing"
                display-time="2020-11-07T05:00:00+01:00"/>
-        <bonus label="bonus-10" description="bonus 10"
+        <bonus label="bonus-10" description="bonus 06:00"
                url="https://drive.google.com/file/d/1QDFzGFyat85Evt4C83aU-xT8_80phz69/view?usp=sharing"
                display-time="2020-11-07T06:00:00+01:00"/>
-        <bonus label="bonus-11" description="bonus 11"
+        <bonus label="bonus-11" description="bonus 07:00"
                url="https://drive.google.com/file/d/19a0hgOnLA1xC__7SFQ2qek-j4DPWdRqR/view?usp=sharing"
                display-time="2020-11-07T07:00:00+01:00"/>
-        <bonus label="bonus-12" description="bonus 12"
+        <bonus label="bonus-12" description="bonus 08:00"
                url="https://drive.google.com/file/d/124jX0-8d-g_mHnKNl8aqERL1pqEw2q_X/view?usp=sharing"
                display-time="2020-11-07T08:00:00+01:00"/>
     </bonuses>
