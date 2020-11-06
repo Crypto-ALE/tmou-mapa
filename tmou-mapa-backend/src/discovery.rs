@@ -179,6 +179,7 @@ pub fn get_puzzle_welcome_message(
         Some(x) => match x.level as usize
         {
             0 => (String::from("Vítejte na startu!"), 0),
+            15 => (String::from("Gratulujeme k dokončení hry."), 15),
             l => (format!("Vítejte na další šifře! V inventáři vám přibyla {}.", x.name), l)
         }
     };
@@ -192,11 +193,14 @@ pub fn get_puzzle_welcome_message(
     let bonus_line = match skips_limits
     {
         Some(limits) => limits.iter().enumerate()
-          .fold(String::from("K přeskočení šifry potřebujete, aby šifrou prošlo pro:"), 
+          .fold(String::from("K přeskočení šifry potřebujete, aby šifrou prošlo pro:"),
           |acc, (i, l)| acc + &format_skip_limit(i,limits.len() - 1, *l)),
-  
-        None => String::from("Tuto šifru nelze přeskočit.")
+
+        None => match max_puzzle_level {
+            15 => String::from(""),
+            _ => String::from("Tuto šifru nelze přeskočit."),
+        }
     };
-    
+
     Ok(format!("{} Jste tu {}. {}", welcome, ranking, bonus_line))
 }
