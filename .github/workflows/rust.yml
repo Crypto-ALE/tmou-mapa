@@ -26,4 +26,7 @@ jobs:
     - name: Run tests
       env:
         ROCKET_DATABASES: '{postgres={url="${{ secrets.DB_URL }}",pool_size=1}}'
+        TMOU_GAME_END: '2020-11-07T12:00:00+01:00'
+        TMOU_GAME_EXECUTION_MODE: 'On'
+        TMOU_GAME_START: '2020-11-06T20:00:00+01:00'
       run: cargo test --verbose
