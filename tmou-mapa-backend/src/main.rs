@@ -43,6 +43,7 @@ mod schema;
 mod discovery;
 mod datetime_operators;
 mod skip;
+mod standings;
 
 use api_models::*;
 use postgres_db_controller::PostgresDbControl;
