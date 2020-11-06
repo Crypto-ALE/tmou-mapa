@@ -313,8 +313,8 @@ async function run() {
     const badges = items
       .filter((item) => item.type === "badge")
       .sort((a, b) => a.timestamp - b.timestamp)
-      .map(({name}) => {
-        return `<div class="badge ${name}"></div>`
+      .map(({name, description}) => {
+        return `<div class="badge ${name}" title="${description}"></div>`
       })
       .join('');
 

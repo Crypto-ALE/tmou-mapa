@@ -64,16 +64,20 @@ export interface OutgoingMessage {
 }
 
 export interface Standings {
-  badge_labels: string[],
   standings: TeamStanding[],
 }
 
 export interface TeamStanding {
   rank: number,
   name: string,
-  badge_timestamps: {
-    [key: string]: unix_timestamp
-  }
+  puzzles: {
+    [key: number]: {
+      dead: boolean,
+      timestamp: unix_timestamp,
+    }
+  },
+  badge_count: number,
+  start_puzzles_solved: number,
 }
 
 interface Message {
