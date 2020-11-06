@@ -646,7 +646,7 @@ fn discover_fake_puzzle_fails_on_checkpoint_when_not_eligible_some_owned()->Tmou
 #[allow(unused)]
 fn team(rank: u16, name: &str, ps: Vec<(u16, bool, u32)>) -> api::TeamStanding
 {
-    let start_puzzles_solved = ps.iter().filter(|(level,_,_)| *level == 0).count() as u16;
+    let start_puzzles_solved = ps.iter().filter(|(level,_,_)| *level == 1).count() as u16;
     api::TeamStanding{
         rank: rank,
         name: name.to_string(),
@@ -805,19 +805,21 @@ fn calculate_teams_standings_outputs_2_complex_teams_sorted()->TmouResult<()>
     ]);
     a.append(&mut b);
 
-    let res_1 = team(1, "Bazinga", vec![
+    let mut res_1 = team(1, "Bazinga", vec![
         (1, false, 5),
         (2, true, 20),
         (3, false, 30),
         (4, false, 50)
     ]);
+    res_1.start_puzzles_solved = 2;
 
-    let res_2 = team(2, "Absolutno", vec![
+    let mut res_2 = team(2, "Absolutno", vec![
         (1, true, 5),
         (2, true, 20),
         (3, false, 30),
         (4, false, 50)
     ]);
+    res_2.start_puzzles_solved = 4;
 
 
     let expected = vec![res_1, res_2];

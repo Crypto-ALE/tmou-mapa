@@ -27,7 +27,7 @@ fn item_vec_to_standing(name: String, its: Vec<ResultItem>) -> api::TeamStanding
     // badge count is trivial
     let badge_count = badges.len() as u16;
     // so is start puzzles count
-    let start_puzzles_solved = puzzles_vec.iter().filter(|p| p.level == 0).count() as u16;
+    let start_puzzles_solved = puzzles_vec.iter().filter(|p| p.level == 1).count() as u16;
     // convert dead vector to set of dead levels for better use
     let dead_set:HashSet<i16> = deads.into_iter().map(|d| d.level).collect();
     // sort puzzles by time descending so that last puzzle (earlies) with the same level ends up in the hash map
