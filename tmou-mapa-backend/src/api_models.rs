@@ -119,20 +119,21 @@ pub struct IncomingMessage
     pub message: Message,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(PartialEq, Debug, Serialize, Deserialize)]
 pub struct PuzzleResult
 {
-    pub solved: bool,
+    pub dead: bool,
     pub timestamp: chrono::NaiveDateTime
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Serialize, Deserialize)]
 pub struct TeamStanding
 {
    pub rank: u16,
    pub name: String,
    pub puzzles: HashMap<u16, PuzzleResult>,
-   pub badge_count: u16 
+   pub badge_count: u16,
+   pub start_puzzles_solved: u16 
 }
 
 #[derive(Serialize, Deserialize)]

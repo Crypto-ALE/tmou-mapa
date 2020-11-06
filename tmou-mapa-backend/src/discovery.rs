@@ -180,7 +180,10 @@ pub fn get_puzzle_welcome_message(
         {
             0 => (String::from("Vítejte na startu!"), 0),
             15 => (String::from("Gratulujeme k dokončení hry."), 15),
-            l => (format!("Vítejte na další šifře! V inventáři vám přibyla {}.", x.name), l)
+            l => (format!("Vítejte na další šifře! Přibyla vám {}.", match &x.description {
+                Some(d) => d,
+                None => &x.name
+            }), l)
         }
     };
 
