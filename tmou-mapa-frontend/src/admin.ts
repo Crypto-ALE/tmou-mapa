@@ -26,26 +26,30 @@ async function updateTeamsPositions() {
 
 
 async function updateStandings() {
-    //const standings = await getStandings();
-    //drawStandings(standings);
+    const standings = await getStandings();
+    drawStandings(standings);
 }
 
 
 function drawStandings(standings: Standings) {
   let s = "<table><tr><th>#</th><th>Tým</th>";
-  for (const bl of standings.badge_labels) {
-    const t = bl.slice(-3)
-    s += `<th class="header_badge lvl${t[0]}"><span>${t}</span></th>`;
+  for (let i=0; i < 16; i++) {
+    s += `<th><span>${i}</span></th>`;
   }
   s += '</tr>';
   for (const t of standings.standings) {
     s += `<tr><td style="text-align: left">${t.rank}</td><td style="text-align: left">${t.name}</td>`;
-    for (const bl of standings.badge_labels) {
-      const ts = t.badge_timestamps[bl];
-      s += `<td title="${ts ? formatTimestamp(ts) : ''}">${ ts ? '✓' : '✗'}</td>`;
+    for (let j=0; j < 16; j++) {
+      const ts = t.puzzles[j];
+      if (j == 1) {
+        s += `<td title="${ts ? formatTimestamp(ts.timestamp) : ''}">${ t.start_puzzles_solved}/10</td>`;
+      } else {
+      s += `<td title="${ts ? formatTimestamp(ts.timestamp) : ''}">${ ts ? '✓' : '✗'}</td>`;
+      }
     }
     s += `</tr>`
   }
+  s += '</table>';
   document.getElementById('standings').innerHTML = s;
 }
 

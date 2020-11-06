@@ -158,20 +158,47 @@ export async function sendMessage(data: FormData, secretPhrase?: string) {
 
 export async function getStandings(): Promise<Standings> {
   const res = await fetch(`/admin/standings`);
-  const {badge_labels, standings: standings_raw} = await res.json();
+  const stats_json = await res.json();
+    //"standings": [
+        //{
+            //"rank": 1,
+            //"name": "Maštěné ředkvičky",
+            //"puzzles": {
+                //"2": {
+                    //"dead": false,
+                    //"timestamp": "2020-11-04T20:13:03.486773"
+                //},
+                //"0": {
+                    //"dead": false,
+                    //"timestamp": "2020-11-04T20:12:25.532593"
+                //},
+                //"1": {
+                    //"dead": false,
+                    //"timestamp": "2020-11-04T20:12:50.784585"
+                //}
+            //},
+            //"badge_count": 0,
+            //"start_puzzles_solved": 1
+        //}
+    //]
 
-  const standings: TeamStanding[] = standings_raw.map((item: any) => {
-    return {
-      name: item.name,
-      rank: item.rank,
-      badge_timestamps: Object.entries(item.badge_timestamps).reduce((acc, [k,v]) => {
-        acc[k] = Date.parse(v+"+00:00");
-        return acc;
-      }, {}),
+  const standings = stats_json.standings.map((s: any) => {
+    const puzzles = {};
+    for (const [k, v] of Object.entries(s.puzzles)) {
+      puzzles[parseInt(k, 10)] = {
+        dead: (v as any).dead,
+        timestamp: timestampMapper([{timestamp: (v as any).timestamp}])[0] //disgusting hack
+      }
     }
-  });
-
-  return {badge_labels, standings};
+    return {
+      rank: s.rank,
+      name: s.name,
+      puzzles,
+      badge_count: s.badge_count,
+      start_puzzles_solved: s.start_puzzles_solved,
+    }
+  })
+  return {standings};
 }
 
 function parseJson(res: any): TeamState {

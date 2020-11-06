@@ -372,6 +372,10 @@ button#continue{
   background: #33FF33aa;
 }
 
+#standings {
+  height: 50vh;
+  overflow: auto;
+}
 
 #standings > table {
   width: 100%;
