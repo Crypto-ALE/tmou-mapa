@@ -327,7 +327,7 @@ async function run() {
 
   function drawBonuses(items: Bonus[]) {
     const bonuses = items
-      .map(({url, label}) => `<li><a href="${url}" target="_blank">${label}</a>`);
+      .map(({url, description}) => `<li><a href="${url}" target="_blank">${description}</a>`);
 
     document.querySelector('#bonuses>#bonuses-list').innerHTML = `<ul>${bonuses.join('')}</ul>`;
 
