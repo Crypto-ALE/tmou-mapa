@@ -1,4 +1,5 @@
 import {getMap} from './map';
+import {saveAs} from 'file-saver';
 import {
   Circle,
   layerGroup,
@@ -62,6 +63,11 @@ function drawTeamsPositions(teamsPositions: TeamPosition[]) {
     c.addTo(teamsPositionsLayer);
   }
 
+  document.getElementById('export').onclick = async (e: Event) => {
+    e.preventDefault();
+    await export_results();
+  }
+
   document.getElementById('discover').onclick = async (e: Event) => {
     e.preventDefault();
     const formEl = document.getElementById("messageForm") as HTMLFormElement;
@@ -75,6 +81,44 @@ function drawTeamsPositions(teamsPositions: TeamPosition[]) {
       alert("Nepovedlo se odeslat zprávu.");
     }
   }
+}
+
+async function export_results() {
+  let standings = await getStandings();
+  function gen_header() {
+    let s = '<thead><tr><th class="bg-yellow-tmou">Pořadí</th><th class="bg-yellow-tmou">Název týmu</th><th class="bg-yellow-tmou">START</th>';
+    for (let i=1; i < 15; i++) {
+      s += `<th class="bg-yellow-tmou">${i}</th>`;
+    }
+    s += `<th class="bg-yellow-tmou">Cíl</th><th class="bg-yellow-tmou">Bonusy</th></tr></thead>`;
+
+    return s;
+  }
+
+  let s = '<div class="table-responsive">';
+  s += '<table class="stick-2-left-columns datagrid datagrid-grid w-full" cellspacing="0" cellpadding="0">';
+  for (const c of standings.standings) {
+    if (c.rank % 50 == 1) {
+      s += gen_header();
+    }
+    s += `<tr><td class="text-center">${c.rank}</td><td class="text-center">${c.name}</td>`;
+    for (let i=0; i < 16; i++) {
+      const ts = c.puzzles[i];
+      if (!ts) {
+        s += '<td></td>';
+        continue;
+      }
+      const dead_class = ts.dead ? 'bg-fail-tmou' : '';
+      const cell_val = i == 0 ? `${c.start_puzzles_solved}/10` : formatTimestamp(ts.timestamp);
+      s += `<td class="text-center ${dead_class}">${cell_val}</td>`;
+    }
+    s += `<td class="text-center">${c.badge_count}</td>`;
+    s += '</tr>';
+  }
+    s += '</table></div>';
+  const blob = new Blob([s], {type: "text/plain;charset=utf-8"});
+
+  saveAs(blob, "vysledky.txt");
 }
 
 function formatTimestamp(timestamp: number) {

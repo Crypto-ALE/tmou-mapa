@@ -197,12 +197,8 @@ export async function getStandings(): Promise<Standings> {
       badge_count: s.badge_count,
       start_puzzles_solved: s.start_puzzles_solved,
     }
-  }).sort((a, b) => {
-    if (a.rank == b.rank) {
-      return a.start_puzzles_solved - b.start_puzzles_solved;
-    }
-    return a.rank - b.rank;
   })
+
   return {standings};
 }
 
