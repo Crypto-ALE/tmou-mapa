@@ -1447,7 +1447,7 @@ checksum = "53953d2d3a5ad81d9f844a32f14ebb121f50b650cd59d0ee2a07cf13c617efed"
 
 [[package]]
 name = "tmou-mapa-backend"
-version = "0.1.0"
+version = "1.0.0"
 dependencies = [
  "chrono",
  "diesel",
