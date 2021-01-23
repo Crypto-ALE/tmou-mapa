@@ -55,7 +55,7 @@
         },
         {
             "type": "shell",
-            "command": "cargo test -- --skip admin_is_protected_by_password",
+            "command": "cargo test -- --skip admin_is_protected_by_password -- skip phrase_are_guarded_by_admin",
             "label": "Rust: cargo test without failing admin",
             "group": {
                 "kind": "build",
