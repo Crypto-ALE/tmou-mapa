@@ -14,6 +14,15 @@ Aplikace pro servírování mapových dlaždic, uzlů a správy týmů pro onlin
 2. `rustup override set nightly` 
 3. `ROCKET_DATABASES='{postgres={url="postgres://USER:PASSWORD@SERVER:PORT/DB_NAME"}}' cargo run` 
 
+## Proměnné prostředí
+
+Název | Formát | příklad | popis
+---|---|---|---
+TMOU_GAME_EXECUTION_MODE | On/Off/Auto | Auto | On - hra je zapnuta, Off, hra je vypnuta, Auto - hra se řídí proměnnými START a END (viz níže)
+TMOU_GAME_START | Čas podle [RFC3339](https://tools.ietf.org/html/rfc3339) | 2020-11-06T20:00:00+01:00 | Začátek hry; Čas, před kterým backend vrací chybu 
+TMOU_GAME_END | Čas podle [RFC3339](https://tools.ietf.org/html/rfc3339) | 2020-11-07T12:00:00+01:00 | Konec hry; Čas, po kterém už není možno objevovat uzly
+TMOU_GAME_RATE_LIMIT_CHECKING | On/Off | On | Zapínání kontroly minimálního času mezi dvěma požadavky týmu na přesun (viz níže)
+TMOU_GAME_RATE_LIMIT_IN_MS | integer | 1000 | Minimalní čas mezi dvěma požadavky týmu na přesun (proměnná neexistuje = 1000)
 
 ## Migrace
 

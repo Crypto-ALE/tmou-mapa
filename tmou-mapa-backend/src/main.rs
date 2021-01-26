@@ -1,6 +1,7 @@
 #![feature(proc_macro_hygiene, decl_macro)]
 #![feature(bool_to_option)]
 #![feature(is_sorted)]
+#![feature(entry_insert)]
 
 #[macro_use] extern crate rocket;
 #[macro_use] extern crate diesel;
@@ -14,6 +15,7 @@ use rocket::request::{FromRequest, Outcome};
 use rocket::response::{Responder, Redirect};
 use rocket::Request;
 use rocket::Rocket;
+use rocket::State;
 use rocket_contrib::database;
 use rocket_contrib::json::Json;
 use rocket_contrib::serve::StaticFiles;
@@ -44,9 +46,11 @@ mod discovery;
 mod datetime_operators;
 mod skip;
 mod standings;
+mod rate_limiter;
 
 use api_models::*;
 use postgres_db_controller::PostgresDbControl;
+use rate_limiter::{RateLimiter, check_rate_limit};
 
 embed_migrations!("./migrations/");
 
@@ -207,9 +211,10 @@ fn go_cookie(
     _started: GameWasStarted,
     action: Json<NodeAction>,
     team: db_models::Team,
-    conn: PostgresDbConn
+    conn: PostgresDbConn,
+    rate_limiter: State<RateLimiter>
 ) -> Result<Json<TeamInfo>, Status> {
-    go(action, team, conn)
+    go(action, team, conn, rate_limiter)
 }
 
 #[post("/game/<secret_phrase>", data = "<action>")]
@@ -218,11 +223,12 @@ fn go_phrase(
     _started: GameWasStarted,
     secret_phrase: &RawStr,
     action: Json<NodeAction>,
-    conn: PostgresDbConn
+    conn: PostgresDbConn,
+    rate_limiter: State<RateLimiter>
 ) -> Result<Json<TeamInfo>, Status> {
     match postgres_db_controller::get_team_by_phrase(&*conn, &secret_phrase.to_string(), get_game_execution_mode() == "Test")
     {
-        Some(team) => go(action, team, conn),
+        Some(team) => go(action, team, conn, rate_limiter),
         None => Err(Status::NotFound)
     }
 }
@@ -231,13 +237,18 @@ fn go_phrase(
 fn go(
     action: Json<NodeAction>,
     team: db_models::Team,
-    conn: PostgresDbConn
+    conn: PostgresDbConn,
+    rate_limiter: State<RateLimiter>
 ) -> Result<Json<TeamInfo>, Status> {
     let mut db_ctrl = PostgresDbControl::new(conn);
-    match game_controller::go_to_node(& mut db_ctrl, team, action.nodeId) {
-        Ok(info) => Ok(Json(info)),
-        Err(_) => Err(Status::NotFound)
+    match check_rate_limit(rate_limiter.inner(), &team.id) {
+        Ok(()) => match game_controller::go_to_node(& mut db_ctrl, team, action.nodeId) {
+                    Ok(info) => Ok(Json(info)),
+                    Err(_) => Err(Status::NotFound)
+                    },
+        Err(()) => Err(Status::TooManyRequests)
     }
+
 }
 
 #[get("/game/discover")]
@@ -448,7 +459,6 @@ fn run_migrations(rocket: Rocket) -> Result<Rocket, Rocket> {
     }
 }
 
-
 fn rocket() -> rocket::Rocket {
     let static_dir = match env::current_dir() {
         Ok(x) => x.join("static"),
@@ -456,6 +466,7 @@ fn rocket() -> rocket::Rocket {
     };
 
     rocket::ignite()
+        .manage(RateLimiter::new())
         .register(catchers![not_auth, force_https])
         .attach(PostgresDbConn::fairing())
         .attach(AdHoc::on_attach("Database Migrations", run_migrations))
@@ -655,3 +666,8 @@ impl <'a, 'r> FromRequest<'a, 'r> for ForcedHttps {
         }
     }
 }
+
+
+
+
+
