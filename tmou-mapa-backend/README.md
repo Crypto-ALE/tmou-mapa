@@ -23,6 +23,16 @@ TMOU_GAME_START | Čas podle [RFC3339](https://tools.ietf.org/html/rfc3339) | 20
 TMOU_GAME_END | Čas podle [RFC3339](https://tools.ietf.org/html/rfc3339) | 2020-11-07T12:00:00+01:00 | Konec hry; Čas, po kterém už není možno objevovat uzly
 TMOU_GAME_RATE_LIMIT_CHECKING | On/Off | On | Zapínání kontroly minimálního času mezi dvěma požadavky týmu na přesun (viz níže)
 TMOU_GAME_RATE_LIMIT_IN_MS | integer | 1000 | Minimalní čas mezi dvěma požadavky týmu na přesun (proměnná neexistuje = 1000)
+ROCKET_DATABASES | objekt | {postgres={url="postgres://USER:PASSWORD@SERVER:PORT/DB_NAME"}} | Konfigurační objekt frameworku Rocket se spojením do databází (může jich být víc)
+ADMIN_USERNAME | string | admin | Uživatelské jméno pro vstup do admin sekce
+ADMIN_PASSWORD | string | admin | Heslo pro vstup do admin sekce
+BYPASS_AUTH | 1/Nic | 1 | Preskočení autorizace pro přístup k admin sekci **POUZE PRO TEST**
+JWT_TOKEN | string | your-256-bit-secret | Secret pro dekódování [JWT Tokenu](https://jwt.io/) použitého pro sdílení session s webem TMOU _pouze  TMOU_
+LOGIN_REDIRECT | url | https://www.tmou.cz | Adresa pro přihlášení týmu při sdílené session _pouze TMOU_
+PROJECT_PATH | string | tmou-mapa-backend | Cesta k adresáři s backendem _pouze Heroku_
+ROCKET_ENV | dev/stage/prod | dev | Specifikace prostředí pro [Rocket](https://rocket.rs/v0.4/guide/configuration/#environment)
+HOST | string | i.tmou.cz | Adresa webu, používaná pro přesměrování z http na https
+
 
 ## Migrace
 
