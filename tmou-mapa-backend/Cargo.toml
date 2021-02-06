@@ -24,6 +24,7 @@ jsonwebtoken = "7.2.0"
 slugify = "0.1.0"
 log = "0.4"
 
+
 [[bin]]
 name = "import-osm-data"
 path = "src/import_osm_data.rs"

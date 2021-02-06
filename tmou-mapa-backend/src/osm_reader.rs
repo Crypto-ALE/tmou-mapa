@@ -1,5 +1,5 @@
-use super::osm_models::*;
-use super::errors::*;
+use crate::osm_models::*;
+use crate::models::errors::*;
 use std::fs::read_to_string;
 use std::collections::HashMap;
 

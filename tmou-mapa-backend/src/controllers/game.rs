@@ -1,13 +1,13 @@
 
-use super::api_models as api;
-use super::db_models as db;
-use super::db_controller::{DbControl, MessagesDbControl};
-use super::errors::*;
+use crate::models::api as api;
+use crate::models::db as db;
+use crate::database::db::{DbControl, MessagesDbControl};
+use crate::models::errors::*;
 use itertools::*;
-use super::discovery as disc;
+use crate::controllers::discovery as disc;
 use chrono::Utc;
-use super::skip;
-use super::message_controller::send_message_to_team;
+use crate::controllers::skip;
+use crate::controllers::message::send_message_to_team;
 
 // const FILLOVA_X_BROZIKOVA_NODE_ID: i64 = 3750367566;
 

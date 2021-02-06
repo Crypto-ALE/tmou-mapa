@@ -1,4 +1,4 @@
-use super::rocket;
+use crate::rocket;
 #[allow(unused)]
 use rocket::local::Client;
 #[allow(unused)]

@@ -1,6 +1,6 @@
 use diesel::{Queryable, Identifiable, Insertable};
 use serde::{Deserialize, Serialize};
-use super::schema::*;
+use crate::models::schema::*;
 use chrono;
 
 #[derive(Serialize, Deserialize, Queryable, Insertable)]

@@ -1,19 +1,17 @@
 #[macro_use] extern crate diesel;
 
-mod db_models;
-mod errors;
-mod schema;
+mod models;
 
 use diesel::prelude::*;
 use diesel::insert_into;
 use std::env;
-use errors::*;
-use schema::items::dsl as items;
-use schema::bonuses::dsl as bonuses;
-use schema::nodes_items::dsl as nodes_items;
+use models::errors::*;
+use models::schema::items::dsl as items;
+use models::schema::bonuses::dsl as bonuses;
+use models::schema::nodes_items::dsl as nodes_items;
 use std::fs::read_to_string;
 
-use db_models as db;
+use crate::models::db as db;
 use regex::Regex;
 use chrono::NaiveDateTime;
 
