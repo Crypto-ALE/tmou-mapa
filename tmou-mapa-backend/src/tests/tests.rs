@@ -1,29 +1,31 @@
 #[cfg(test)]
 
+#[allow(unused)]
+use std::env::current_dir;
 #[allow(unused_imports)]
-use super::osm_models as osm;
-#[allow(unused_imports)]
-use super::osm_reader::*;
-#[allow(unused_imports)]
-use super::errors::*;
-#[allow(unused_imports)]
-use super::discovery as dis;
-#[allow(unused_imports)]
-use super::db_models as db;
+use std::cmp::Ordering;
+
 #[allow(unused_imports)]
 use chrono::prelude::*;
 #[allow(unused_imports)]
 use chrono::{Utc, Duration};
+
 #[allow(unused_imports)]
-use super::standings;
+use crate::controllers::standings;
 #[allow(unused_imports)]
-use super::api_models as api;
+use crate::controllers::discovery as dis;
 #[allow(unused_imports)]
-use std::cmp::Ordering;
+use crate::models::errors::*;
+#[allow(unused_imports)]
+use crate::models::db as db;
+#[allow(unused_imports)]
+use crate::models::api as api;
+#[allow(unused_imports)]
+use crate::osm_models as osm;
+#[allow(unused_imports)]
+use crate::osm_reader::*;
 
 
-#[allow(unused)]
-use std::env::current_dir;
  
 
 /////////////////////////////////////////////////////////////////////
@@ -146,7 +148,7 @@ fn osm_reader_when_malformed_xml_suplied_fails_gracefully()->TmouResult<()>
 }
 
 /////////////////////////////////////////////////////////////////////
-/// Discovery
+/// controllers::discovery
 /////////////////////////////////////////////////////////////////////
 
 #[allow(unused)]
@@ -156,7 +158,7 @@ fn item(t: &str, l: i16, n: &str)->db::Item
 }
 
 #[test]
-fn discovery_returns_unchanged_inventory_when_nothing_found()->TmouResult<()> 
+fn controllers::discovery_returns_unchanged_inventory_when_nothing_found()->TmouResult<()> 
 {
     // ready for picking level 2:
     let inventory = vec![
@@ -176,7 +178,7 @@ fn discovery_returns_unchanged_inventory_when_nothing_found()->TmouResult<()>
 }
 
 #[test]
-fn discovery_returns_level_0_puzzles_at_start()->TmouResult<()> 
+fn controllers::discovery_returns_level_0_puzzles_at_start()->TmouResult<()> 
 {
     let inventory = Vec::new();
 
@@ -195,7 +197,7 @@ fn discovery_returns_level_0_puzzles_at_start()->TmouResult<()>
 }
 
 #[test]
-fn discovery_returns_level_1_puzzles_when_in_level_0()->TmouResult<()> 
+fn controllers::discovery_returns_level_1_puzzles_when_in_level_0()->TmouResult<()> 
 {
     let inventory = vec![
         item("puzzles", 0, "puzzles-0")];
@@ -216,7 +218,7 @@ fn discovery_returns_level_1_puzzles_when_in_level_0()->TmouResult<()>
 }
 
 #[test]
-fn discovery_returns_level_4_puzzles_when_in_level_4()->TmouResult<()> 
+fn controllers::discovery_returns_level_4_puzzles_when_in_level_4()->TmouResult<()> 
 {
     let inventory = vec![
         item("puzzles", 4, "puzzles-4a")];
@@ -237,7 +239,7 @@ fn discovery_returns_level_4_puzzles_when_in_level_4()->TmouResult<()>
 }
 
 #[test]
-fn discovery_returns_empty_when_puzzle_level_4_found_and_in_level_5()->TmouResult<()> 
+fn controllers::discovery_returns_empty_when_puzzle_level_4_found_and_in_level_5()->TmouResult<()> 
 {
     let inventory = vec![
         item("puzzles", 5, "puzzles-5")];
@@ -255,7 +257,7 @@ fn discovery_returns_empty_when_puzzle_level_4_found_and_in_level_5()->TmouResul
 
  
 #[test]
-fn discovery_returns_nothing_on_level_1_puzzles_at_start()->TmouResult<()> 
+fn controllers::discovery_returns_nothing_on_level_1_puzzles_at_start()->TmouResult<()> 
 {
     let inventory = Vec::new();
 
@@ -271,7 +273,7 @@ fn discovery_returns_nothing_on_level_1_puzzles_at_start()->TmouResult<()>
 }
 
 #[test]
-fn discovery_returns_badge_level_when_found_at_start()->TmouResult<()> 
+fn controllers::discovery_returns_badge_level_when_found_at_start()->TmouResult<()> 
 {
     // ready for a new badge
     let inventory = Vec::new();
@@ -289,7 +291,7 @@ fn discovery_returns_badge_level_when_found_at_start()->TmouResult<()>
 }
 
 #[test]
-fn discovery_returns_badge_level_when_found_when_inventory_somehow_populated()->TmouResult<()> 
+fn controllers::discovery_returns_badge_level_when_found_when_inventory_somehow_populated()->TmouResult<()> 
 {
     // ready for a new badge
     let inventory = vec![
@@ -336,7 +338,7 @@ fn discovery_returns_badge_level_when_found_when_inventory_somehow_populated()->
 }
 
 #[test]
-fn discovery_returns_nothing_when_inventory_already_contains_badge()->TmouResult<()> 
+fn controllers::discovery_returns_nothing_when_inventory_already_contains_badge()->TmouResult<()> 
 {
     // ready for a new badge
     let inventory = vec![
@@ -382,7 +384,7 @@ fn discovery_returns_nothing_when_inventory_already_contains_badge()->TmouResult
 }
 
 #[test]
-fn discovery_returns_final_badge_when_on_proper_level()->TmouResult<()> 
+fn controllers::discovery_returns_final_badge_when_on_proper_level()->TmouResult<()> 
 {
     // ready for a new badge
     let inventory = vec![item("puzzles", 14, "puzzles-14")];
@@ -403,7 +405,7 @@ fn discovery_returns_final_badge_when_on_proper_level()->TmouResult<()>
 
 
 #[test]
-fn discovery_returns_nothing_when_on_badge_but_insufficient_level()->TmouResult<()> 
+fn controllers::discovery_returns_nothing_when_on_badge_but_insufficient_level()->TmouResult<()> 
 {
     // ready for a new badge
     let inventory = vec![item("puzzles", 13, "puzzles-13")];
@@ -421,7 +423,7 @@ fn discovery_returns_nothing_when_on_badge_but_insufficient_level()->TmouResult<
 
 
 #[test]
-fn discovery_returns_fakes_on_checkpoint_when_eligible_nothing_owned()->TmouResult<()> 
+fn controllers::discovery_returns_fakes_on_checkpoint_when_eligible_nothing_owned()->TmouResult<()> 
 {
     let inventory = vec![
         item("puzzles", 0, "puzzles-0")];
@@ -447,7 +449,7 @@ fn discovery_returns_fakes_on_checkpoint_when_eligible_nothing_owned()->TmouResu
 }
 
 #[test]
-fn discovery_returns_nothing_on_checkpoint_when_not_eligible_nothing_owned()->TmouResult<()> 
+fn controllers::discovery_returns_nothing_on_checkpoint_when_not_eligible_nothing_owned()->TmouResult<()> 
 {
     let inventory = vec![
         item("puzzles", 0, "puzzles-0")];
@@ -468,7 +470,7 @@ fn discovery_returns_nothing_on_checkpoint_when_not_eligible_nothing_owned()->Tm
 }
 
 #[test]
-fn discovery_returns_subset_on_checkpoint_when_eligible_some_owned()->TmouResult<()> 
+fn controllers::discovery_returns_subset_on_checkpoint_when_eligible_some_owned()->TmouResult<()> 
 {
     let inventory = vec![
         item("puzzles", 0, "puzzles-0"),
@@ -501,7 +503,7 @@ fn discovery_returns_subset_on_checkpoint_when_eligible_some_owned()->TmouResult
 }
 
 #[test]
-fn discovery_returns_nothing_on_checkpoint_when_not_eligible_some_owned()->TmouResult<()> 
+fn controllers::discovery_returns_nothing_on_checkpoint_when_not_eligible_some_owned()->TmouResult<()> 
 {
     let inventory = vec![
         item("puzzles", 0, "puzzles-0"),
@@ -640,7 +642,7 @@ fn discover_fake_puzzle_fails_on_checkpoint_when_not_eligible_some_owned()->Tmou
 }
 
 ////////////////////////////////////////////////////////
-/// standings
+/// controllers::standings
 ////////////////////////////////////////////////////////
 
 #[allow(unused)]
@@ -664,7 +666,7 @@ fn is_better_team_returns_alphabetical_for_empty_teams()->TmouResult<()>
 {
     let a = team(0, "Absolutno", Vec::new());
     let b = team(0, "Bazinga", Vec::new());
-    assert_eq!(standings::is_better_team(&a, &b), Ordering::Less);
+    assert_eq!(controllers::standings::is_better_team(&a, &b), Ordering::Less);
     Ok(())
 }
 
@@ -673,7 +675,7 @@ fn is_better_team_returns_alphabetical_for_equivalent_teams()->TmouResult<()>
 {
     let a = team(0, "Absolutno", vec![(1,true,1), (2,true,17), (3,true,23), (4,false,51), (5,true,59)]);
     let b = team(0, "Bazinga", vec![(1,true,1), (2,true,17), (3,true,23), (4,false,51), (5,true,59)]);
-    assert_eq!(standings::is_better_team(&a, &b), Ordering::Less);
+    assert_eq!(controllers::standings::is_better_team(&a, &b), Ordering::Less);
     Ok(())
 }
 
@@ -683,7 +685,7 @@ fn is_better_team_does_not_prefer_puzzle_visit_over_nothing()->TmouResult<()>
 {
     let a = team(0, "Absolutno", Vec::new());
     let b = team(0, "Bazinga", vec![(1,false,0)]);
-    assert_eq!(standings::is_better_team(&a, &b), Ordering::Less);
+    assert_eq!(controllers::standings::is_better_team(&a, &b), Ordering::Less);
     Ok(())
 }
 
@@ -692,7 +694,7 @@ fn is_better_team_does_not_prefer_dead()->TmouResult<()>
 {
     let a = team(0, "Absolutno", vec![(1,false,0)]);
     let b = team(0, "Bazinga", vec![(1,true,0)]);
-    assert_eq!(standings::is_better_team(&a, &b), Ordering::Less);
+    assert_eq!(controllers::standings::is_better_team(&a, &b), Ordering::Less);
     Ok(())
 }
 
@@ -701,7 +703,7 @@ fn is_better_team_prefers_team_with_solved_puzzle()->TmouResult<()>
 {
     let a = team(0, "Absolutno", vec![(1,true,0), (2,true,0)]);
     let b = team(0, "Bazinga", vec![(1,false,1), (2,true,1)]);
-    assert_eq!(standings::is_better_team(&a, &b), Ordering::Greater);
+    assert_eq!(controllers::standings::is_better_team(&a, &b), Ordering::Greater);
     Ok(())
 }
 
@@ -710,7 +712,7 @@ fn is_better_team_prefers_faster_team()->TmouResult<()>
 {
     let a = team(0, "Absolutno", vec![(1,false,0), (2,false,1)]);
     let b = team(0, "Bazinga", vec![(1,false,1), (2,false,0)]);
-    assert_eq!(standings::is_better_team(&a, &b), Ordering::Greater);
+    assert_eq!(controllers::standings::is_better_team(&a, &b), Ordering::Greater);
     Ok(())
 }
 
@@ -719,7 +721,7 @@ fn is_better_team_prefers_faster_team_on_last_solved()->TmouResult<()>
 {
     let a = team(0, "Absolutno", vec![(1,true,0), (2,true,1), (3,false,1), (4,true,1), (5,false,1), (6,true,1), (7,true,1), (8,false,1)]);
     let b = team(0, "Bazinga",   vec![(1,true,0), (2,true,1), (3,true,1), (4,false,1), (5,true,1), (6,false,1), (7,true,2), (8,false,2)]);
-    assert_eq!(standings::is_better_team(&a, &b), Ordering::Greater);
+    assert_eq!(controllers::standings::is_better_team(&a, &b), Ordering::Greater);
     Ok(())
 }
 
@@ -729,7 +731,7 @@ fn is_better_team_prefers_team_with_more_solved()->TmouResult<()>
 {
     let a = team(0, "Absolutno", vec![(1,true,1), (2,true,1), (3,true,1), (4,false,1), (5,true,1)]);
     let b = team(0, "Bazinga", vec![(1,false,0), (2,false,5), (3,true,7)]);
-    assert_eq!(standings::is_better_team(&a, &b), Ordering::Greater);
+    assert_eq!(controllers::standings::is_better_team(&a, &b), Ordering::Greater);
     Ok(())
 }
 
@@ -761,7 +763,7 @@ fn db_team(name: &str, ps: Vec<(&str, i16, u32)>) -> Vec<db::TeamStandingsItem>
 
 
 #[test]
-fn calculate_teams_standings_outputs_2_empty_teams_sorted()->TmouResult<()> 
+fn calculate_teams_controllers::standings_outputs_2_empty_teams_sorted()->TmouResult<()> 
 {
     let mut a = db_team("Absolutno", Vec::new());
     let mut b = db_team("Bazinga", Vec::new());
@@ -772,13 +774,13 @@ fn calculate_teams_standings_outputs_2_empty_teams_sorted()->TmouResult<()>
         team(2, "Bazinga", Vec::new())
     ];
 
-    let st = standings::calculate_teams_standings(a)?;
-    assert_eq!(st.standings, expected);
+    let st = controllers::standings::calculate_teams_controllers::standings(a)?;
+    assert_eq!(st.controllers::standings, expected);
     Ok(())
 }
 
 #[test]
-fn calculate_teams_standings_outputs_2_complex_teams_sorted()->TmouResult<()> 
+fn calculate_teams_controllers::standings_outputs_2_complex_teams_sorted()->TmouResult<()> 
 {
     let mut a = db_team("Absolutno", vec![
         ("puzzles-fake", 1, 0),
@@ -824,13 +826,13 @@ fn calculate_teams_standings_outputs_2_complex_teams_sorted()->TmouResult<()>
 
     let expected = vec![res_1, res_2];
 
-    let st = standings::calculate_teams_standings(a)?;
-    assert_eq!(st.standings, expected);
+    let st = controllers::standings::calculate_teams_controllers::standings(a)?;
+    assert_eq!(st.controllers::standings, expected);
     Ok(())
 }
 
 #[test]
-fn calculate_teams_standings_outputs_correct_badge_counts()->TmouResult<()> 
+fn calculate_teams_controllers::standings_outputs_correct_badge_counts()->TmouResult<()> 
 {
     let mut a = db_team("Absolutno", vec![
         ("puzzles-fake", 1, 0),
@@ -873,16 +875,16 @@ fn calculate_teams_standings_outputs_correct_badge_counts()->TmouResult<()>
     a.append(&mut c);
     a.append(&mut d);
 
-    let st = standings::calculate_teams_standings(a)?;
-    assert_eq!(st.standings.len(), 4);
-    assert_eq!(st.standings[0].name, "Bazinga".to_string());
-    assert_eq!(st.standings[0].badge_count, 1);
-    assert_eq!(st.standings[1].name, "Absolutno".to_string());
-    assert_eq!(st.standings[1].badge_count, 5);
-    assert_eq!(st.standings[2].name, "Corn Flakes".to_string());
-    assert_eq!(st.standings[2].badge_count, 0);
-    assert_eq!(st.standings[3].name, "Degen a spol".to_string());
-    assert_eq!(st.standings[3].badge_count, 0);
+    let st = controllers::standings::calculate_teams_controllers::standings(a)?;
+    assert_eq!(st.controllers::standings.len(), 4);
+    assert_eq!(st.controllers::standings[0].name, "Bazinga".to_string());
+    assert_eq!(st.controllers::standings[0].badge_count, 1);
+    assert_eq!(st.controllers::standings[1].name, "Absolutno".to_string());
+    assert_eq!(st.controllers::standings[1].badge_count, 5);
+    assert_eq!(st.controllers::standings[2].name, "Corn Flakes".to_string());
+    assert_eq!(st.controllers::standings[2].badge_count, 0);
+    assert_eq!(st.controllers::standings[3].name, "Degen a spol".to_string());
+    assert_eq!(st.controllers::standings[3].badge_count, 0);
     Ok(())
 }
 

@@ -1,10 +1,10 @@
-use super::api_models as api;
-use super::db_models as db;
-use super::db_controller::{DbControl};
 use std::collections::{HashMap};
-use super::errors::*;
 use itertools::*;
-use super::standings;
+
+use crate::controllers::standings;
+use crate::models::*;
+use crate::models::errors::*;
+use crate::database::db::{DbControl};
 
 ////////////////////////////////////////////////////////////////////
 /// Interface

@@ -1,21 +1,20 @@
-use super::db_models::Team;
 use diesel::prelude::*;
 use diesel::dsl::{sql};
 use diesel::insert_into;
 use rocket_contrib::databases::diesel;
 
-use super::schema::teams::dsl as teams;
-use super::schema::messages::dsl as messages;
-use super::schema::messages_teams::dsl as messages_teams;
-use super::schema::nodes::dsl as nodes;
-use super::schema::ways_nodes::dsl as ways_nodes;
-use super::schema::nodes_items::dsl as nodes_items;
-use super::schema::items::dsl as items;
-use super::schema::bonuses::dsl as bonuses;
-use super::schema::teams_items::dsl as teams_items;
-use super::db_controller::{DbControl, MessagesDbControl};
-use super::db_models;
-use super::errors;
+use crate::models::schema::teams::dsl as teams;
+use crate::models::schema::messages::dsl as messages;
+use crate::models::schema::messages_teams::dsl as messages_teams;
+use crate::models::schema::nodes::dsl as nodes;
+use crate::models::schema::ways_nodes::dsl as ways_nodes;
+use crate::models::schema::nodes_items::dsl as nodes_items;
+use crate::models::schema::items::dsl as items;
+use crate::models::schema::bonuses::dsl as bonuses;
+use crate::models::schema::teams_items::dsl as teams_items;
+use crate::database::db::{DbControl, MessagesDbControl};
+use crate::models::db::*;
+use crate::models::errors::*;
 
 // HOWTO debug query?
 // use diesel::debug_query;
@@ -25,12 +24,12 @@ use super::errors;
 
 pub struct PostgresDbControl
 {
-    pub conn: super::PostgresDbConn
+    pub conn: crate::PostgresDbConn
 }
 
 impl PostgresDbControl
 {
-    pub fn new(conn: super::PostgresDbConn) -> Self
+    pub fn new(conn: crate::PostgresDbConn) -> Self
     {
         PostgresDbControl{conn: conn}
     }
@@ -40,7 +39,7 @@ impl DbControl for PostgresDbControl
 {
 
 
-fn get_team(&self, id: i32) -> std::option::Option<db_models::Team>
+fn get_team(&self, id: i32) -> std::option::Option<Team>
 {
     match teams::teams.filter(teams::id.eq(id))
         .limit(1)
@@ -50,7 +49,7 @@ fn get_team(&self, id: i32) -> std::option::Option<db_models::Team>
         }
 }
 
-fn update_team_position(&mut self, team: &db_models::Team, pos: i64) -> std::result::Result<Team, errors::TmouError>
+fn update_team_position(&mut self, team: &Team, pos: i64) -> std::result::Result<Team, TmouError>
 {
     let query = diesel::update(team).set(teams::position.eq(pos));
 
@@ -60,7 +59,7 @@ fn update_team_position(&mut self, team: &db_models::Team, pos: i64) -> std::res
     }
 }
 
-fn get_reachable_nodes(&self, seed: i64) -> std::result::Result<db_models::Pois, errors::TmouError>
+fn get_reachable_nodes(&self, seed: i64) -> std::result::Result<Pois, TmouError>
 {
     let ways_level_0: Vec<i64> = ways_nodes::ways_nodes
         .filter(ways_nodes::node_id.eq(seed))
@@ -74,23 +73,23 @@ fn get_reachable_nodes(&self, seed: i64) -> std::result::Result<db_models::Pois,
         .filter(ways_nodes::node_id.eq_any(nodes_level_0))
         .select(ways_nodes::way_id)
         .load(&*self.conn)?;
-    let w2n_level_1: Vec<db_models::WaysToNodes> = ways_nodes::ways_nodes
+    let w2n_level_1: Vec<WaysToNodes> = ways_nodes::ways_nodes
         .filter(ways_nodes::way_id.eq_any(ways_level_1))
         .select((ways_nodes::way_id, ways_nodes::node_id, ways_nodes::node_order))
         .order_by(ways_nodes::node_order)
         .load(&*self.conn)?;
 
-    let nodes: Vec<db_models::Node> = nodes::nodes
+    let nodes: Vec<Node> = nodes::nodes
         .filter(nodes::id.eq_any(w2n_level_1.iter().map(|w2n| w2n.node_id)))
         .select((nodes::id, nodes::lat, nodes::lon, nodes::type_))
         .load(&*self.conn)?;
 
-    Ok(db_models::Pois{nodes: nodes, ways_to_nodes: w2n_level_1})
+    Ok(Pois{nodes: nodes, ways_to_nodes: w2n_level_1})
 }
 
-fn get_items_in_node(&self, node_id: i64) -> std::result::Result<std::vec::Vec<db_models::Item>, errors::TmouError>
+fn get_items_in_node(&self, node_id: i64) -> std::result::Result<std::vec::Vec<Item>, TmouError>
 {
-    let items: Vec<db_models::Item> = nodes_items::nodes_items
+    let items: Vec<Item> = nodes_items::nodes_items
         .filter(nodes_items::node_id.eq(node_id))
         .inner_join(items::items)
         .select((items::type_, items::url, items::level, items::name, items::description))
@@ -98,7 +97,7 @@ fn get_items_in_node(&self, node_id: i64) -> std::result::Result<std::vec::Vec<d
     Ok(items)
 }
 
-fn get_team_items(&self, team_id: i32) -> std::result::Result<std::vec::Vec<db_models::Item>, errors::TmouError>
+fn get_team_items(&self, team_id: i32) -> std::result::Result<std::vec::Vec<Item>, TmouError>
 {
     let items = teams_items::teams_items
         .filter(teams_items::team_id.eq(team_id))
@@ -108,7 +107,7 @@ fn get_team_items(&self, team_id: i32) -> std::result::Result<std::vec::Vec<db_m
     Ok(items)
 }
 
-fn get_team_items_with_timestamps(&self, team_id: i32) -> std::result::Result<std::vec::Vec<db_models::TeamItem>, errors::TmouError>
+fn get_team_items_with_timestamps(&self, team_id: i32) -> std::result::Result<std::vec::Vec<TeamItem>, TmouError>
 {
     type Tuple = (String,String,i16,String,Option<String>,Option<chrono::NaiveDateTime>);
     let items:Vec<Tuple> = teams_items::teams_items
@@ -116,16 +115,16 @@ fn get_team_items_with_timestamps(&self, team_id: i32) -> std::result::Result<st
         .inner_join(items::items)
         .select((items::type_, items::url, items::level, items::name, items::description, teams_items::timestamp))
         .load(&*self.conn)?;
-    let from_tuple = |t: Tuple| db_models::TeamItem {type_:t.0, url:t.1, level:t.2, name:t.3, description:t.4, timestamp:t.5};
-    let team_items:Vec<db_models::TeamItem> = items.into_iter().map(from_tuple).collect();
+    let from_tuple = |t: Tuple| TeamItem {type_:t.0, url:t.1, level:t.2, name:t.3, description:t.4, timestamp:t.5};
+    let team_items:Vec<TeamItem> = items.into_iter().map(from_tuple).collect();
     Ok(team_items)
 }
 
 
 
-fn get_teams_items(&self) -> std::result::Result<std::vec::Vec<db_models::TeamStandingsItem>, errors::TmouError>
+fn get_teams_items(&self) -> std::result::Result<std::vec::Vec<TeamStandingsItem>, TmouError>
 {
-    let items:Vec<db_models::TeamStandingsItem> = teams::teams
+    let items:Vec<TeamStandingsItem> = teams::teams
         .left_join(teams_items::teams_items.inner_join(items::items.on(items::name.eq(teams_items::item_name))))
         .select((teams::name,
                  items::type_.nullable(),
@@ -137,9 +136,9 @@ fn get_teams_items(&self) -> std::result::Result<std::vec::Vec<db_models::TeamSt
     Ok(items)
 }
 
-fn get_items_teams(&self) -> std::result::Result<std::vec::Vec<db_models::ItemTeam>, errors::TmouError>
+fn get_items_teams(&self) -> std::result::Result<std::vec::Vec<ItemTeam>, TmouError>
 {
-    let items:Vec<db_models::ItemTeam> = items::items
+    let items:Vec<ItemTeam> = items::items
         .left_join(teams_items::teams_items.inner_join(teams::teams.on(teams::id.eq(teams_items::team_id))))
         .select((items::name,
                  items::type_,
@@ -151,7 +150,7 @@ fn get_items_teams(&self) -> std::result::Result<std::vec::Vec<db_models::ItemTe
 }
 
 
-fn put_team_items(&mut self, team_id: i32, items: std::vec::Vec<db_models::Item>) -> std::result::Result<(), errors::TmouError>
+fn put_team_items(&mut self, team_id: i32, items: std::vec::Vec<Item>) -> std::result::Result<(), TmouError>
 {
     let existing_records: Vec<String> = teams_items::teams_items
         .filter(teams_items::team_id.eq(team_id))
@@ -166,11 +165,11 @@ fn put_team_items(&mut self, team_id: i32, items: std::vec::Vec<db_models::Item>
         0 => Ok(()),
         _ =>
         {
-            let records: Vec<db_models::TeamToItem> = its.iter()
-            .map(|i| db_models::TeamToItem{team_id: team_id, item_name: i.name.clone(), timestamp: None})
+            let records: Vec<TeamToItem> = its.iter()
+            .map(|i| TeamToItem{team_id: team_id, item_name: i.name.clone(), timestamp: None})
             .collect();
             let query = insert_into(teams_items::teams_items).values(records);
-            match query.get_result::<db_models::TeamToItem>(&*self.conn) {
+            match query.get_result::<TeamToItem>(&*self.conn) {
                 Ok(_) => Ok(()),
                 Err(err) => Err(err.into()),
             }
@@ -179,7 +178,7 @@ fn put_team_items(&mut self, team_id: i32, items: std::vec::Vec<db_models::Item>
     }
 }
 
-fn get_teams_positions(&self) -> std::result::Result<std::vec::Vec<db_models::TeamPosition>, errors::TmouError>
+fn get_teams_positions(&self) -> std::result::Result<std::vec::Vec<TeamPosition>, TmouError>
 {
     let teams_positions = teams::teams
         .left_join(teams_items::teams_items)
@@ -192,7 +191,7 @@ fn get_teams_positions(&self) -> std::result::Result<std::vec::Vec<db_models::Te
     Ok(teams_positions?)
 }
 
-fn get_badge_labels(&self) -> std::result::Result<Vec<String>, errors::TmouError>
+fn get_badge_labels(&self) -> std::result::Result<Vec<String>, TmouError>
 {
     let badges = items::items
         .filter(items::type_.eq("badge"))
@@ -202,7 +201,7 @@ fn get_badge_labels(&self) -> std::result::Result<Vec<String>, errors::TmouError
     Ok(badges)
 }
 
-fn get_bonuses(&self) -> std::result::Result<std::vec::Vec<db_models::Bonus>, errors::TmouError> {
+fn get_bonuses(&self) -> std::result::Result<std::vec::Vec<Bonus>, TmouError> {
     let bonuses = bonuses::bonuses
         .filter(bonuses::display_time.lt(diesel::dsl::now))
         .select((bonuses::url, bonuses::label, bonuses::description.nullable(), bonuses::display_time))
@@ -212,7 +211,7 @@ fn get_bonuses(&self) -> std::result::Result<std::vec::Vec<db_models::Bonus>, er
     Ok(bonuses)
 }
 
-fn get_game_state_by_puzzles(&self) -> std::result::Result<std::vec::Vec<i64>, errors::TmouError> {
+fn get_game_state_by_puzzles(&self) -> std::result::Result<std::vec::Vec<i64>, TmouError> {
    let game_state: Vec<Option<i64>> = items::items
        .left_join(teams_items::teams_items.on(items::name.eq(teams_items::item_name)))
        .filter(items::type_.eq("puzzles").or(items::type_.eq("puzzles-fake")))
@@ -224,7 +223,7 @@ fn get_game_state_by_puzzles(&self) -> std::result::Result<std::vec::Vec<i64>, e
     Ok(game_state.iter().map(|c| c.unwrap_or(0)).collect())
 }
 
-fn get_dead_item_for_level(&self, level: i16) -> std::result::Result<db_models::Item, errors::TmouError> {
+fn get_dead_item_for_level(&self, level: i16) -> std::result::Result<Item, TmouError> {
     let dead = items::items
         .filter(items::level.eq(level).and(items::type_.eq("dead")))
         .limit(1)
@@ -239,7 +238,7 @@ pub const BROADCAST_TEAM_ID: i32 = 0;
 
 impl MessagesDbControl for PostgresDbControl
 {
-    fn get_messages(&self, team_id: i32, limit: Option<i64>) -> Option<Vec<db_models::Message>> {
+    fn get_messages(&self, team_id: i32, limit: Option<i64>) -> Option<Vec<Message>> {
         let mut query = messages_teams::messages_teams
             .filter(messages_teams::team_id.eq(team_id).or(messages_teams::team_id.eq(BROADCAST_TEAM_ID)))
             .inner_join(messages::messages)
@@ -258,13 +257,13 @@ impl MessagesDbControl for PostgresDbControl
         }
     }
 
-    fn put_message(&self, message: db_models::WebMessage, teams_ids: Vec<i32>) -> std::result::Result<(), errors::TmouError> {
+    fn put_message(&self, message: WebMessage, teams_ids: Vec<i32>) -> std::result::Result<(), TmouError> {
         let message_id = insert_into(messages::messages)
             .values(message)
             .returning(messages::id)
             .get_result(&*self.conn)?;
-        let messages_teams: Vec<db_models::MessageToTeam> = teams_ids.into_iter()
-            .map(|team_id| db_models::MessageToTeam {message_id, team_id}).collect();
+        let messages_teams: Vec<MessageToTeam> = teams_ids.into_iter()
+            .map(|team_id| MessageToTeam {message_id, team_id}).collect();
         match insert_into(messages_teams::messages_teams).values(messages_teams).execute(&*self.conn) {
             Ok(_) => Ok(()),
             Err(err) => Err(err.into()),
@@ -287,7 +286,7 @@ pub fn get_team_by_phrase(connection: &diesel::PgConnection, phr:&String, tester
         }
 }
 
-pub fn get_team_by_external_id(connection: &diesel::PgConnection, id: i32, testers_only: bool) -> std::option::Option<db_models::Team>
+pub fn get_team_by_external_id(connection: &diesel::PgConnection, id: i32, testers_only: bool) -> std::option::Option<Team>
 {
     let mut query = teams::teams.into_boxed().filter(teams::team_id.eq(id));
     if testers_only {
@@ -302,7 +301,7 @@ pub fn get_team_by_external_id(connection: &diesel::PgConnection, id: i32, teste
         }
 }
 
-pub fn put_team(connection: &diesel::PgConnection, team: db_models::WebTeam) -> std::result::Result<Team, errors::TmouError>
+pub fn put_team(connection: &diesel::PgConnection, team: WebTeam) -> std::result::Result<Team, TmouError>
 {
     let query = insert_into(teams::teams)
         .values((teams::team_id.eq(team.team_id), teams::name.eq(team.name), teams::phrase.eq(team.phrase)));
@@ -313,7 +312,7 @@ pub fn put_team(connection: &diesel::PgConnection, team: db_models::WebTeam) -> 
         }
 }
 
-pub fn get_all_teams(connection: &diesel::PgConnection) -> std::result::Result<Vec<Team>, errors::TmouError>
+pub fn get_all_teams(connection: &diesel::PgConnection) -> std::result::Result<Vec<Team>, TmouError>
 {
     teams::teams.order_by(teams::name).load(connection).or_else(|err| Err(err.into()))
 }

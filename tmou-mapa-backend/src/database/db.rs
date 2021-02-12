@@ -1,5 +1,5 @@
-use super::db_models::*;
-use super::errors::*;
+use crate::models::db::*;
+use crate::models::errors::*;
 
 
 

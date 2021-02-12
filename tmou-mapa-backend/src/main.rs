@@ -7,6 +7,13 @@
 #[macro_use] extern crate diesel;
 #[macro_use] extern crate diesel_migrations;
 
+use std::env;
+
+use chrono::{DateTime,FixedOffset};
+use http_auth_basic::Credentials;
+use jsonwebtoken::{decode, DecodingKey, Validation, Algorithm};
+use log::{info, warn};
+use rocket::config::Environment;
 use rocket::fairing::AdHoc;
 use rocket::http::RawStr;
 use rocket::http::{Status, Header};
@@ -20,36 +27,17 @@ use rocket_contrib::database;
 use rocket_contrib::json::Json;
 use rocket_contrib::serve::StaticFiles;
 use rocket_contrib::templates::Template;
-use std::env;
-use http_auth_basic::Credentials;
-use jsonwebtoken::{decode, DecodingKey, Validation, Algorithm};
 use serde::{Deserialize, Serialize};
 use slugify::slugify;
-use log::{info, warn};
-use chrono::{DateTime,FixedOffset};
-use rocket::config::Environment;
 
-mod api_models;
-mod postgres_db_controller;
-mod db_controller;
-mod db_models;
-mod errors;
-mod game_controller;
-mod admin_controller;
-mod message_controller;
-mod osm_models;
-mod osm_reader;
-mod tests;
-mod rocket_test;
-mod schema;
-mod discovery;
-mod datetime_operators;
-mod skip;
-mod standings;
+mod models;
+mod controllers;
+mod database;
 mod rate_limiter;
 
-use api_models::*;
-use postgres_db_controller::PostgresDbControl;
+use controllers::*;
+use database::postgres::PostgresDbControl;
+use models::*;
 use rate_limiter::{RateLimiter, check_rate_limit};
 
 embed_migrations!("./migrations/");
@@ -60,9 +48,9 @@ pub struct PostgresDbConn(diesel::PgConnection);
 #[get("/game")]
 fn info_cookie(
     _started: GameWasStarted,
-    team: db_models::Team,
+    team: models::db::Team,
     conn: PostgresDbConn
-) -> Result<Json<TeamInfo>, Status> {
+) -> Result<Json<api::TeamInfo>, Status> {
     info(team, conn)
 }
 
@@ -72,8 +60,8 @@ fn info_phrase(
     _started: GameWasStarted,
     secret_phrase: &RawStr,
     conn: PostgresDbConn
-) -> Result<Json<TeamInfo>, Status> {
-    match postgres_db_controller::get_team_by_phrase(&*conn, &secret_phrase.to_string(), get_game_execution_mode() == "Test")
+) -> Result<Json<models::api::TeamInfo>, Status> {
+    match database::postgres::get_team_by_phrase(&*conn, &secret_phrase.to_string(), get_game_execution_mode() == "Test")
     {
         Some(team) => info(team, conn),
         None => Err(Status::NotFound)
@@ -81,11 +69,11 @@ fn info_phrase(
 }
 
 fn info(
-    team: db_models::Team,
+    team: models::db::Team,
     conn: PostgresDbConn
-) -> Result<Json<TeamInfo>, Status> {
+) -> Result<Json<api::TeamInfo>, Status> {
     let db_ctrl = PostgresDbControl::new(conn);
-    match game_controller::get_info(&db_ctrl, team) {
+    match game::get_info(&db_ctrl, team) {
         Ok(info) => Ok(Json(info)),
         Err(_) => Err(Status::NotFound)
     }
@@ -94,9 +82,9 @@ fn info(
 #[get("/game/skip")]
 fn skip_cookie(
     _started: GameWasStarted,
-    team: db_models::Team,
+    team: models::db::Team,
     conn: PostgresDbConn
-) -> Result<Json<Skip>, Status> {
+) -> Result<Json<api::Skip>, Status> {
     skip(team, conn)
 }
 
@@ -106,8 +94,8 @@ fn skip_phrase(
     _started: GameWasStarted,
     secret_phrase: &RawStr,
     conn: PostgresDbConn
-) -> Result<Json<Skip>, Status> {
-    match postgres_db_controller::get_team_by_phrase(&*conn, &secret_phrase.to_string(), get_game_execution_mode() == "Test")
+) -> Result<Json<api::Skip>, Status> {
+    match database::postgres::get_team_by_phrase(&*conn, &secret_phrase.to_string(), get_game_execution_mode() == "Test")
     {
         Some(team) => skip(team, conn),
         None => Err(Status::NotFound)
@@ -115,11 +103,11 @@ fn skip_phrase(
 }
 
 fn skip(
-    team: db_models::Team,
+    team: models::db::Team,
     conn: PostgresDbConn
-) -> Result<Json<Skip>, Status> {
+) -> Result<Json<api::Skip>, Status> {
     let db_ctrl = PostgresDbControl::new(conn);
-    match game_controller::is_skip_allowed(&db_ctrl, &team) {
+    match game::is_skip_allowed(&db_ctrl, &team) {
         Ok(skip) => Ok(Json(skip)),
         Err(e) => {
             warn!("Skip check failed: {}", e.message);
@@ -131,10 +119,10 @@ fn skip(
 #[post("/game/skip", data="<action>")]
 fn proceed_skip_cookie(
     _started: GameWasStarted,
-    team: db_models::Team,
-    action: Json<SkipAction>,
+    team: models::db::Team,
+    action: Json<api::SkipAction>,
     conn: PostgresDbConn
-) -> Result<Json<SkipResult>, Status> {
+) -> Result<Json<api::SkipResult>, Status> {
     proceed_skip(action, team, conn)
 }
 
@@ -143,10 +131,10 @@ fn proceed_skip_phrase(
     _admin: Admin,
     _started: GameWasStarted,
     secret_phrase: &RawStr,
-    action: Json<SkipAction>,
+    action: Json<api::SkipAction>,
     conn: PostgresDbConn
-) -> Result<Json<SkipResult>, Status> {
-    match postgres_db_controller::get_team_by_phrase(&*conn, &secret_phrase.to_string(), get_game_execution_mode() == "Test")
+) -> Result<Json<api::SkipResult>, Status> {
+    match database::postgres::get_team_by_phrase(&*conn, &secret_phrase.to_string(), get_game_execution_mode() == "Test")
     {
         Some(team) => proceed_skip(action, team, conn),
         None => Err(Status::NotFound)
@@ -154,15 +142,15 @@ fn proceed_skip_phrase(
 }
 
 fn proceed_skip(
-    action: Json<SkipAction>,
-    team: db_models::Team,
+    action: Json<api::SkipAction>,
+    team: models::db::Team,
     conn: PostgresDbConn,
-) -> Result<Json<SkipResult>, Status> {
+) -> Result<Json<api::SkipResult>, Status> {
     match action.verified {
        false => Err(Status::BadRequest),
        true => {
             let mut db_ctrl = PostgresDbControl::new(conn);
-            match game_controller::skip_current_puzzle(&mut db_ctrl, team) {
+            match game::skip_current_puzzle(&mut db_ctrl, team) {
                 Ok(skip) => Ok(Json(skip)),
                 Err(_) => Err(Status::NotFound)
             }
@@ -174,10 +162,10 @@ fn proceed_skip(
 #[get("/messages?<limit>")]
 fn messages_cookie(
     _started: GameWasStarted,
-    team: db_models::Team,
+    team: models::db::Team,
     conn: PostgresDbConn,
     limit: Option<i64>
-) -> Result<Json<Vec<Message>>, Status> {
+) -> Result<Json<Vec<api::Message>>, Status> {
     messages(team, conn, limit)
 }
 
@@ -188,8 +176,8 @@ fn messages_phrase(
     secret_phrase: &RawStr,
     conn: PostgresDbConn,
     limit: Option<i64>
-) -> Result<Json<Vec<Message>>, Status> {
-    match postgres_db_controller::get_team_by_phrase(&*conn, &secret_phrase.to_string(), get_game_execution_mode() == "Test")
+) -> Result<Json<Vec<api::Message>>, Status> {
+    match database::postgres::get_team_by_phrase(&*conn, &secret_phrase.to_string(), get_game_execution_mode() == "Test")
     {
         Some(team) => messages(team, conn, limit),
         None => Err(Status::NotFound)
@@ -197,10 +185,10 @@ fn messages_phrase(
 }
 
 fn messages(
-    team: db_models::Team, conn: PostgresDbConn, limit: Option<i64>
-) -> Result<Json<Vec<Message>>, Status> {
+    team: models::db::Team, conn: PostgresDbConn, limit: Option<i64>
+) -> Result<Json<Vec<api::Message>>, Status> {
     let db_ctrl = PostgresDbControl::new(conn);
-    match message_controller::get_messages_for_team(&db_ctrl, team, limit) {
+    match controllers::message::get_messages_for_team(&db_ctrl, team, limit) {
         Ok(msgs) => Ok(Json(msgs)),
         Err(_) => Err(Status::InternalServerError),
     }
@@ -209,11 +197,11 @@ fn messages(
 #[post("/game", data = "<action>")]
 fn go_cookie(
     _started: GameWasStarted,
-    action: Json<NodeAction>,
-    team: db_models::Team,
+    action: Json<api::NodeAction>,
+    team: models::db::Team,
     conn: PostgresDbConn,
     rate_limiter: State<RateLimiter>
-) -> Result<Json<TeamInfo>, Status> {
+) -> Result<Json<api::TeamInfo>, Status> {
     go(action, team, conn, rate_limiter)
 }
 
@@ -222,11 +210,11 @@ fn go_phrase(
     _admin: Admin,
     _started: GameWasStarted,
     secret_phrase: &RawStr,
-    action: Json<NodeAction>,
+    action: Json<api::NodeAction>,
     conn: PostgresDbConn,
     rate_limiter: State<RateLimiter>
-) -> Result<Json<TeamInfo>, Status> {
-    match postgres_db_controller::get_team_by_phrase(&*conn, &secret_phrase.to_string(), get_game_execution_mode() == "Test")
+) -> Result<Json<api::TeamInfo>, Status> {
+    match database::postgres::get_team_by_phrase(&*conn, &secret_phrase.to_string(), get_game_execution_mode() == "Test")
     {
         Some(team) => go(action, team, conn, rate_limiter),
         None => Err(Status::NotFound)
@@ -235,14 +223,14 @@ fn go_phrase(
 
 //#[post("/game/<secret_phrase>", data = "<action>")]
 fn go(
-    action: Json<NodeAction>,
-    team: db_models::Team,
+    action: Json<api::NodeAction>,
+    team: models::db::Team,
     conn: PostgresDbConn,
     rate_limiter: State<RateLimiter>
-) -> Result<Json<TeamInfo>, Status> {
+) -> Result<Json<api::TeamInfo>, Status> {
     let mut db_ctrl = PostgresDbControl::new(conn);
     match check_rate_limit(rate_limiter.inner(), &team.id) {
-        Ok(()) => match game_controller::go_to_node(& mut db_ctrl, team, action.nodeId) {
+        Ok(()) => match game::go_to_node(& mut db_ctrl, team, action.nodeId) {
                     Ok(info) => Ok(Json(info)),
                     Err(_) => Err(Status::NotFound)
                     },
@@ -254,9 +242,9 @@ fn go(
 #[get("/game/discover")]
 fn discover_cookie(
     _running: GameIsRunning,
-    team: db_models::Team,
+    team: models::db::Team,
     conn: PostgresDbConn
-) -> Result<Json<DiscoveryEvent>, Status> {
+) -> Result<Json<api::DiscoveryEvent>, Status> {
     discover(team, conn)
 }
 
@@ -266,8 +254,8 @@ fn discover_phrase(
     _running: GameIsRunning,
     secret_phrase: &RawStr,
     conn: PostgresDbConn
-) -> Result<Json<DiscoveryEvent>, Status> {
-    match postgres_db_controller::get_team_by_phrase(&*conn, &secret_phrase.to_string(), get_game_execution_mode() == "Test")
+) -> Result<Json<api::DiscoveryEvent>, Status> {
+    match database::postgres::get_team_by_phrase(&*conn, &secret_phrase.to_string(), get_game_execution_mode() == "Test")
     {
         Some(team) => discover(team, conn),
         None => Err(Status::NotFound)
@@ -277,11 +265,11 @@ fn discover_phrase(
 
 //#[get("/game/<secret_phrase>/discover")]
 fn discover(
-    team: db_models::Team,
+    team: models::db::Team,
     conn: PostgresDbConn
-) -> Result<Json<DiscoveryEvent>, Status> {
+) -> Result<Json<api::DiscoveryEvent>, Status> {
     let mut db_ctrl = PostgresDbControl::new(conn);
-    match game_controller::discover_node(& mut db_ctrl, team) {
+    match game::discover_node(& mut db_ctrl, team) {
         Ok(nc) => Ok(Json(nc)),
         Err(_) => Err(Status::NotFound),
     }
@@ -291,10 +279,10 @@ fn discover(
 #[post("/game/discover", data = "<puzzle_name>")]
 fn discover_post_cookie(
     _running: GameIsRunning,
-    team: db_models::Team,
+    team: models::db::Team,
     conn: PostgresDbConn,
-    puzzle_name: Json<PuzzleName>
-) -> Result<Json<Vec<Item>>, Status> {
+    puzzle_name: Json<api::PuzzleName>
+) -> Result<Json<Vec<api::Item>>, Status> {
     discover_post(team, conn, puzzle_name)
 }
 
@@ -304,9 +292,9 @@ fn discover_post_phrase(
     _running: GameIsRunning,
     secret_phrase: &RawStr,
     conn: PostgresDbConn,
-    puzzle_name: Json<PuzzleName>
-) -> Result<Json<Vec<Item>>, Status> {
-    match postgres_db_controller::get_team_by_phrase(&*conn, &secret_phrase.to_string(), get_game_execution_mode() == "Test")
+    puzzle_name: Json<api::PuzzleName>
+) -> Result<Json<Vec<api::Item>>, Status> {
+    match database::postgres::get_team_by_phrase(&*conn, &secret_phrase.to_string(), get_game_execution_mode() == "Test")
     {
         Some(team) => discover_post(team, conn, puzzle_name),
         None => Err(Status::NotFound)
@@ -316,12 +304,12 @@ fn discover_post_phrase(
 
 //#[post("/game/<secret_phrase>/discover")]
 fn discover_post(
-    team: db_models::Team,
+    team: models::db::Team,
     conn: PostgresDbConn,
-    puzzle_name: Json<PuzzleName>
-) -> Result<Json<Vec<Item>>, Status> {
+    puzzle_name: Json<api::PuzzleName>
+) -> Result<Json<Vec<api::Item>>, Status> {
     let mut db_ctrl = PostgresDbControl::new(conn);
-    match game_controller::discover_post(& mut db_ctrl, team, &puzzle_name.puzzleName) {
+    match game::discover_post(& mut db_ctrl, team, &puzzle_name.puzzleName) {
         Ok(nc) => Ok(Json(nc)),
         Err(_) => Err(Status::NotFound),
     }
@@ -332,9 +320,9 @@ fn discover_post(
 fn bonuses(
     _started: GameWasStarted,
     conn: PostgresDbConn,
-) -> Result<Json<Vec<Bonus>>, Status> {
+) -> Result<Json<Vec<api::Bonus>>, Status> {
     let db_ctrl = PostgresDbControl::new(conn);
-    match game_controller::get_bonuses(&db_ctrl) {
+    match game::get_bonuses(&db_ctrl) {
         Ok(bonuses) => Ok(Json(bonuses)),
         Err(_) => Err(Status::InternalServerError),
     }
@@ -347,22 +335,22 @@ fn bonuses(
 
 #[get("/admin")]
 fn admin(_admin: Admin, conn: PostgresDbConn) -> Template {
-    let teams = postgres_db_controller::get_all_teams(&*conn).unwrap_or_default();
+    let teams = database::postgres::get_all_teams(&*conn).unwrap_or_default();
 
     #[derive(Serialize, Deserialize)]
     struct AdminContext {
         broadcast_team_id: i32,
-        teams: Vec<db_models::Team>
+        teams: Vec<models::db::Team>
     }
 
-    Template::render("admin", AdminContext{broadcast_team_id: postgres_db_controller::BROADCAST_TEAM_ID, teams})
+    Template::render("admin", AdminContext{broadcast_team_id: database::postgres::BROADCAST_TEAM_ID, teams})
 }
 
 
 #[get("/admin/positions")]
-fn admin_positions(_admin: Admin, conn: PostgresDbConn) -> Result<Json<Vec<TeamPosition>>, Status> {
+fn admin_positions(_admin: Admin, conn: PostgresDbConn) -> Result<Json<Vec<api::TeamPosition>>, Status> {
     let db_ctrl = PostgresDbControl::new(conn);
-    match admin_controller::get_teams_positions(&db_ctrl)
+    match admin::get_teams_positions(&db_ctrl)
     {
         Ok(positions) => Ok(Json(positions)),
         Err(_) => Err(Status::InternalServerError),
@@ -370,12 +358,12 @@ fn admin_positions(_admin: Admin, conn: PostgresDbConn) -> Result<Json<Vec<TeamP
 }
 
 #[post("/messages",  data = "<message>")]
-fn admin_send_message(_admin: Admin, conn: PostgresDbConn, message: Json<IncomingMessage>) -> Result<Status, Status> {
+fn admin_send_message(_admin: Admin, conn: PostgresDbConn, message: Json<api::IncomingMessage>) -> Result<Status, Status> {
     let db_msg_control: PostgresDbControl = PostgresDbControl::new(conn);
     let res = match message.recipient_id {
-        postgres_db_controller::BROADCAST_TEAM_ID => message_controller::send_message_to_all_teams(&db_msg_control, message.into_inner().message),
-        _ => admin_controller::unwrap_incoming_message(&db_msg_control, message.into_inner())
-                .and_then(|(team, message)| {message_controller::send_message_to_team(&db_msg_control, team, message)
+        database::postgres::BROADCAST_TEAM_ID => controllers::message::send_message_to_all_teams(&db_msg_control, message.into_inner().message),
+        _ => admin::unwrap_incoming_message(&db_msg_control, message.into_inner())
+                .and_then(|(team, message)| {controllers::message::send_message_to_team(&db_msg_control, team, message)
         })
     };
 
@@ -386,9 +374,9 @@ fn admin_send_message(_admin: Admin, conn: PostgresDbConn, message: Json<Incomin
 }
 
 #[get("/admin/standings")]
-fn admin_standings(_admin: Admin, conn: PostgresDbConn) -> Result<Json<Standings>, Status> {
+fn admin_standings(_admin: Admin, conn: PostgresDbConn) -> Result<Json<api::Standings>, Status> {
     let db_ctrl = PostgresDbControl::new(conn);
-    match admin_controller::get_teams_standings(&db_ctrl)
+    match controllers::admin::get_teams_standings(&db_ctrl)
     {
         Ok(standings) => Ok(Json(standings)),
         Err(_) => Err(Status::InternalServerError),
@@ -396,9 +384,9 @@ fn admin_standings(_admin: Admin, conn: PostgresDbConn) -> Result<Json<Standings
 }
 
 #[get("/admin/puzzles-stats")]
-fn puzzles_stats(_admin: Admin, conn: PostgresDbConn) -> Result<Json<PuzzlesStats>, Status> {
+fn puzzles_stats(_admin: Admin, conn: PostgresDbConn) -> Result<Json<api::PuzzlesStats>, Status> {
     let db_ctrl = PostgresDbControl::new(conn);
-    match admin_controller::get_puzzles_stats(&db_ctrl)
+    match controllers::admin::get_puzzles_stats(&db_ctrl)
     {
         Ok(stats) => Ok(Json(stats)),
         Err(_) => Err(Status::InternalServerError),
@@ -406,7 +394,7 @@ fn puzzles_stats(_admin: Admin, conn: PostgresDbConn) -> Result<Json<PuzzlesStat
 }
 
 #[get("/")]
-fn index_cookie(_forced_https: ForcedHttps, team: db_models::Team, started: Option<GameWasStarted>, running: Option<GameIsRunning>) -> Template {
+fn index_cookie(_forced_https: ForcedHttps, team: models::db::Team, started: Option<GameWasStarted>, running: Option<GameIsRunning>) -> Template {
     let mut context = std::collections::HashMap::<String, String>::new();
     context.insert("teamName".to_string(), team.name);
     index(context, started, running)
@@ -421,7 +409,7 @@ fn index_redirect() -> Redirect {
 #[get("/<secret_phrase>")]
 fn team_index(_admin: Admin, _forced_https: ForcedHttps, started: Option<GameWasStarted>, running: Option<GameIsRunning>, secret_phrase: &RawStr, conn: PostgresDbConn) -> Result<Template, Redirect> {
     let mut context = std::collections::HashMap::<String, String>::new();
-    match postgres_db_controller::get_team_by_phrase(&*conn, &secret_phrase.to_string(), get_game_execution_mode() == "Test") {
+    match database::postgres::get_team_by_phrase(&*conn, &secret_phrase.to_string(), get_game_execution_mode() == "Test") {
         Some(team) => {
                 context.insert("teamName".to_string(), team.name);
                 context.insert("secretPhrase".to_string(), secret_phrase.to_string());
@@ -545,10 +533,10 @@ impl <'a, 'r> FromRequest<'a, 'r> for Admin {
     }
 }
 
-impl<'a, 'r> FromRequest<'a, 'r> for db_models::Team {
+impl<'a, 'r> FromRequest<'a, 'r> for models::db::Team {
     type Error = ();
 
-    fn from_request(request: &'a Request<'r>) -> Outcome<db_models::Team, Self::Error> {
+    fn from_request(request: &'a Request<'r>) -> Outcome<models::db::Team, Self::Error> {
         #[derive(Debug, Serialize, Deserialize)]
         struct TeamWeb {
             tid: i32,
@@ -570,15 +558,15 @@ impl<'a, 'r> FromRequest<'a, 'r> for db_models::Team {
             .and_then(|team_web| {
                 let team_id: i32 = team_web.claims.tid;
                 let team_name = team_web.claims.tna;
-                postgres_db_controller::get_team_by_external_id(&*conn, team_id, testers_only)
+                database::postgres::get_team_by_external_id(&*conn, team_id, testers_only)
                     .or_else(|| {
                         info!("Inserting team {}", &team_name);
-                        let new_team = db_models::WebTeam {
+                        let new_team = models::db::WebTeam {
                             name: team_name.clone(),
                             phrase: slugify!(&team_name),
                             team_id,
                         };
-                        match postgres_db_controller::put_team(&*conn, new_team) {
+                        match database::postgres::put_team(&*conn, new_team) {
                             // when GAME MODE is TEST, cookie teams are inserted, but don't have an
                             //access
                             Ok(team) => match !testers_only {

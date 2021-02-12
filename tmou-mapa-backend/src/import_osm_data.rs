@@ -1,22 +1,21 @@
 #[macro_use] extern crate diesel;
 
-mod db_models;
-mod errors;
+mod models;
 mod osm_models;
 mod osm_reader;
-mod schema;
 
+use std::env;
+
+use chrono::Utc;
 use diesel::prelude::*;
 use diesel::insert_into;
-use std::env;
-use errors::*;
-use schema::nodes::dsl as nodes;
-use schema::ways_nodes::dsl as ways_nodes;
-
-use osm_reader::*;
-use db_models as db;
 use regex::Regex;
-use chrono::Utc;
+
+use models::errors::*;
+use models::schema::nodes::dsl as nodes;
+use models::schema::ways_nodes::dsl as ways_nodes;
+use models::db as db;
+use osm_reader::*;
 
 fn import_osm(path: &String) -> TmouResult<()>
 {
@@ -54,12 +53,12 @@ fn import_osm(path: &String) -> TmouResult<()>
         }
     }
 
-    let mut ways2nodes: Vec<db_models::WaysToNodes> = Vec::new();
+    let mut ways2nodes: Vec<models::db::WaysToNodes> = Vec::new();
     for (_,w) in osm.ways
     {
         for (i, n) in w.nodes.into_iter().enumerate()
         {
-            ways2nodes.push(db_models::WaysToNodes{way_id: w.id, node_id:n, node_order: i as i16});
+            ways2nodes.push(models::db::WaysToNodes{way_id: w.id, node_id:n, node_order: i as i16});
         }
     }
 

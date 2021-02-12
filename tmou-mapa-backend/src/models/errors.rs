@@ -1,6 +1,6 @@
 // TODO:
 // - implement error::Error
-// - add types of encapsulated errors for better handling
+// - add types of encapsulated models::errors for better handling
 // - make an automatic response somehow?
 #[derive(Debug)]
 pub struct TmouError

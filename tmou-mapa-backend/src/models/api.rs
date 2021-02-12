@@ -1,7 +1,8 @@
 #![allow(non_snake_case)]
 
-use ::serde::{Serialize, Deserialize};
 use std::collections::HashMap;
+
+use ::serde::{Serialize, Deserialize};
 
 #[derive(Serialize, Deserialize)]
 pub struct NodeAction

@@ -1,9 +1,11 @@
-use super::errors::*;
-use super::db_models as db;
+use std::env;
+
 use chrono::prelude::*;
 use chrono::{Utc,Duration};
-use super::skip::get_skips_limits;
-use std::env;
+
+use crate::models::errors::*;
+use crate::models::db as db;
+use crate::controllers::skip::get_skips_limits;
 
 #[derive(PartialEq, Debug)]
 pub enum EventType {CheckpointStartVisited, PuzzlesFound, BadgeFound, Nothing}
@@ -72,7 +74,7 @@ pub fn discover_node(time: DateTime<Utc>, inventory: &Items, node_contents: &Ite
     // player-level is the maximum level of any item, or -1 at start (eligible for puzzles level 0)
     let player_level = inventory.iter().map(|item| item.level).max().unwrap_or(-1);
 
-    // intermediate collections, accumulated during discovery of all items in node
+    // intermediate collections, accumulated during controllers::discovery of all items in node
     let mut event = EventType::Nothing; // last event wins - should be only one
     let mut current_inventory= inventory[..].to_vec();
     let mut newly_discovered_items = Vec::new();
