@@ -1,9 +1,12 @@
-use crate::models::db::Team;
 use diesel::prelude::*;
 use diesel::dsl::{sql};
 use diesel::insert_into;
 use rocket_contrib::databases::diesel;
 
+use crate::database::db::{DbControl, MessagesDbControl};
+use crate::models::db;
+use crate::models::db::Team;
+use crate::models::errors;
 use crate::schema::teams::dsl as teams;
 use crate::schema::messages::dsl as messages;
 use crate::schema::messages_teams::dsl as messages_teams;
@@ -13,9 +16,6 @@ use crate::schema::nodes_items::dsl as nodes_items;
 use crate::schema::items::dsl as items;
 use crate::schema::bonuses::dsl as bonuses;
 use crate::schema::teams_items::dsl as teams_items;
-use crate::database::db::{DbControl, MessagesDbControl};
-use crate::models::db;
-use crate::models::errors;
 
 // HOWTO debug query?
 // use diesel::debug_query;

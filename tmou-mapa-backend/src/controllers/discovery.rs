@@ -1,9 +1,11 @@
-use crate::models::errors::*;
-use crate::models::db as db;
+use std::env;
+
 use chrono::prelude::*;
 use chrono::{Utc,Duration};
+
+use crate::models::errors::*;
+use crate::models::db as db;
 use crate::controllers::skip::get_skips_limits;
-use std::env;
 
 #[derive(PartialEq, Debug)]
 pub enum EventType {CheckpointStartVisited, PuzzlesFound, BadgeFound, Nothing}

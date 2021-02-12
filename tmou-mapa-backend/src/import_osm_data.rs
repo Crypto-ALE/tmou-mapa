@@ -4,17 +4,18 @@ mod models;
 mod osm_models;
 mod osm_reader;
 
+use std::env;
+
+use chrono::Utc;
 use diesel::prelude::*;
 use diesel::insert_into;
-use std::env;
+use regex::Regex;
+
 use models::errors::*;
 use models::schema::nodes::dsl as nodes;
 use models::schema::ways_nodes::dsl as ways_nodes;
-
-use osm_reader::*;
 use models::db as db;
-use regex::Regex;
-use chrono::Utc;
+use osm_reader::*;
 
 fn import_osm(path: &String) -> TmouResult<()>
 {

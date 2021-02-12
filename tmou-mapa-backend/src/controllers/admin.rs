@@ -1,9 +1,10 @@
+use std::collections::{HashMap};
+use itertools::*;
+
+use crate::controllers::standings;
 use crate::models::*;
 use crate::models::errors::*;
 use crate::database::db::{DbControl};
-use std::collections::{HashMap};
-use itertools::*;
-use crate::controllers::standings;
 
 ////////////////////////////////////////////////////////////////////
 /// Interface

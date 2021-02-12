@@ -1,7 +1,8 @@
-use crate::osm_models::*;
-use crate::models::errors::*;
-use std::fs::read_to_string;
 use std::collections::HashMap;
+use std::fs::read_to_string;
+
+use crate::models::errors::*;
+use crate::osm_models::*;
 
 
 fn get_osm_element<'a>(doc:&'a roxmltree::Document)->TmouResult<roxmltree::Node<'a,'a>>

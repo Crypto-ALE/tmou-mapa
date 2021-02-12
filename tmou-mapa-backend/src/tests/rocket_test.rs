@@ -1,8 +1,9 @@
-use crate::rocket;
 #[allow(unused)]
 use rocket::local::Client;
 #[allow(unused)]
 use rocket::http::Status;
+
+use crate::rocket;
 
 #[test]
 fn team_without_cookie_and_phrase_is_redirected() {

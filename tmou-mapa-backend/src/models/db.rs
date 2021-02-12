@@ -1,7 +1,8 @@
+use chrono;
 use diesel::{Queryable, Identifiable, Insertable};
 use serde::{Deserialize, Serialize};
+
 use crate::models::schema::*;
-use chrono;
 
 #[derive(Serialize, Deserialize, Queryable, Insertable)]
 #[table_name = "nodes"]

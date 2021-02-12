@@ -7,6 +7,13 @@
 #[macro_use] extern crate diesel;
 #[macro_use] extern crate diesel_migrations;
 
+use std::env;
+
+use chrono::{DateTime,FixedOffset};
+use http_auth_basic::Credentials;
+use jsonwebtoken::{decode, DecodingKey, Validation, Algorithm};
+use log::{info, warn};
+use rocket::config::Environment;
 use rocket::fairing::AdHoc;
 use rocket::http::RawStr;
 use rocket::http::{Status, Header};
@@ -20,23 +27,17 @@ use rocket_contrib::database;
 use rocket_contrib::json::Json;
 use rocket_contrib::serve::StaticFiles;
 use rocket_contrib::templates::Template;
-use std::env;
-use http_auth_basic::Credentials;
-use jsonwebtoken::{decode, DecodingKey, Validation, Algorithm};
 use serde::{Deserialize, Serialize};
 use slugify::slugify;
-use log::{info, warn};
-use chrono::{DateTime,FixedOffset};
-use rocket::config::Environment;
 
 mod models;
 mod controllers;
 mod database;
 mod rate_limiter;
 
-use models::*;
 use controllers::*;
 use database::postgres::PostgresDbControl;
+use models::*;
 use rate_limiter::{RateLimiter, check_rate_limit};
 
 embed_migrations!("./migrations/");

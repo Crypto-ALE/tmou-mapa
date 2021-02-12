@@ -1,8 +1,9 @@
+use itertools::*;
+
+use crate::database::db::{MessagesDbControl};
 use crate::models::api as api;
 use crate::models::db as db;
-use crate::database::db::{MessagesDbControl};
 use crate::models::errors::*;
-use itertools::*;
 
 ////////////////////////////////////////////////////////////////////
 /// Interface
