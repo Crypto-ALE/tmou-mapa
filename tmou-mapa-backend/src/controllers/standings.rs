@@ -32,7 +32,7 @@ fn item_vec_to_standing(name: String, its: Vec<ResultItem>) -> api::TeamStanding
     let start_puzzles_solved = puzzles_vec.iter().filter(|p| p.level == 1).count() as u16;
     // convert dead vector to set of dead levels for better use
     let dead_set:HashSet<i16> = deads.into_iter().map(|d| d.level).collect();
-    // sort puzzles by time descending so that last puzzle (earlies) with the same level ends up in the hash map
+    // sort puzzles by time descending so that last puzzle (earliest) with the same level ends up in the hash map
     puzzles_vec.sort_by(|a,b| b.timestamp.cmp(&a.timestamp));
     let puzzles:HashMap<u16,api::PuzzleResult> = puzzles_vec.into_iter()
         // take all except start
@@ -74,7 +74,7 @@ pub fn is_better_team(l: &api::TeamStanding, r: &api::TeamStanding) -> Ordering
 {
     match solved_puzzles_count(l).cmp(&solved_puzzles_count(r))
     {
-        // more puzzles lower raning
+        // more puzzles lower ranking
         Ordering::Greater => Ordering::Less,
         Ordering::Less => Ordering::Greater,
         _ => {
@@ -82,7 +82,7 @@ pub fn is_better_team(l: &api::TeamStanding, r: &api::TeamStanding) -> Ordering
             let r_hio = highest_solved_level(r);
             match (l_hio, r_hio)
             {
-                (None, None) => l.name.cmp(&r.name), // alphabetical
+                (None, None) => l.name.cmp(&r.name), // neither solved anything: alphabetical
                 (Some(_), None) => Ordering::Less, // something is always better     
                 (None, Some(_)) => Ordering::Greater,
                 (Some(l_hi), Some(r_hi)) => match l_hi.0.cmp(&r_hi.0) {

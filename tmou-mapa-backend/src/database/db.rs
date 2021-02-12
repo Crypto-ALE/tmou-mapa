@@ -6,7 +6,7 @@ use crate::models::errors::*;
 
 // database control holds the state of the game for teams
 
-pub trait DbControl
+pub trait Db
 {
     fn get_team(&self, id: i32) -> Option<Team>;
     fn get_teams_positions(&self) -> TmouResult<Vec<TeamPosition>>;
@@ -24,7 +24,7 @@ pub trait DbControl
     fn get_dead_item_for_level(&self, level: i16) -> TmouResult<Item>;
 }
 
-pub trait MessagesDbControl
+pub trait MessagesDb
 {
     fn get_messages(&self, team_id: i32, limit: Option<i64>) -> Option<Vec<Message>>;
     fn put_message(&self, message: WebMessage, teams_ids: Vec<i32>) -> TmouResult<()>;
