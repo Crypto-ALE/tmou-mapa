@@ -1,6 +1,6 @@
 use itertools::*;
 
-use crate::database::db::{MessagesDbControl};
+use crate::database::db::{MessagesDb};
 use crate::models::api as api;
 use crate::models::db as db;
 use crate::models::errors::*;
@@ -9,7 +9,7 @@ use crate::models::errors::*;
 /// Interface
 ////////////////////////////////////////////////////////////////////
 
-pub fn get_messages_for_team(msg_control: & impl MessagesDbControl, team: db::Team, limit: Option<i64>) -> TmouResult<Vec<api::Message>>
+pub fn get_messages_for_team(msg_control: & impl MessagesDb, team: db::Team, limit: Option<i64>) -> TmouResult<Vec<api::Message>>
 {
     match msg_control.get_messages(team.id, limit) {
         Some(messages) => Ok(messages.iter().map_into().collect()),
@@ -17,11 +17,11 @@ pub fn get_messages_for_team(msg_control: & impl MessagesDbControl, team: db::Te
     }
 }
 
-pub fn send_message_to_team(msg_control: & impl MessagesDbControl, team: db::Team, message: api::Message) -> TmouResult<()> {
+pub fn send_message_to_team(msg_control: & impl MessagesDb, team: db::Team, message: api::Message) -> TmouResult<()> {
     msg_control.put_message(message.into(), vec![team.id])
 }
 
-pub fn send_message_to_all_teams(msg_control: & impl MessagesDbControl, message: api::Message) -> TmouResult<()> {
+pub fn send_message_to_all_teams(msg_control: & impl MessagesDb, message: api::Message) -> TmouResult<()> {
     msg_control.put_message(message.into(), vec![0])
 }
 

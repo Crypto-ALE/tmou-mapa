@@ -34,9 +34,10 @@ mod models;
 mod controllers;
 mod database;
 mod rate_limiter;
+mod tests;
 
 use controllers::*;
-use database::postgres::PostgresDbControl;
+use database::postgres::PostgresDb;
 use models::*;
 use rate_limiter::{RateLimiter, check_rate_limit};
 
@@ -44,6 +45,10 @@ embed_migrations!("./migrations/");
 
 #[database("postgres")]
 pub struct PostgresDbConn(diesel::PgConnection);
+
+///////////////////////////////////////////////////////////
+/// info
+///////////////////////////////////////////////////////////
 
 #[get("/game")]
 fn info_cookie(
@@ -72,12 +77,16 @@ fn info(
     team: models::db::Team,
     conn: PostgresDbConn
 ) -> Result<Json<api::TeamInfo>, Status> {
-    let db_ctrl = PostgresDbControl::new(conn);
+    let db_ctrl = PostgresDb::new(conn);
     match game::get_info(&db_ctrl, team) {
         Ok(info) => Ok(Json(info)),
         Err(_) => Err(Status::NotFound)
     }
 }
+
+///////////////////////////////////////////////////////////
+/// skip
+///////////////////////////////////////////////////////////
 
 #[get("/game/skip")]
 fn skip_cookie(
@@ -106,7 +115,7 @@ fn skip(
     team: models::db::Team,
     conn: PostgresDbConn
 ) -> Result<Json<api::Skip>, Status> {
-    let db_ctrl = PostgresDbControl::new(conn);
+    let db_ctrl = PostgresDb::new(conn);
     match game::is_skip_allowed(&db_ctrl, &team) {
         Ok(skip) => Ok(Json(skip)),
         Err(e) => {
@@ -115,6 +124,10 @@ fn skip(
         }
     }
 }
+
+///////////////////////////////////////////////////////////
+/// proceed_skip
+///////////////////////////////////////////////////////////
 
 #[post("/game/skip", data="<action>")]
 fn proceed_skip_cookie(
@@ -149,7 +162,7 @@ fn proceed_skip(
     match action.verified {
        false => Err(Status::BadRequest),
        true => {
-            let mut db_ctrl = PostgresDbControl::new(conn);
+            let mut db_ctrl = PostgresDb::new(conn);
             match game::skip_current_puzzle(&mut db_ctrl, team) {
                 Ok(skip) => Ok(Json(skip)),
                 Err(_) => Err(Status::NotFound)
@@ -158,6 +171,9 @@ fn proceed_skip(
     }
 }
 
+///////////////////////////////////////////////////////////
+/// messages
+///////////////////////////////////////////////////////////
 
 #[get("/messages?<limit>")]
 fn messages_cookie(
@@ -187,12 +203,16 @@ fn messages_phrase(
 fn messages(
     team: models::db::Team, conn: PostgresDbConn, limit: Option<i64>
 ) -> Result<Json<Vec<api::Message>>, Status> {
-    let db_ctrl = PostgresDbControl::new(conn);
+    let db_ctrl = PostgresDb::new(conn);
     match controllers::message::get_messages_for_team(&db_ctrl, team, limit) {
         Ok(msgs) => Ok(Json(msgs)),
         Err(_) => Err(Status::InternalServerError),
     }
 }
+
+///////////////////////////////////////////////////////////
+/// go
+///////////////////////////////////////////////////////////
 
 #[post("/game", data = "<action>")]
 fn go_cookie(
@@ -228,7 +248,7 @@ fn go(
     conn: PostgresDbConn,
     rate_limiter: State<RateLimiter>
 ) -> Result<Json<api::TeamInfo>, Status> {
-    let mut db_ctrl = PostgresDbControl::new(conn);
+    let mut db_ctrl = PostgresDb::new(conn);
     match check_rate_limit(rate_limiter.inner(), &team.id) {
         Ok(()) => match game::go_to_node(& mut db_ctrl, team, action.nodeId) {
                     Ok(info) => Ok(Json(info)),
@@ -238,6 +258,10 @@ fn go(
     }
 
 }
+
+///////////////////////////////////////////////////////////
+/// discover
+///////////////////////////////////////////////////////////
 
 #[get("/game/discover")]
 fn discover_cookie(
@@ -262,19 +286,21 @@ fn discover_phrase(
     }
 }
 
-
 //#[get("/game/<secret_phrase>/discover")]
 fn discover(
     team: models::db::Team,
     conn: PostgresDbConn
 ) -> Result<Json<api::DiscoveryEvent>, Status> {
-    let mut db_ctrl = PostgresDbControl::new(conn);
+    let mut db_ctrl = PostgresDb::new(conn);
     match game::discover_node(& mut db_ctrl, team) {
         Ok(nc) => Ok(Json(nc)),
         Err(_) => Err(Status::NotFound),
     }
 }
 
+///////////////////////////////////////////////////////////
+/// discover_post
+///////////////////////////////////////////////////////////
 
 #[post("/game/discover", data = "<puzzle_name>")]
 fn discover_post_cookie(
@@ -301,19 +327,22 @@ fn discover_post_phrase(
     }
 }
 
-
 //#[post("/game/<secret_phrase>/discover")]
 fn discover_post(
     team: models::db::Team,
     conn: PostgresDbConn,
     puzzle_name: Json<api::PuzzleName>
 ) -> Result<Json<Vec<api::Item>>, Status> {
-    let mut db_ctrl = PostgresDbControl::new(conn);
+    let mut db_ctrl = PostgresDb::new(conn);
     match game::discover_post(& mut db_ctrl, team, &puzzle_name.puzzleName) {
         Ok(nc) => Ok(Json(nc)),
         Err(_) => Err(Status::NotFound),
     }
 }
+
+///////////////////////////////////////////////////////////
+/// bonuses
+///////////////////////////////////////////////////////////
 
 
 #[get("/game/bonuses")]
@@ -321,16 +350,16 @@ fn bonuses(
     _started: GameWasStarted,
     conn: PostgresDbConn,
 ) -> Result<Json<Vec<api::Bonus>>, Status> {
-    let db_ctrl = PostgresDbControl::new(conn);
+    let db_ctrl = PostgresDb::new(conn);
     match game::get_bonuses(&db_ctrl) {
         Ok(bonuses) => Ok(Json(bonuses)),
         Err(_) => Err(Status::InternalServerError),
     }
 }
 
-/* ----------
- * ADMIN
- ------------ */
+///////////////////////////////////////////////////////////
+/// admin
+///////////////////////////////////////////////////////////
 
 
 #[get("/admin")]
@@ -349,7 +378,7 @@ fn admin(_admin: Admin, conn: PostgresDbConn) -> Template {
 
 #[get("/admin/positions")]
 fn admin_positions(_admin: Admin, conn: PostgresDbConn) -> Result<Json<Vec<api::TeamPosition>>, Status> {
-    let db_ctrl = PostgresDbControl::new(conn);
+    let db_ctrl = PostgresDb::new(conn);
     match admin::get_teams_positions(&db_ctrl)
     {
         Ok(positions) => Ok(Json(positions)),
@@ -359,7 +388,7 @@ fn admin_positions(_admin: Admin, conn: PostgresDbConn) -> Result<Json<Vec<api::
 
 #[post("/messages",  data = "<message>")]
 fn admin_send_message(_admin: Admin, conn: PostgresDbConn, message: Json<api::IncomingMessage>) -> Result<Status, Status> {
-    let db_msg_control: PostgresDbControl = PostgresDbControl::new(conn);
+    let db_msg_control: PostgresDb = PostgresDb::new(conn);
     let res = match message.recipient_id {
         database::postgres::BROADCAST_TEAM_ID => controllers::message::send_message_to_all_teams(&db_msg_control, message.into_inner().message),
         _ => admin::unwrap_incoming_message(&db_msg_control, message.into_inner())
@@ -375,7 +404,7 @@ fn admin_send_message(_admin: Admin, conn: PostgresDbConn, message: Json<api::In
 
 #[get("/admin/standings")]
 fn admin_standings(_admin: Admin, conn: PostgresDbConn) -> Result<Json<api::Standings>, Status> {
-    let db_ctrl = PostgresDbControl::new(conn);
+    let db_ctrl = PostgresDb::new(conn);
     match controllers::admin::get_teams_standings(&db_ctrl)
     {
         Ok(standings) => Ok(Json(standings)),
@@ -383,15 +412,9 @@ fn admin_standings(_admin: Admin, conn: PostgresDbConn) -> Result<Json<api::Stan
     }
 }
 
-#[get("/admin/puzzles-stats")]
-fn puzzles_stats(_admin: Admin, conn: PostgresDbConn) -> Result<Json<api::PuzzlesStats>, Status> {
-    let db_ctrl = PostgresDbControl::new(conn);
-    match controllers::admin::get_puzzles_stats(&db_ctrl)
-    {
-        Ok(stats) => Ok(Json(stats)),
-        Err(_) => Err(Status::InternalServerError),
-    }
-}
+///////////////////////////////////////////////////////////
+/// index: static serving
+///////////////////////////////////////////////////////////
 
 #[get("/")]
 fn index_cookie(_forced_https: ForcedHttps, team: models::db::Team, started: Option<GameWasStarted>, running: Option<GameIsRunning>) -> Template {
@@ -436,6 +459,10 @@ fn index(mut context: std::collections::HashMap<String, String>, started: Option
     }
 
 }
+
+///////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////
 
 fn run_migrations(rocket: Rocket) -> Result<Rocket, Rocket> {
     let conn = PostgresDbConn::get_one(&rocket).expect("database connection");
@@ -483,8 +510,7 @@ fn rocket() -> rocket::Rocket {
                 admin,
                 admin_positions,
                 admin_send_message,
-                admin_standings,
-                puzzles_stats],
+                admin_standings],
         )
 }
 
@@ -514,6 +540,10 @@ fn not_auth(_req: &Request) -> BasicAuthResponder {
 fn force_https(request: &Request) -> Redirect {
     Redirect::permanent(format!("https://{}{}", env::var("HOST").unwrap_or("i.tmou.cz".to_string()), request.uri().path()))
 }
+
+///////////////////////////////////////////////////////////
+/// Guards and Fairings
+///////////////////////////////////////////////////////////
 
 struct Admin {}
 

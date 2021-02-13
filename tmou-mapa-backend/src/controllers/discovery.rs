@@ -7,6 +7,8 @@ use crate::models::errors::*;
 use crate::models::db as db;
 use crate::controllers::skip::get_skips_limits;
 
+use super::get_player_level;
+
 #[derive(PartialEq, Debug)]
 pub enum EventType {CheckpointStartVisited, PuzzlesFound, BadgeFound, Nothing}
 
@@ -20,59 +22,15 @@ pub struct DiscoveryEvent
 }
 
 
-
-// inventory contains real puzzle for given fake puzzle name
-// based on name: the puzzles must correspond, e. g.
-// real: "puzzles-1a"; fake: "puzzles-1a-fake"
-fn contains_real(inventory: &Items, fake_name: &String) -> bool
-{
-    inventory.iter().any(|i| (i.name.clone() + "-fake").eq(fake_name))
-}
-
-fn get_game_start() -> TmouResult<DateTime<FixedOffset>>
-{
-    // TODO: do timezoning properly
-    let time_str = env::var("TMOU_GAME_START")?;
-    DateTime::parse_from_rfc3339(time_str.as_str()).or_else(|e| Err(e.into()))
-}
-
-// every 30 minutes starting Friday 21:00, a new fake is available
-fn is_eligible_for_fake(time: DateTime<Utc>, inventory: &Items) -> TmouResult<bool>
-{
-    let fake_count= inventory.iter().filter(|i| i.type_ =="puzzles-fake".to_string()).count();
-    let minutes = match fake_count
-    {
-        0 => 60, 
-        1 => 60 + 30, 2 => 60 + 60,
-        3 => 120 + 20, 4 => 120 + 40 , 5 => 120 + 60,
-        6 => 180 + 15, 7 => 180 + 30 , 8 => 180 + 45, 9 => 180 + 60,
-        _ => 9999 /* doesn't happen */ 
-    };
-    let eligible_time = get_game_start()? + Duration::minutes(minutes);
-    Ok(time >= eligible_time)
-}
-
-
-// return all fakes that are not in inventory in real or fake form (if time allows)
-fn get_fake_puzzles(time: DateTime<Utc>, level: i16, inventory: &Items, it: &db::Item, checkpoint_content: &Items) -> TmouResult<Items>
-{
-    let res = if !is_eligible_for_fake(time, &inventory)? || (it.level > level)  { Vec::new() } else 
-    {
-        checkpoint_content.iter()
-        .filter(|i| (i.level <= level+1) 
-                    && (i.type_ == "puzzles-fake".to_string() 
-                    && !inventory.contains(i))
-                    && !contains_real(inventory, &i.name))
-        .cloned().collect()
-    };
-    Ok(res)
-}
+///////////////////////////////////////////////////////////
+/// Interface
+///////////////////////////////////////////////////////////
 
 // time parameter added for unit testing
 pub fn discover_node(time: DateTime<Utc>, inventory: &Items, node_contents: &Items) -> TmouResult<DiscoveryEvent>
 {
     // player-level is the maximum level of any item, or -1 at start (eligible for puzzles level 0)
-    let player_level = inventory.iter().map(|item| item.level).max().unwrap_or(-1);
+    let player_level = get_player_level(&inventory);
 
     // intermediate collections, accumulated during controllers::discovery of all items in node
     let mut event = EventType::Nothing; // last event wins - should be only one
@@ -154,7 +112,59 @@ pub fn discover_fake_puzzle(
 }
 
 
+///////////////////////////////////////////////////////////
+/// Implementation helpers
+///////////////////////////////////////////////////////////
 
+// inventory contains real puzzle for given fake puzzle name
+// based on name: the puzzles must correspond, e. g.
+// real: "puzzles-1a"; fake: "puzzles-1a-fake"
+fn contains_real(inventory: &Items, fake_name: &String) -> bool
+{
+    inventory.iter().any(|i| (i.name.clone() + "-fake").eq(fake_name))
+}
+
+fn get_game_start() -> TmouResult<DateTime<FixedOffset>>
+{
+    // TODO: do timezoning properly
+    let time_str = env::var("TMOU_GAME_START")?;
+    DateTime::parse_from_rfc3339(time_str.as_str()).or_else(|e| Err(e.into()))
+}
+
+// starting Friday 21:00, a new fake is available:
+// every 30 minutes for first hour (2 fakes)
+// every 20 minutes for next hour (3 fakes)
+// every 15 minutes for next hour (4 fakes)
+fn is_eligible_for_fake(time: DateTime<Utc>, inventory: &Items) -> TmouResult<bool>
+{
+    let fake_count= inventory.iter().filter(|i| i.type_ =="puzzles-fake".to_string()).count();
+    let minutes = match fake_count
+    {
+        0 => 60, 
+        1 => 60 + 30, 2 => 60 + 60,
+        3 => 120 + 20, 4 => 120 + 40 , 5 => 120 + 60,
+        6 => 180 + 15, 7 => 180 + 30 , 8 => 180 + 45, 9 => 180 + 60,
+        _ => 9999 /* doesn't happen */ 
+    };
+    let eligible_time = get_game_start()? + Duration::minutes(minutes);
+    Ok(time >= eligible_time)
+}
+
+
+// return all fakes that are not in inventory in real or fake form (if time allows)
+fn get_fake_puzzles(time: DateTime<Utc>, level: i16, inventory: &Items, it: &db::Item, checkpoint_content: &Items) -> TmouResult<Items>
+{
+    let res = if !is_eligible_for_fake(time, &inventory)? || (it.level > level)  { Vec::new() } else 
+    {
+        checkpoint_content.iter()
+        .filter(|i| (i.level <= level+1) 
+                    && (i.type_ == "puzzles-fake".to_string() 
+                    && !inventory.contains(i))
+                    && !contains_real(inventory, &i.name))
+        .cloned().collect()
+    };
+    Ok(res)
+}
 
 pub fn format_skip_limit(badges:usize, max_badges: usize, limit: i64) -> String
 {

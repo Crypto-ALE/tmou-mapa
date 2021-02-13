@@ -12,7 +12,7 @@ use crate::models::schema::nodes_items::dsl as nodes_items;
 use crate::models::schema::items::dsl as items;
 use crate::models::schema::bonuses::dsl as bonuses;
 use crate::models::schema::teams_items::dsl as teams_items;
-use crate::database::db::{DbControl, MessagesDbControl};
+use crate::database::db::{Db, MessagesDb};
 use crate::models::db::*;
 use crate::models::errors::*;
 
@@ -22,20 +22,20 @@ use crate::models::errors::*;
 // let debug = debug_query::<Pg, _>(&query);
 // println!("Insert query: {:?}", debug);
 
-pub struct PostgresDbControl
+pub struct PostgresDb
 {
     pub conn: crate::PostgresDbConn
 }
 
-impl PostgresDbControl
+impl PostgresDb
 {
     pub fn new(conn: crate::PostgresDbConn) -> Self
     {
-        PostgresDbControl{conn: conn}
+        PostgresDb{conn: conn}
     }
 }
 
-impl DbControl for PostgresDbControl
+impl Db for PostgresDb
 {
 
 
@@ -236,7 +236,7 @@ fn get_dead_item_for_level(&self, level: i16) -> std::result::Result<Item, TmouE
 // messages for this team id are broadcasted to all the teams
 pub const BROADCAST_TEAM_ID: i32 = 0;
 
-impl MessagesDbControl for PostgresDbControl
+impl MessagesDb for PostgresDb
 {
     fn get_messages(&self, team_id: i32, limit: Option<i64>) -> Option<Vec<Message>> {
         let mut query = messages_teams::messages_teams

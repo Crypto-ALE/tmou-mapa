@@ -3,6 +3,7 @@
 mod models;
 mod osm_models;
 mod osm_reader;
+mod osm_reader_tests;
 
 use std::env;
 
