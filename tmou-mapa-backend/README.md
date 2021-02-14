@@ -106,7 +106,7 @@ Atributy:
 - label - hlavní identifikátor v databázi
 - description - zobrazený popis bonusu v UI
 - url - odkaz na zadání bonusu
-- display-time - čas zobrazení bonusu (pro všechny týmy stejný)
+- display-time - čas zobrazení bonusu (pro všechny týmy stejný) ve formátu [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601)
 
 ## Neformální popis API
 
