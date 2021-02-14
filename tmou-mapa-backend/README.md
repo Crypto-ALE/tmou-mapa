@@ -10,9 +10,23 @@ Aplikace pro servírování mapových dlaždic, uzlů a správy týmů pro onlin
 
 ## Spuštění
 
-1. `git clone https://github.com/miiila/tmou-mapa` a přesunout se do adresáře `tmou-mapa/tmou-mapa-backend`
+### Lokální build
+1. `git clone https://github.com/Crypto-ALE/tmou-mapa` a přesunout se do adresáře `tmou-mapa/tmou-mapa-backend`
 2. `rustup override set nightly` 
 3. `ROCKET_DATABASES='{postgres={url="postgres://USER:PASSWORD@SERVER:PORT/DB_NAME"}}' cargo run` 
+
+### Docker
+Docker image je publikovaný na docker hub, není třeba ho sestavit lokálně.
+```
+docker run \
+-e TMOU_GAME_EXECUTION_MODE=Auto \
+-e TMOU_GAME_START=2020-11-06T20:00:00+01:00 \
+-e TMOU_GAME_END=2020-11-07T12:00:00+01:00 \
+-e ROCKET_DATABASES='{...}'
+--net host \
+--name tmou \
+cryptoale/itmou
+```
 
 ## Proměnné prostředí
 
@@ -33,6 +47,10 @@ PROJECT_PATH | string | tmou-mapa-backend | Cesta k adresáři s backendem _pouz
 ROCKET_ENV | dev/stage/prod | dev | Specifikace prostředí pro [Rocket](https://rocket.rs/v0.4/guide/configuration/#environment)
 HOST | string | i.tmou.cz | Adresa webu, používaná pro přesměrování z http na https
 
+## Přihlášení týmu
+Tým se může přihlásit dvěma způsoby - buď může využít své přihlášené z webu TMOU nebo může přistupovat na svou url ve tvaru `base-url/{url-tymu}`, kde `url-tymu` odpovídá sloupci `phrase` v databázi. Ve výchozím stavu je toto přihlášení přes url považování za admin přístup a chráněno stejným přihlášením.
+
+_Pro lepší nasazení a použití i mimo TMOU se přihlášení asi brzy změní._
 
 ## Migrace
 
@@ -55,6 +73,40 @@ Postup:
 2. Naimportovat mapová data: `{target}/import-osm-data pubfiles/tiles/osmdata.xml`
 3. Naimportovat šifrová data: `{target}/import-game-data sample_game_data.xml`
 4. Vytvořit v tabulce teams tým
+
+### Struktura souboru OSM DATA
+Používá se standardní Open Street Map XML, detaily [zde](https://wiki.openstreetmap.org/wiki/OSM_XML).
+
+### Struktura souboru GAME DATA
+XML popisuje herní prvky, z implementačních důvodů rozdelěné do dvou kategorií (`items`, `bonuses`).
+
+#### Items
+Jedná se o předměty, které se dají najít a vyzvednout na mapě.
+
+Atributy:
+- name - hlavní identifikátor v databázi
+- type - typ předmětu, viz níže
+- description - zobrazený popis předmětu v UI
+- url - cíl odkazu z inventáře
+- level - úroveň předmětu, určená pro ověřování podmínky vyzvednutí (obvykle musí mít tým v invetáři předmět levelu o 1 nižší, než ten, který chce vyzvednout)
+
+Všechny prvky typu item navíc obsahují kolekci prvků `node` s atributem `id`, který popisuje id uzlu ze souboru OSM DATA, na kterém se daný předmět nachází.
+
+Typy předmětů:
+- puzzles - zadání šifry
+- puzzles-fake - řešení šifry, `name` musí odpovídat příslušné šifře plus připojit `-fake`, např. `puzzles-4-fake`; url je stejné jako url původní šifry
+- checkpoint-start - místo, kde je možné vyzvednout řešení šifer, *vyžaduje specifickou implementaci*
+- dead - výsledek přeskočení šifry, url odkazuje zadání šifry s level+1
+- badge - odznáček za vyluštěný bonus, url je prázdné, podle `name` se hledá příslušený obrázek 
+
+#### Bonuses
+Bonusy nejsou na mapě, ale zpřístupňují se v příslušném čase.
+
+Atributy:
+- label - hlavní identifikátor v databázi
+- description - zobrazený popis bonusu v UI
+- url - odkaz na zadání bonusu
+- display-time - čas zobrazení bonusu (pro všechny týmy stejný)
 
 ## Neformální popis API
 
