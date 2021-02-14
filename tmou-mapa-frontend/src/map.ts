@@ -1,5 +1,5 @@
 import * as L from 'leaflet';
-import {LatLngTuple, LeafletMouseEvent} from "leaflet";
+import {LatLngTuple} from "leaflet";
 
 let map: L.Map;
 let currentLayer: L.TileLayer;

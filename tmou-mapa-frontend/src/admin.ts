@@ -128,4 +128,5 @@ function formatTimestamp(timestamp: number) {
 
       return `${hours < 10 ? '0' : ''}${hours}:${mins < 10 ? '0' : ''}${mins}`;
 }
+
 run().then(_r => console.log('Running for admin'));

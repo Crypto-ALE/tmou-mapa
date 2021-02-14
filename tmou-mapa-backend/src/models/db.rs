@@ -107,7 +107,7 @@ pub struct TeamToItem {
     pub timestamp: Option<chrono::NaiveDateTime>
 }
 
-#[derive(Clone, Default, Debug, PartialEq)]
+#[derive(Clone, Default, Debug, PartialEq, Queryable)]
 pub struct TeamItem {
     pub type_: String, // puzzles | badge | message
     pub url: String,

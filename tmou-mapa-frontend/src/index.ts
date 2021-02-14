@@ -7,64 +7,52 @@ import {
   LeafletMouseEvent,
   Polyline
 } from "leaflet";
-import {Item, Node, way, MessageWithTimestamp, Bonus} from './types';
+import {Item, Node, way, MessageWithTimestamp, Bonus, BadgeClass} from './types';
 import {discover, getTeamState, moveTeam, fetchMessages, fetchBonuses, skip, checkSkip, skipStartPuzzle} from './api';
 
 const mapInstance = getMap('map', [49.195, 16.609], 15);
 
 async function run() {
+  // Data, init
   const secretPhrase = document.querySelector("body").dataset.secretphrase || null;
   const renderedNodes = new Map<string, Circle>();
   const renderedWays = new Set();
   const localContainer = [];
 
-
+  // Check after page load, init
   messagesHandler();
-  setInterval(messagesHandler, 10000);
   bonusesHandler();
-  setInterval(bonusesHandler, 60000);
   checkSkipHandler();
+  // Set periodic checks
+  setInterval(messagesHandler, 10000);
+  setInterval(bonusesHandler, 60000);
   setInterval(checkSkipHandler, 60000);
 
-  async function checkSkipHandler() {
-    let allowed: boolean;
-    try {
-      ({allowed} = await checkSkip(secretPhrase));
-    } catch (e) {
-      alert("Došlo k chybě. Zkuste to znovu a případně kontaktuje organizátory.");
-      console.error(e);
-    }
-    updateSkipControl(allowed);
-  }
 
-  function updateSkipControl(enable: boolean) {
-    const skipEl = document.getElementById("skip");
-    if (enable) {
-      skipEl.removeAttribute('disabled');
-      skipEl.classList.remove('disabled');
-      skipEl.classList.add('enabled');
-    } else {
-      skipEl.setAttribute('disabled', 'disabled');
-      skipEl.classList.remove('enabled');
-      skipEl.classList.add('disabled');
+  // Find team position, init
+  let {nodes, ways, state, items} = await getTeamState(secretPhrase);
+  const lines: Polyline[] = [];
+  const latLng: LatLngLiteral = nodes.get(state.position)!.latLng;
+  let currentNodeCoords: LatLng = new LatLng(latLng.lat, latLng.lng);
+  let currentNode: Circle;
+
+  const lastNodesAndWays = window.localStorage.getItem('nodesAndWays');
+  if (lastNodesAndWays) {
+    const nodesAndWays = JSON.parse(lastNodesAndWays);
+    for (const nw of nodesAndWays) {
+      const nodes: Map<string, Node> = new Map(JSON.parse(nw.nodes));
+      const ways: Map<string, way> = new Map(JSON.parse(nw.ways));
+      drawNodesAndWays(nodes, ways);
     }
   }
 
-  async function messagesHandler() {
-    try {
-      const messages = await fetchMessages(secretPhrase);
-      drawMessages(messages);
-    } catch (e) {
-        alert("Došlo k chybě při získávání zpráv. Obnovte stránku a případně kontaktujte organizátory.");
-        console.error(e);
-    }
-  }
-
-  async function bonusesHandler() {
-    const bonuses = await fetchBonuses(secretPhrase);
-    drawBonuses(bonuses);
-  }
-
+  // Set positions and items, init
+  mapInstance.setView(currentNodeCoords, 17);
+  drawInventory(items);
+  drawNodesAndWays(nodes, ways);
+  document.getElementById('teamName').innerText = state.name;
+  
+  // Controls Handlers
   document.getElementById("mapSelectorMO").onclick = switchToMapyCzOutdoor;
   document.getElementById("mapSelectorMB").onclick = switchToMapyCzBase;
   document.getElementById("mapSelectorOSM").onclick = switchToOSM;
@@ -112,6 +100,7 @@ async function run() {
         console.error(e);
     }
   }
+
   document.getElementById('skip').onclick = async () => {
     const validate = window.confirm("Opravdu chcete přeskočit šifru?");
     if (validate) {
@@ -128,35 +117,52 @@ async function run() {
     }
   }
 
-  let {nodes, ways, state, items} = await getTeamState(secretPhrase);
-  const lines: Polyline[] = [];
-  const latLng: LatLngLiteral = nodes.get(state.position)!.latLng;
-  let currentNodeCoords: LatLng = new LatLng(latLng.lat, latLng.lng);
-  let currentNode: Circle;
+  async function checkSkipHandler() {
+    let allowed: boolean;
+    try {
+      ({allowed} = await checkSkip(secretPhrase));
+    } catch (e) {
+      alert("Došlo k chybě. Zkuste to znovu a případně kontaktuje organizátory.");
+      console.error(e);
+    }
+    updateSkipControl(allowed);
+  }
 
-  const lastNodesAndWays = window.localStorage.getItem('nodesAndWays');
-  if (lastNodesAndWays) {
-    const nodesAndWays = JSON.parse(lastNodesAndWays);
-    for (const nw of nodesAndWays) {
-      const nodes: Map<string, Node> = new Map(JSON.parse(nw.nodes));
-      const ways: Map<string, way> = new Map(JSON.parse(nw.ways));
-      drawNodesAndWays(nodes, ways);
+  function updateSkipControl(enable: boolean) {
+    const skipEl = document.getElementById("skip");
+    if (enable) {
+      skipEl.removeAttribute('disabled');
+      skipEl.classList.remove('disabled');
+      skipEl.classList.add('enabled');
+    } else {
+      skipEl.setAttribute('disabled', 'disabled');
+      skipEl.classList.remove('enabled');
+      skipEl.classList.add('disabled');
     }
   }
 
-  document.getElementById('teamName').innerText = state.name;
-  mapInstance.setView(currentNodeCoords, 17);
-  drawInventory(items);
-  drawNodesAndWays(nodes, ways);
+  async function messagesHandler() {
+    try {
+      const messages = await fetchMessages(secretPhrase);
+      drawMessages(messages);
+    } catch (e) {
+        alert("Došlo k chybě při získávání zpráv. Obnovte stránku a případně kontaktujte organizátory.");
+        console.error(e);
+    }
+  }
+
+  async function bonusesHandler() {
+    const bonuses = await fetchBonuses();
+    drawBonuses(bonuses);
+  }
 
   function showBadgePopup(name: string) {
     const message = 'Řešení je správně, získali jste za něj odznáček.';
     showTextPopup('Hurá!', message, name as BadgeClass);
   }
 
-  type BadgeClass = 'badge' | 'shrug' | 'get_puzzle';
 
-  function showSelectPopup(heading: string, options: Item[],badgeClass: BadgeClass) {
+  function showSelectPopup(heading: string, options: Item[], badgeClass: BadgeClass) {
     const opts = options.map((opt) => `<option value='${opt.name}'>${opt.description}</option>`);
     const form = `<form method='POST' id='skipStartPuzzle'><select name="puzzleName">${opts.join('')}</select></form>`;
     const clickHandler = async (e: Event) => {
@@ -342,4 +348,4 @@ async function run() {
 
 
 
-run().then(r => console.log('Running'))
+run().then(_ => console.log('Running'))

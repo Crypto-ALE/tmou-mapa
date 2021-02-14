@@ -1,4 +1,4 @@
-import {TeamState, Node, way, DiscoveryEvent, TeamPosition, MessageWithTimestamp, OutgoingMessage, MessageType, Standings, TeamStanding, Bonus, Skip, Item, SkipResult} from './types';
+import {TeamState, Node, way, DiscoveryEvent, TeamPosition, MessageWithTimestamp, OutgoingMessage, MessageType, Standings, Bonus, Skip, Item, SkipResult} from './types';
 
 export async function getTeamState(secretPhrase?: string): Promise<TeamState> {
   const url = secretPhrase ? `/game/${secretPhrase}` : '/game';
@@ -120,7 +120,7 @@ export async function fetchMessages(secretPhrase?: string, limit?: number): Prom
   return timestampMapper(messages);
 }
 
-export async function fetchBonuses(secretPhrase?: string): Promise<Bonus[]> {
+export async function fetchBonuses(): Promise<Bonus[]> {
   try {
     const url = '/game/bonuses';
     const res = await fetch(url);
@@ -159,28 +159,6 @@ export async function sendMessage(data: FormData, secretPhrase?: string) {
 export async function getStandings(): Promise<Standings> {
   const res = await fetch(`/admin/standings`);
   const stats_json = await res.json();
-    //"standings": [
-        //{
-            //"rank": 1,
-            //"name": "Maštěné ředkvičky",
-            //"puzzles": {
-                //"2": {
-                    //"dead": false,
-                    //"timestamp": "2020-11-04T20:13:03.486773"
-                //},
-                //"0": {
-                    //"dead": false,
-                    //"timestamp": "2020-11-04T20:12:25.532593"
-                //},
-                //"1": {
-                    //"dead": false,
-                    //"timestamp": "2020-11-04T20:12:50.784585"
-                //}
-            //},
-            //"badge_count": 0,
-            //"start_puzzles_solved": 1
-        //}
-    //]
 
   const standings = stats_json.standings.map((s: any) => {
     const puzzles = {};
