@@ -109,14 +109,16 @@ fn get_team_items(&self, team_id: i32) -> std::result::Result<std::vec::Vec<Item
 
 fn get_team_items_with_timestamps(&self, team_id: i32) -> std::result::Result<std::vec::Vec<TeamItem>, TmouError>
 {
-    type Tuple = (String,String,i16,String,Option<String>,Option<chrono::NaiveDateTime>);
-    let items:Vec<Tuple> = teams_items::teams_items
+    let team_items:Vec<TeamItem> = teams_items::teams_items
         .filter(teams_items::team_id.eq(team_id))
         .inner_join(items::items)
-        .select((items::type_, items::url, items::level, items::name, items::description, teams_items::timestamp))
+        .select((items::type_,
+                 items::url,
+                 items::level,
+                 items::name,
+                 items::description.nullable(),
+                 teams_items::timestamp.nullable()))
         .load(&*self.conn)?;
-    let from_tuple = |t: Tuple| TeamItem {type_:t.0, url:t.1, level:t.2, name:t.3, description:t.4, timestamp:t.5};
-    let team_items:Vec<TeamItem> = items.into_iter().map(from_tuple).collect();
     Ok(team_items)
 }
 
@@ -166,8 +168,8 @@ fn put_team_items(&mut self, team_id: i32, items: std::vec::Vec<Item>) -> std::r
         _ =>
         {
             let records: Vec<TeamToItem> = its.iter()
-            .map(|i| TeamToItem{team_id: team_id, item_name: i.name.clone(), timestamp: None})
-            .collect();
+                .map(|i| TeamToItem{team_id: team_id, item_name: i.name.clone(), timestamp: None})
+                .collect();
             let query = insert_into(teams_items::teams_items).values(records);
             match query.get_result::<TeamToItem>(&*self.conn) {
                 Ok(_) => Ok(()),
