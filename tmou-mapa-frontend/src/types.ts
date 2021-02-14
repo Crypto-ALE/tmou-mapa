@@ -92,3 +92,5 @@ export interface Skip {
 export interface SkipResult {
   newItems: Item[];
 }
+
+export type BadgeClass = 'badge' | 'shrug' | 'get_puzzle';

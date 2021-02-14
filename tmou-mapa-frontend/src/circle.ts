@@ -1,4 +1,4 @@
-import {Circle, LatLngExpression, LatLngTuple, Layer, LeafletMouseEvent} from "leaflet";
+import {Circle, LatLngExpression, LeafletMouseEvent} from "leaflet";
 
 Circle.include({
   id: null,
