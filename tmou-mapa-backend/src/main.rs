@@ -14,15 +14,12 @@ use std::env;
 
 use chrono::{DateTime, FixedOffset};
 use http_auth_basic::Credentials;
-use jsonwebtoken::{decode, Algorithm, DecodingKey, Validation};
-use log::{info, warn};
-use rocket::config::Environment;
+use log::warn;
 use rocket::fairing::AdHoc;
 use rocket::http::RawStr;
 use rocket::http::{Header, Status};
-use rocket::outcome::IntoOutcome;
 use rocket::request::{FromRequest, Outcome};
-use rocket::response::{Redirect, Responder};
+use rocket::response::Redirect;
 use rocket::Request;
 use rocket::Rocket;
 use rocket::State;
@@ -31,7 +28,6 @@ use rocket_contrib::json::Json;
 use rocket_contrib::serve::StaticFiles;
 use rocket_contrib::templates::Template;
 use serde::{Deserialize, Serialize};
-use slugify::slugify;
 
 mod controllers;
 mod database;
@@ -53,18 +49,8 @@ pub struct PostgresDbConn(diesel::PgConnection);
 /// info
 ///////////////////////////////////////////////////////////
 
-#[get("/game")]
-fn info_cookie(
-    _started: GameWasStarted,
-    team: models::db::Team,
-    conn: PostgresDbConn,
-) -> Result<Json<api::TeamInfo>, Status> {
-    info(team, conn)
-}
-
 #[get("/game/<secret_phrase>")]
 fn info_phrase(
-    _admin: Admin,
     _started: GameWasStarted,
     secret_phrase: &RawStr,
     conn: PostgresDbConn,
@@ -88,112 +74,11 @@ fn info(team: models::db::Team, conn: PostgresDbConn) -> Result<Json<api::TeamIn
 }
 
 ///////////////////////////////////////////////////////////
-/// skip
-///////////////////////////////////////////////////////////
-
-#[get("/game/skip")]
-fn skip_cookie(
-    _started: GameWasStarted,
-    team: models::db::Team,
-    conn: PostgresDbConn,
-) -> Result<Json<api::Skip>, Status> {
-    skip(team, conn)
-}
-
-#[get("/game/<secret_phrase>/skip")]
-fn skip_phrase(
-    _admin: Admin,
-    _started: GameWasStarted,
-    secret_phrase: &RawStr,
-    conn: PostgresDbConn,
-) -> Result<Json<api::Skip>, Status> {
-    match database::postgres::get_team_by_phrase(
-        &*conn,
-        &secret_phrase.to_string(),
-        get_game_execution_mode() == "Test",
-    ) {
-        Some(team) => skip(team, conn),
-        None => Err(Status::NotFound),
-    }
-}
-
-fn skip(team: models::db::Team, conn: PostgresDbConn) -> Result<Json<api::Skip>, Status> {
-    let db_ctrl = PostgresDb::new(conn);
-    match game::is_skip_allowed(&db_ctrl, &team) {
-        Ok(skip) => Ok(Json(skip)),
-        Err(e) => {
-            warn!("Skip check failed: {}", e.message);
-            Err(Status::InternalServerError)
-        }
-    }
-}
-
-///////////////////////////////////////////////////////////
-/// proceed_skip
-///////////////////////////////////////////////////////////
-
-#[post("/game/skip", data = "<action>")]
-fn proceed_skip_cookie(
-    _started: GameWasStarted,
-    team: models::db::Team,
-    action: Json<api::SkipAction>,
-    conn: PostgresDbConn,
-) -> Result<Json<api::SkipResult>, Status> {
-    proceed_skip(action, team, conn)
-}
-
-#[post("/game/<secret_phrase>/skip", data = "<action>")]
-fn proceed_skip_phrase(
-    _admin: Admin,
-    _started: GameWasStarted,
-    secret_phrase: &RawStr,
-    action: Json<api::SkipAction>,
-    conn: PostgresDbConn,
-) -> Result<Json<api::SkipResult>, Status> {
-    match database::postgres::get_team_by_phrase(
-        &*conn,
-        &secret_phrase.to_string(),
-        get_game_execution_mode() == "Test",
-    ) {
-        Some(team) => proceed_skip(action, team, conn),
-        None => Err(Status::NotFound),
-    }
-}
-
-fn proceed_skip(
-    action: Json<api::SkipAction>,
-    team: models::db::Team,
-    conn: PostgresDbConn,
-) -> Result<Json<api::SkipResult>, Status> {
-    match action.verified {
-        false => Err(Status::BadRequest),
-        true => {
-            let mut db_ctrl = PostgresDb::new(conn);
-            match game::skip_current_puzzle(&mut db_ctrl, team) {
-                Ok(skip) => Ok(Json(skip)),
-                Err(_) => Err(Status::NotFound),
-            }
-        }
-    }
-}
-
-///////////////////////////////////////////////////////////
 /// messages
 ///////////////////////////////////////////////////////////
 
-#[get("/messages?<limit>")]
-fn messages_cookie(
-    _started: GameWasStarted,
-    team: models::db::Team,
-    conn: PostgresDbConn,
-    limit: Option<i64>,
-) -> Result<Json<Vec<api::Message>>, Status> {
-    messages(team, conn, limit)
-}
-
 #[get("/messages/<secret_phrase>?<limit>")]
 fn messages_phrase(
-    _admin: Admin,
     _started: GameWasStarted,
     secret_phrase: &RawStr,
     conn: PostgresDbConn,
@@ -225,20 +110,8 @@ fn messages(
 /// go
 ///////////////////////////////////////////////////////////
 
-#[post("/game", data = "<action>")]
-fn go_cookie(
-    _started: GameWasStarted,
-    action: Json<api::NodeAction>,
-    team: models::db::Team,
-    conn: PostgresDbConn,
-    rate_limiter: State<RateLimiter>,
-) -> Result<Json<api::TeamInfo>, Status> {
-    go(action, team, conn, rate_limiter)
-}
-
 #[post("/game/<secret_phrase>", data = "<action>")]
 fn go_phrase(
-    _admin: Admin,
     _started: GameWasStarted,
     secret_phrase: &RawStr,
     action: Json<api::NodeAction>,
@@ -255,7 +128,6 @@ fn go_phrase(
     }
 }
 
-//#[post("/game/<secret_phrase>", data = "<action>")]
 fn go(
     action: Json<api::NodeAction>,
     team: models::db::Team,
@@ -276,18 +148,8 @@ fn go(
 /// discover
 ///////////////////////////////////////////////////////////
 
-#[get("/game/discover")]
-fn discover_cookie(
-    _running: GameIsRunning,
-    team: models::db::Team,
-    conn: PostgresDbConn,
-) -> Result<Json<api::DiscoveryEvent>, Status> {
-    discover(team, conn)
-}
-
 #[get("/game/<secret_phrase>/discover")]
 fn discover_phrase(
-    _admin: Admin,
     _running: GameIsRunning,
     secret_phrase: &RawStr,
     conn: PostgresDbConn,
@@ -302,7 +164,6 @@ fn discover_phrase(
     }
 }
 
-//#[get("/game/<secret_phrase>/discover")]
 fn discover(
     team: models::db::Team,
     conn: PostgresDbConn,
@@ -318,19 +179,8 @@ fn discover(
 /// discover_post
 ///////////////////////////////////////////////////////////
 
-#[post("/game/discover", data = "<puzzle_name>")]
-fn discover_post_cookie(
-    _running: GameIsRunning,
-    team: models::db::Team,
-    conn: PostgresDbConn,
-    puzzle_name: Json<api::PuzzleName>,
-) -> Result<Json<Vec<api::Item>>, Status> {
-    discover_post(team, conn, puzzle_name)
-}
-
 #[post("/game/<secret_phrase>/discover", data = "<puzzle_name>")]
 fn discover_post_phrase(
-    _admin: Admin,
     _running: GameIsRunning,
     secret_phrase: &RawStr,
     conn: PostgresDbConn,
@@ -346,7 +196,6 @@ fn discover_post_phrase(
     }
 }
 
-//#[post("/game/<secret_phrase>/discover")]
 fn discover_post(
     team: models::db::Team,
     conn: PostgresDbConn,
@@ -356,22 +205,6 @@ fn discover_post(
     match game::discover_post(&mut db_ctrl, team, &puzzle_name.puzzleName) {
         Ok(nc) => Ok(Json(nc)),
         Err(_) => Err(Status::NotFound),
-    }
-}
-
-///////////////////////////////////////////////////////////
-/// bonuses
-///////////////////////////////////////////////////////////
-
-#[get("/game/bonuses")]
-fn bonuses(
-    _started: GameWasStarted,
-    conn: PostgresDbConn,
-) -> Result<Json<Vec<api::Bonus>>, Status> {
-    let db_ctrl = PostgresDb::new(conn);
-    match game::get_bonuses(&db_ctrl) {
-        Ok(bonuses) => Ok(Json(bonuses)),
-        Err(_) => Err(Status::InternalServerError),
     }
 }
 
@@ -568,28 +401,8 @@ fn admin_go(
 /// index: static serving
 ///////////////////////////////////////////////////////////
 
-#[get("/")]
-fn index_cookie(
-    _forced_https: ForcedHttps,
-    team: models::db::Team,
-    started: Option<GameWasStarted>,
-    running: Option<GameIsRunning>,
-) -> Template {
-    let mut context = std::collections::HashMap::<String, String>::new();
-    context.insert("teamName".to_string(), team.name);
-    index(context, started, running)
-}
-
-#[get("/", rank = 2)]
-fn index_redirect() -> Redirect {
-    let url: String = env::var("LOGIN_REDIRECT").unwrap_or("https://www.tmou.cz".to_string());
-    Redirect::temporary(url)
-}
-
 #[get("/<secret_phrase>")]
 fn team_index(
-    _admin: Admin,
-    _forced_https: ForcedHttps,
     started: Option<GameWasStarted>,
     running: Option<GameIsRunning>,
     secret_phrase: &RawStr,
@@ -656,7 +469,7 @@ fn rocket() -> rocket::Rocket {
     rocket::ignite()
         .manage(RateLimiter::new())
         .manage(admin::Position::new())
-        .register(catchers![not_auth, force_https])
+        .register(catchers![not_auth])
         .attach(PostgresDbConn::fairing())
         .attach(AdHoc::on_attach("Database Migrations", run_migrations))
         .attach(Template::fairing())
@@ -664,24 +477,12 @@ fn rocket() -> rocket::Rocket {
         .mount(
             "/",
             routes![
-                index_cookie,
-                index_redirect,
                 team_index,
-                info_cookie,
                 info_phrase,
-                messages_cookie,
                 messages_phrase,
-                go_cookie,
                 go_phrase,
-                discover_cookie,
                 discover_phrase,
-                discover_post_cookie,
                 discover_post_phrase,
-                bonuses,
-                skip_cookie,
-                skip_phrase,
-                proceed_skip_cookie,
-                proceed_skip_phrase,
                 admin,
                 admin_positions,
                 admin_send_message,
@@ -720,15 +521,6 @@ fn not_auth(_req: &Request) -> BasicAuthResponder {
     }
 }
 
-#[catch(505)]
-fn force_https(request: &Request) -> Redirect {
-    Redirect::permanent(format!(
-        "https://{}{}",
-        env::var("HOST").unwrap_or("i.tmou.cz".to_string()),
-        request.uri().path()
-    ))
-}
-
 ///////////////////////////////////////////////////////////
 /// Guards and Fairings
 ///////////////////////////////////////////////////////////
@@ -758,66 +550,6 @@ impl<'a, 'r> FromRequest<'a, 'r> for Admin {
                     (),
                 ))),
         }
-    }
-}
-
-impl<'a, 'r> FromRequest<'a, 'r> for models::db::Team {
-    type Error = ();
-
-    fn from_request(request: &'a Request<'r>) -> Outcome<models::db::Team, Self::Error> {
-        #[derive(Debug, Serialize, Deserialize)]
-        struct TeamWeb {
-            tid: i32,
-            tna: String,
-        }
-        let conn = request.guard::<PostgresDbConn>()?;
-        let testers_only = get_game_execution_mode() == "Test";
-
-        request
-            .cookies()
-            .get("TMOU_SSO_JWT")
-            .and_then(|cookie| {
-                let val: Result<String, _> = cookie.value().parse();
-                match env::var("JWT_TOKEN") {
-                    Ok(secret) => decode::<TeamWeb>(
-                        &val.unwrap(),
-                        &DecodingKey::from_secret(secret.as_ref()),
-                        &Validation::new(Algorithm::HS512),
-                    )
-                    .ok(),
-                    Err(_) => {
-                        warn!("JWT_TOKEN env var not found.");
-                        None
-                    }
-                }
-            })
-            .and_then(|team_web| {
-                let team_id: i32 = team_web.claims.tid;
-                let team_name = team_web.claims.tna;
-                database::postgres::get_team_by_external_id(&*conn, team_id, testers_only).or_else(
-                    || {
-                        info!("Inserting team {}", &team_name);
-                        let new_team = models::db::WebTeam {
-                            name: team_name.clone(),
-                            phrase: slugify!(&team_name),
-                            team_id,
-                        };
-                        match database::postgres::put_team(&*conn, new_team) {
-                            // when GAME MODE is TEST, cookie teams are inserted, but don't have an
-                            //access
-                            Ok(team) => match !testers_only {
-                                true => Some(team),
-                                false => None,
-                            },
-                            Err(err) => {
-                                warn!("Failed to insert team with error: {:?}", err);
-                                None
-                            }
-                        }
-                    },
-                )
-            })
-            .or_forward(())
     }
 }
 
@@ -876,22 +608,6 @@ impl<'a, 'r> FromRequest<'a, 'r> for GameWasStarted {
             rocket::Outcome::Success(GameWasStarted {})
         } else {
             rocket::Outcome::Failure((rocket::http::Status::Forbidden, ()))
-        }
-    }
-}
-
-struct ForcedHttps {}
-
-impl<'a, 'r> FromRequest<'a, 'r> for ForcedHttps {
-    type Error = ();
-
-    fn from_request(request: &'a Request<'r>) -> Outcome<ForcedHttps, Self::Error> {
-        let is_prod = Environment::active()
-            .and_then(|env| Ok(env.is_prod()))
-            .unwrap_or(false);
-        match (is_prod, request.headers().get_one("X-Forwarded-Proto")) {
-            (true, Some("http")) => rocket::Outcome::Failure((Status::HttpVersionNotSupported, ())),
-            _ => rocket::Outcome::Success(ForcedHttps {}),
         }
     }
 }

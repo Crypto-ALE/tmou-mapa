@@ -23,13 +23,8 @@ async function run() {
   // Check after page load, init
   drawTranslations(translations);
   messagesHandler();
-  bonusesHandler();
-  checkSkipHandler();
   // Set periodic checks
   setInterval(messagesHandler, 10000);
-  setInterval(bonusesHandler, 60000);
-  setInterval(checkSkipHandler, 60000);
-
 
   // Find team position, init
   let {nodes, ways, state, items} = await getTeamState(secretPhrase);
@@ -67,30 +62,11 @@ async function run() {
         showTextPopup(translations.popup_failed_heading, translations.popup_failed_search_text, 'shrug');
         break;
       }
-      case "badge-found": {
-        if (newItems.length) {
-          const {name} = newItems[0];
-          showBadgePopup(name);
-        } else {
-          showTextPopup(translations.popup_neutral_heading, translations.popup_neutral_badge_text, 'shrug');
-        }
-        // badge can trigger lower limit for skip, check it
-        checkSkipHandler();
-        break;
-      }
       case "puzzles-found": {
         if (newItems.length) {
           showTextPopup(translations.popup_success_heading, translations.popup_success_search_text, 'get_puzzle');
         } else {
           showTextPopup(translations.popup_neutral_heading, translations.popup_neutral_search_text, 'shrug');
-        }
-        break;
-      }
-      case "checkpoint-start-visited": {
-        if (newItems.length) {
-          showSelectPopup(translations.popup_checkpoint_select, newItems, 'get_puzzle');
-        } else {
-          showTextPopup(translations.popup_neutral_heading, translations.popup_neutral_checkpoint_text, 'shrug');
         }
         break;
       }
@@ -103,46 +79,6 @@ async function run() {
     }
   }
 
-  document.getElementById('skip').onclick = async () => {
-    const validate = window.confirm(translations.skip_confirmation);
-    if (validate) {
-      // skip puzzle
-      try {
-        let {newItems} = await skip(validate, secretPhrase);
-        drawInventory(newItems);
-        // skip used, disable control
-        updateSkipControl(false);
-      } catch (e) {
-        alert(translations.error);
-        console.error(e);
-      }
-    }
-  }
-
-  async function checkSkipHandler() {
-    let allowed: boolean;
-    try {
-      ({allowed} = await checkSkip(secretPhrase));
-    } catch (e) {
-      alert(translations.error);
-      console.error(e);
-    }
-    updateSkipControl(allowed);
-  }
-
-  function updateSkipControl(enable: boolean) {
-    const skipEl = document.getElementById("skip");
-    if (enable) {
-      skipEl.removeAttribute('disabled');
-      skipEl.classList.remove('disabled');
-      skipEl.classList.add('enabled');
-    } else {
-      skipEl.setAttribute('disabled', 'disabled');
-      skipEl.classList.remove('enabled');
-      skipEl.classList.add('disabled');
-    }
-  }
-
   async function messagesHandler() {
     try {
       const messages = await fetchMessages(secretPhrase);
@@ -151,35 +87,6 @@ async function run() {
         alert(translations.error_messages);
         console.error(e);
     }
-  }
-
-  async function bonusesHandler() {
-    const bonuses = await fetchBonuses();
-    drawBonuses(bonuses);
-  }
-
-  function showBadgePopup(name: string) {
-    showTextPopup(translations.popup_success_heading, translations.popup_success_badge_text, name as BadgeClass);
-  }
-
-
-  function showSelectPopup(heading: string, options: Item[], badgeClass: BadgeClass) {
-    const opts = options.map((opt) => `<option value='${opt.name}'>${opt.description}</option>`);
-    const form = `<form method='POST' id='skipStartPuzzle'><select name="puzzleName">${opts.join('')}</select></form>`;
-    const clickHandler = async (e: Event) => {
-      e.preventDefault();
-      const formEl = document.getElementById("skipStartPuzzle") as HTMLFormElement;
-      const data = new FormData(formEl);
-      try {
-        const newItems = await skipStartPuzzle(data, secretPhrase);
-        drawInventory(newItems);
-      } catch (e) {
-        alert(translations.error);
-        console.error(e);
-      }
-  }
-
-    showPopup(heading, form, badgeClass, clickHandler);
   }
 
   function showTextPopup(heading: string, text: string, badgeClass: BadgeClass) {
@@ -317,28 +224,10 @@ async function run() {
       .sort((a, b) => a.level - b.level)
       .map(({url, description}) => `<li><a href="${url}" target="_blank">${description}</a>`);
 
-    const badges = items
-      .filter((item) => item.type === "badge")
-      .sort((a, b) => a.timestamp - b.timestamp)
-      .map(({name, description}) => {
-        return `<div class="badge ${name}" title="${description}"></div>`
-      })
-      .join('');
-
-    document.getElementById('badges').innerHTML = badges;
     if (puzzles.length) {
       document.querySelector('#puzzles>#puzzles-list').innerHTML = `<ul>${puzzles.join('')}</ul>`;
     }
 
-  }
-
-  function drawBonuses(items: Bonus[]) {
-    const bonuses = items
-      .map(({url, description}) => `<li><a href="${url}" target="_blank">${description}</a>`);
-
-    if (bonuses.length > 0) {
-      document.querySelector('#bonuses>#bonuses-list').innerHTML = `<ul>${bonuses.join('')}</ul>`;
-    }
   }
 
   function drawTranslations(translations: { [key: string]: string }) {
