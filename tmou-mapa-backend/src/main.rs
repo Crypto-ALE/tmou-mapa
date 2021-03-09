@@ -447,6 +447,24 @@ fn admin_standings(_admin: Admin, conn: PostgresDbConn) -> Result<Json<api::Stan
     }
 }
 
+#[allow(unused)]
+#[post("/admin/items", data = "<items>")]
+fn admin_post_items(
+    _admin: Admin,
+    conn: PostgresDbConn,
+    items: Json<Vec<api::Item>>,
+) -> Result<Status, Status> {
+    let db_ctrl = PostgresDb::new(conn);
+    todo!()
+}
+
+#[allow(unused)]
+#[delete("/admin/items/<id>")]
+fn admin_delete_item(_admin: Admin, conn: PostgresDbConn, id: i64) -> Result<Status, Status> {
+    let db_ctrl = PostgresDb::new(conn);
+    todo!()
+}
+
 ///////////////////////////////////////////////////////////
 /// index: static serving
 ///////////////////////////////////////////////////////////
@@ -567,7 +585,9 @@ fn rocket() -> rocket::Rocket {
                 admin,
                 admin_positions,
                 admin_send_message,
-                admin_standings
+                admin_standings,
+                admin_post_items,
+                admin_delete_item
             ],
         )
 }
