@@ -1,5 +1,4 @@
 pub mod api;
-pub mod schema;
-pub mod errors;
 pub mod db;
-			
+pub mod errors;
+pub mod schema;

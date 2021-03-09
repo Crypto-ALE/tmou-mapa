@@ -1,7 +1,7 @@
 #[allow(unused)]
-use rocket::local::Client;
-#[allow(unused)]
 use rocket::http::Status;
+#[allow(unused)]
+use rocket::local::Client;
 
 use crate::rocket;
 
