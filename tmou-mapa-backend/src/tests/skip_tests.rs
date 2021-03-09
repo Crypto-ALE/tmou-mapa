@@ -29,19 +29,22 @@ fn level1_no_bonuses_few_teams() {
 }
 #[test]
 fn level1_1_bonus_few_teams() {
-    let inventory = vec![Item {
-        level: 1,
-        description: None,
-        type_: "puzzles".to_string(),
-        name: "puzzle".to_string(),
-        url: "".to_string(),
-    },Item {
-        level: -1,
-        description: None,
-        type_: "badge".to_string(),
-        name: "badge".to_string(),
-        url: "".to_string(),
-    }];
+    let inventory = vec![
+        Item {
+            level: 1,
+            description: None,
+            type_: "puzzles".to_string(),
+            name: "puzzle".to_string(),
+            url: "".to_string(),
+        },
+        Item {
+            level: -1,
+            description: None,
+            type_: "badge".to_string(),
+            name: "badge".to_string(),
+            url: "".to_string(),
+        },
+    ];
     assert_eq!(is_allowed(inventory, vec!(500, 500, 100)).unwrap(), false);
 }
 #[test]
@@ -68,65 +71,76 @@ fn fake_level1_no_bonuses_enough_teams() {
 }
 #[test]
 fn level1_no_bonuses_enough_teams_already_dead() {
-    let inventory = vec![Item {
-        level: 1,
-        description: None,
-        type_: "puzzles".to_string(),
-        name: "puzzle".to_string(),
-        url: "".to_string(),
-    },Item {
-        level: 1,
-        description: None,
-        type_: "dead".to_string(),
-        name: "dead".to_string(),
-        url: "".to_string(),
-    }];
+    let inventory = vec![
+        Item {
+            level: 1,
+            description: None,
+            type_: "puzzles".to_string(),
+            name: "puzzle".to_string(),
+            url: "".to_string(),
+        },
+        Item {
+            level: 1,
+            description: None,
+            type_: "dead".to_string(),
+            name: "dead".to_string(),
+            url: "".to_string(),
+        },
+    ];
     assert_eq!(is_allowed(inventory, vec!(500, 500, 301)).unwrap(), false);
 }
 #[test]
 fn level1_1_bonus_enough_teams() {
-    let inventory = vec![Item {
-        level: 1,
-        description: None,
-        type_: "puzzles".to_string(),
-        name: "puzzle".to_string(),
-        url: "".to_string(),
-    },Item {
-        level: -1,
-        description: None,
-        type_: "badge".to_string(),
-        name: "badge".to_string(),
-        url: "".to_string(),
-    }];
+    let inventory = vec![
+        Item {
+            level: 1,
+            description: None,
+            type_: "puzzles".to_string(),
+            name: "puzzle".to_string(),
+            url: "".to_string(),
+        },
+        Item {
+            level: -1,
+            description: None,
+            type_: "badge".to_string(),
+            name: "badge".to_string(),
+            url: "".to_string(),
+        },
+    ];
     assert_eq!(is_allowed(inventory, vec!(500, 500, 201)).unwrap(), true);
 }
 #[test]
 fn level1_more_bonuses_than_defined_enough_teams() {
-    let inventory = vec![Item {
-        level: 1,
-        description: None,
-        type_: "puzzles".to_string(),
-        name: "puzzle".to_string(),
-        url: "".to_string(),
-    },Item {
-        level: -1,
-        description: None,
-        type_: "badge".to_string(),
-        name: "badge".to_string(),
-        url: "".to_string(),
-    },Item {
-        level: -1,
-        description: None,
-        type_: "badge".to_string(),
-        name: "badge".to_string(),
-        url: "".to_string(),
-    },Item {
-        level: -1,
-        description: None,
-        type_: "badge".to_string(),
-        name: "badge".to_string(),
-        url: "".to_string(),
-    }];
+    let inventory = vec![
+        Item {
+            level: 1,
+            description: None,
+            type_: "puzzles".to_string(),
+            name: "puzzle".to_string(),
+            url: "".to_string(),
+        },
+        Item {
+            level: -1,
+            description: None,
+            type_: "badge".to_string(),
+            name: "badge".to_string(),
+            url: "".to_string(),
+        },
+        Item {
+            level: -1,
+            description: None,
+            type_: "badge".to_string(),
+            name: "badge".to_string(),
+            url: "".to_string(),
+        },
+        Item {
+            level: -1,
+            description: None,
+            type_: "badge".to_string(),
+            name: "badge".to_string(),
+            url: "".to_string(),
+        },
+    ];
     assert_eq!(is_allowed(inventory, vec!(500, 500, 201)).unwrap(), true);
 }
 #[test]

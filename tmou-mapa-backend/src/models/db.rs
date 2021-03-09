@@ -1,5 +1,5 @@
 use chrono;
-use diesel::{Queryable, Identifiable, Insertable};
+use diesel::{Identifiable, Insertable, Queryable};
 use serde::{Deserialize, Serialize};
 
 use crate::models::schema::*;
@@ -10,7 +10,7 @@ pub struct Node {
     pub id: i64,
     pub lat: f32,
     pub lon: f32,
-    pub type_: String
+    pub type_: String,
 }
 
 #[derive(Serialize, Deserialize, Queryable, Insertable, Debug)]
@@ -18,14 +18,12 @@ pub struct Node {
 pub struct WaysToNodes {
     pub way_id: i64,
     pub node_id: i64,
-    pub node_order: i16
+    pub node_order: i16,
 }
-
 
 impl std::cmp::PartialEq for WaysToNodes // for unique()
 {
-    fn eq(&self, other: &Self) -> bool
-    {
+    fn eq(&self, other: &Self) -> bool {
         self.way_id == other.way_id && self.node_id == other.node_id
     }
 }
@@ -34,10 +32,9 @@ impl std::cmp::Eq for WaysToNodes {}
 impl std::cmp::Ord for WaysToNodes // for dedup
 {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
-        match self.way_id.cmp(&other.way_id)
-        {
+        match self.way_id.cmp(&other.way_id) {
             std::cmp::Ordering::Equal => self.node_id.cmp(&other.node_id),
-            o => o
+            o => o,
         }
     }
 }
@@ -89,14 +86,14 @@ pub struct Bonus {
     pub url: String,
     pub label: String,
     pub description: Option<String>,
-    pub display_time: chrono::NaiveDateTime
+    pub display_time: chrono::NaiveDateTime,
 }
 
 #[derive(Serialize, Deserialize, Clone, Default, Queryable, Insertable)]
 #[table_name = "nodes_items"]
 pub struct NodeToItem {
     pub node_id: i64,
-    pub item_name: String
+    pub item_name: String,
 }
 
 #[derive(Clone, Default, Queryable, Insertable)]
@@ -104,7 +101,7 @@ pub struct NodeToItem {
 pub struct TeamToItem {
     pub team_id: i32,
     pub item_name: String,
-    pub timestamp: Option<chrono::NaiveDateTime>
+    pub timestamp: Option<chrono::NaiveDateTime>,
 }
 
 #[derive(Clone, Default, Debug, PartialEq, Queryable)]
@@ -114,7 +111,7 @@ pub struct TeamItem {
     pub level: i16,
     pub name: String,
     pub description: Option<String>,
-    pub timestamp: Option<chrono::NaiveDateTime>
+    pub timestamp: Option<chrono::NaiveDateTime>,
 }
 
 #[derive(Clone, Default, Debug, PartialEq, Queryable)]
@@ -124,9 +121,8 @@ pub struct TeamStandingsItem {
     pub level: Option<i16>,
     pub name: Option<String>,
     pub description: Option<String>,
-    pub timestamp: Option<chrono::NaiveDateTime>
+    pub timestamp: Option<chrono::NaiveDateTime>,
 }
-
 
 #[derive(Clone, Default, Debug, PartialEq, Queryable)]
 pub struct TeamPosition {
@@ -142,7 +138,7 @@ pub struct WebMessage {
     pub content: String,
     pub type_: String, // success | fail | info
     // Preparation for future-appearing messages
-    pub timestamp: Option<chrono::NaiveDateTime>
+    pub timestamp: Option<chrono::NaiveDateTime>,
 }
 
 #[derive(Serialize, Deserialize, Clone, Default, Queryable)]
@@ -150,7 +146,7 @@ pub struct Message {
     pub id: i32,
     pub content: String,
     pub type_: String, // success | fail | info
-    pub timestamp: Option<chrono::NaiveDateTime>
+    pub timestamp: Option<chrono::NaiveDateTime>,
 }
 
 #[derive(Serialize, Deserialize, Clone, Default, Insertable)]
@@ -161,17 +157,17 @@ pub struct MessageToTeam {
 }
 
 #[derive(Clone, Default, Debug, PartialEq, Queryable)]
-pub struct TeamBadge{
+pub struct TeamBadge {
     pub team_name: String,
     pub badge_name: Option<String>,
-    pub timestamp: Option<chrono::NaiveDateTime>
+    pub timestamp: Option<chrono::NaiveDateTime>,
 }
 
 #[derive(Clone, Default, Debug, PartialEq, Queryable)]
-pub struct ItemTeam{
+pub struct ItemTeam {
     pub item_name: String,
     pub item_type: String,
     pub item_level: i16,
     pub team_name: Option<String>,
-    pub timestamp: Option<chrono::NaiveDateTime>
+    pub timestamp: Option<chrono::NaiveDateTime>,
 }
