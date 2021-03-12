@@ -499,12 +499,12 @@ fn admin_put_item(
 }
 
 #[allow(unused)]
-#[post("/admin/items/<item_name>/nodes/<node_id>")]
+#[post("/admin/items/<item_name>/nodes", data ="<node_ids>")]
 fn admin_post_node(
     _admin: Admin,
     conn: PostgresDbConn,
     item_name: String,
-    node_id: i64,
+    node_ids: Json<Vec<i64>>,
 ) -> Result<Status, Status> {
     let db_ctrl = PostgresDb::new(conn);
     todo!()
@@ -517,6 +517,17 @@ fn admin_delete_node(
     conn: PostgresDbConn,
     item_name: String,
     node_id: i64,
+) -> Result<Status, Status> {
+    let db_ctrl = PostgresDb::new(conn);
+    todo!()
+}
+
+#[allow(unused)]
+#[delete("/admin/items/<item_name>/nodes")]
+fn admin_delete_nodes(
+    _admin: Admin,
+    conn: PostgresDbConn,
+    item_name: String,
 ) -> Result<Status, Status> {
     let db_ctrl = PostgresDb::new(conn);
     todo!()

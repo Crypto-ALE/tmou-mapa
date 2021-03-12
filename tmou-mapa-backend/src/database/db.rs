@@ -25,4 +25,4 @@ pub trait MessagesDb {
     fn put_message(&self, message: WebMessage, teams_ids: Vec<i32>) -> TmouResult<()>;
 }
 
-pub trait ItemEditingDb {}
+pub trait GameEditorDb {}

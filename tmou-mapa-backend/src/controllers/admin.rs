@@ -2,7 +2,7 @@ use itertools::*;
 
 use crate::controllers::game;
 use crate::controllers::standings;
-use crate::database::db::{Db, ItemEditingDb};
+use crate::database::db::{Db, GameEditorDb};
 use crate::models::errors::*;
 use crate::models::*;
 use std::sync::Mutex;
@@ -77,6 +77,6 @@ pub fn go_to_node(db: &impl Db, node_id: i64, pos: &Position) -> TmouResult<api:
 }
 
 #[allow(unused)]
-pub fn get_items(db: &impl ItemEditingDb) -> TmouResult<Vec<api::ItemWithNodes>> {
+pub fn get_items(db: &impl GameEditorDb) -> TmouResult<Vec<api::ItemWithNodes>> {
     todo!()
 }
