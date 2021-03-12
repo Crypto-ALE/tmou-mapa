@@ -1,4 +1,5 @@
 use std::env;
+use evalexpr::*;
 
 use chrono::prelude::*;
 use chrono::{Duration, Utc};
@@ -242,4 +243,40 @@ pub fn get_puzzle_welcome_message(game_state: Vec<i64>, inventory: Items) -> Tmo
     };
 
     Ok(format!("{} Jste tu {}. {}", welcome, ranking, bonus_line))
+}
+
+pub fn evaluate_condition(
+    condition: &str,
+    inventory: &Items,
+    player_level: i16,
+) -> TmouResult<bool> {
+/*
+    let items:Vec<String> = inventory.iter().map(|i| i.name.clone()).collect();
+
+    let b = Box::new(|_:Value|->EvalexprResult<Value> { Ok(Value::Boolean(items.contains(&String::from("p"))))});
+    let f = Function::new(b);
+    Ok(true)
+
+    //let f = Function::new(Box::new(|_|{ Ok(Value::Boolean(items.contains(&String::from("p"))))}));
+    //drop(f);
+    */
+
+    //let items:Box<Vec<String>> = Box::new(inventory.iter().map(|i| i.name.clone()).collect());
+    let items:Vec<String> = inventory.iter().map(|i| i.name.clone()).collect();
+    let context = context_map!
+    {
+        "level" => player_level as i64,
+        "has" => Function::new(Box::new(|argument| {
+            //let i = Box::new(String::from("sdfklja"));
+            if let Ok(item) = argument.as_string() {
+                Ok(Value::Boolean(items.to_owned().contains(&item)))
+                //Ok(Value::Boolean(item==*i))
+            } else {
+                Err(EvalexprError::expected_number(argument.clone()))
+            }
+        }))
+    }.unwrap();
+    let res = eval_boolean_with_context(condition, &context)?;
+    drop(context);
+    Ok(res)
 }

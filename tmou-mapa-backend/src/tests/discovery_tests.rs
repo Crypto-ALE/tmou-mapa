@@ -531,3 +531,77 @@ fn discover_fake_puzzle_fails_on_checkpoint_when_not_eligible_some_owned() -> Tm
     assert!(!updated_inventory.is_ok());
     Ok(())
 }
+
+#[test]
+fn evaluate_condition_fails_on_syntax_error() -> TmouResult<()> {
+    let inventory = Vec::new();
+    let res = dis::evaluate_condition("error", &inventory, 0);
+    assert!(!res.is_ok());
+    Ok(())
+}
+
+#[test]
+fn evaluate_condition_returns_true_for_true() -> TmouResult<()> {
+    let inventory = Vec::new();
+    let res = dis::evaluate_condition("true", &inventory, 0)?;
+    assert!(res);
+    Ok(())
+}
+
+#[test]
+fn evaluate_condition_returns_false_for_false() -> TmouResult<()> {
+    let inventory = Vec::new();
+    let res = dis::evaluate_condition("false", &inventory, 0)?;
+    assert!(!res);
+    Ok(())
+}
+
+#[test]
+fn evaluate_condition_returns_level_greater_true() -> TmouResult<()> {
+    let inventory = Vec::new();
+    let res = dis::evaluate_condition("level >= 5", &inventory, 5)?;
+    assert!(res);
+    Ok(())
+}
+
+#[test]
+fn evaluate_condition_returns_level_greater_false() -> TmouResult<()> {
+    let inventory = Vec::new();
+    let res = dis::evaluate_condition("level >= 5", &inventory, 4)?;
+    assert!(!res);
+    Ok(())
+}
+
+#[test]
+fn evaluate_condition_returns_level_between_true() -> TmouResult<()> {
+    let inventory = Vec::new();
+    let res = dis::evaluate_condition("level >= 5 && level <= 10", &inventory, 7)?;
+    assert!(res);
+    Ok(())
+}
+
+#[test]
+fn evaluate_condition_returns_level_between_false() -> TmouResult<()> {
+    let inventory = Vec::new();
+    let res = dis::evaluate_condition("level >= 5 && level <= 10", &inventory, 12)?;
+    assert!(!res);
+    Ok(())
+}
+
+#[test]
+fn evaluate_condition_returns_has_single_true() -> TmouResult<()> {
+    let inventory = vec![
+        item("puzzles", 0, "logika")];
+    let res = dis::evaluate_condition("has(\"logika\")", &inventory, 12)?;
+    assert!(res);
+    Ok(())
+}
+
+#[test]
+fn evaluate_condition_returns_has_single_false() -> TmouResult<()> {
+    let inventory = vec![
+        item("puzzles", 0, "fyzika")];
+    let res = dis::evaluate_condition("has(\"logika\")", &inventory, 12)?;
+    assert!(!res);
+    Ok(())
+}

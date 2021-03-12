@@ -23,7 +23,7 @@ http-auth-basic = "0.1.0"
 jsonwebtoken = "7.2.0"
 slugify = "0.1.0"
 log = "0.4"
-
+evalexpr = "5"
 
 [[bin]]
 name = "import-osm-data"
