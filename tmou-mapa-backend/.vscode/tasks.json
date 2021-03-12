@@ -62,6 +62,12 @@
                 "isDefault": true
             },
             "problemMatcher": []
+        },
+        {
+            "type": "shell",
+            "command": "cargo fmt",
+            "label": "Rust: format",
+            "group": "build"
         }
     ]
 }

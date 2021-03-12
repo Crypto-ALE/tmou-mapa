@@ -29,6 +29,34 @@ pub struct Item {
 }
 
 #[derive(Serialize, Deserialize)]
+pub struct ItemCreate {
+    pub r#type: String,
+    pub url: String,
+    pub level: i16,
+    pub name: String,
+    pub description: String,
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct ItemUpdate {
+    pub r#type: Option<String>,
+    pub url: Option<String>,
+    pub level: Option<i16>,
+    pub name: String,
+    pub description: Option<String>,
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct ItemWithNodes {
+    pub nodeIds: Vec<i64>,
+    pub r#type: String,
+    pub url: String,
+    pub level: i16,
+    pub name: String,
+    pub description: String,
+}
+
+#[derive(Serialize, Deserialize)]
 pub struct PuzzleName {
     pub puzzleName: String,
 }

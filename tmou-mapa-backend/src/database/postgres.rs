@@ -3,7 +3,7 @@ use diesel::insert_into;
 use diesel::prelude::*;
 use rocket_contrib::databases::diesel;
 
-use crate::database::db::{Db, MessagesDb};
+use crate::database::db::{Db, GameEditorDb, MessagesDb};
 use crate::models::db::*;
 use crate::models::errors::*;
 use crate::models::schema::bonuses::dsl as bonuses;
@@ -386,3 +386,5 @@ pub fn get_all_teams(
         .load(connection)
         .or_else(|err| Err(err.into()))
 }
+
+impl GameEditorDb for PostgresDb {}

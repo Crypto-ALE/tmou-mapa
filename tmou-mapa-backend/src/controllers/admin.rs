@@ -1,9 +1,13 @@
 use itertools::*;
 
+use crate::controllers::game;
 use crate::controllers::standings;
-use crate::database::db::Db;
+use crate::database::db::{Db, GameEditorDb};
 use crate::models::errors::*;
 use crate::models::*;
+use std::sync::Mutex;
+
+const DEFAULT_NODE_ID: i64 = 3750367566;
 
 ////////////////////////////////////////////////////////////////////
 /// Interface
@@ -41,4 +45,38 @@ impl From<&db::TeamPosition> for api::TeamPosition {
             level: value.level.unwrap_or(0),
         }
     }
+}
+
+pub struct Position {
+    pub node_id: Mutex<Option<i64>>,
+}
+
+impl Position {
+    pub fn new() -> Position {
+        Position {
+            node_id: Mutex::new(None),
+        }
+    }
+}
+
+pub fn get_pois(db: &impl Db, pos: &Position) -> TmouResult<api::Pois> {
+    let pos_holder = *pos.node_id.lock().unwrap();
+    let node_id = match pos_holder {
+        Some(id) => id,
+        None => {
+            *pos.node_id.lock().unwrap() = Some(DEFAULT_NODE_ID);
+            DEFAULT_NODE_ID
+        }
+    };
+    game::get_pois_for_position(db, node_id)
+}
+
+pub fn go_to_node(db: &impl Db, node_id: i64, pos: &Position) -> TmouResult<api::Pois> {
+    *pos.node_id.lock().unwrap() = Some(node_id);
+    game::get_pois_for_position(db, node_id)
+}
+
+#[allow(unused)]
+pub fn get_items(db: &impl GameEditorDb) -> TmouResult<Vec<api::ItemWithNodes>> {
+    todo!()
 }

@@ -447,6 +447,123 @@ fn admin_standings(_admin: Admin, conn: PostgresDbConn) -> Result<Json<api::Stan
     }
 }
 
+////////////////
+// item editing
+////////////////
+
+#[allow(unused)]
+#[get("/admin/items")]
+fn admin_get_items(
+    _admin: Admin,
+    conn: PostgresDbConn,
+) -> Result<Json<Vec<api::ItemWithNodes>>, Status> {
+    let db_ctrl = PostgresDb::new(conn);
+    // not implemented
+    match admin::get_items(&db_ctrl) {
+        Ok(items) => Ok(Json(items)),
+        Err(_) => Err(Status::NotFound),
+    }
+}
+
+#[allow(unused)]
+#[post("/admin/items", data = "<item>")]
+fn admin_post_item(
+    _admin: Admin,
+    conn: PostgresDbConn,
+    item: Json<api::ItemCreate>,
+) -> Result<Status, Status> {
+    let db_ctrl = PostgresDb::new(conn);
+    todo!()
+}
+
+#[allow(unused)]
+#[delete("/admin/items/<item_name>")]
+fn admin_delete_item(
+    _admin: Admin,
+    conn: PostgresDbConn,
+    item_name: String,
+) -> Result<Status, Status> {
+    let db_ctrl = PostgresDb::new(conn);
+    todo!()
+}
+
+#[allow(unused)]
+#[put("/admin/items", data = "<item>")]
+fn admin_put_item(
+    _admin: Admin,
+    conn: PostgresDbConn,
+    item: Json<Vec<api::ItemUpdate>>,
+) -> Result<Status, Status> {
+    let db_ctrl = PostgresDb::new(conn);
+    todo!()
+}
+
+#[allow(unused)]
+#[post("/admin/items/<item_name>/nodes", data ="<node_ids>")]
+fn admin_post_node(
+    _admin: Admin,
+    conn: PostgresDbConn,
+    item_name: String,
+    node_ids: Json<Vec<i64>>,
+) -> Result<Status, Status> {
+    let db_ctrl = PostgresDb::new(conn);
+    todo!()
+}
+
+#[allow(unused)]
+#[delete("/admin/items/<item_name>/nodes/<node_id>")]
+fn admin_delete_node(
+    _admin: Admin,
+    conn: PostgresDbConn,
+    item_name: String,
+    node_id: i64,
+) -> Result<Status, Status> {
+    let db_ctrl = PostgresDb::new(conn);
+    todo!()
+}
+
+#[allow(unused)]
+#[delete("/admin/items/<item_name>/nodes")]
+fn admin_delete_nodes(
+    _admin: Admin,
+    conn: PostgresDbConn,
+    item_name: String,
+) -> Result<Status, Status> {
+    let db_ctrl = PostgresDb::new(conn);
+    todo!()
+}
+
+////////////////
+// admin mobility
+////////////////
+
+#[get("/admin/position")]
+fn admin_get_info(
+    _admin: Admin,
+    conn: PostgresDbConn,
+    pos: State<admin::Position>,
+) -> Result<Json<api::Pois>, Status> {
+    let db_ctrl = PostgresDb::new(conn);
+    match admin::get_pois(&db_ctrl, pos.inner()) {
+        Ok(pois) => Ok(Json(pois)),
+        Err(_) => Err(Status::NotFound),
+    }
+}
+
+#[post("/admin/position", data = "<action>")]
+fn admin_go(
+    _admin: Admin,
+    action: Json<api::NodeAction>,
+    conn: PostgresDbConn,
+    pos: State<admin::Position>,
+) -> Result<Json<api::Pois>, Status> {
+    let db_ctrl = PostgresDb::new(conn);
+    match admin::go_to_node(&db_ctrl, action.nodeId, pos.inner()) {
+        Ok(pois) => Ok(Json(pois)),
+        Err(_) => Err(Status::NotFound),
+    }
+}
+
 ///////////////////////////////////////////////////////////
 /// index: static serving
 ///////////////////////////////////////////////////////////
@@ -538,6 +655,7 @@ fn rocket() -> rocket::Rocket {
 
     rocket::ignite()
         .manage(RateLimiter::new())
+        .manage(admin::Position::new())
         .register(catchers![not_auth, force_https])
         .attach(PostgresDbConn::fairing())
         .attach(AdHoc::on_attach("Database Migrations", run_migrations))
@@ -567,7 +685,14 @@ fn rocket() -> rocket::Rocket {
                 admin,
                 admin_positions,
                 admin_send_message,
-                admin_standings
+                admin_standings,
+                admin_post_item,
+                admin_delete_item,
+                admin_put_item,
+                admin_post_node,
+                admin_delete_node,
+                admin_go,
+                admin_get_info
             ],
         )
 }

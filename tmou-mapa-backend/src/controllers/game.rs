@@ -17,7 +17,7 @@ use super::get_player_level;
 /// Interface
 ////////////////////////////////////////////////////////////////////
 
-pub fn get_pois_for_team(db: &impl Db, position: i64) -> TmouResult<api::Pois> {
+pub fn get_pois_for_position(db: &impl Db, position: i64) -> TmouResult<api::Pois> {
     let db_pois = db.get_reachable_nodes(position)?;
     let nodes: Vec<api::Node> = db_pois.nodes.iter().map(|n| n.into()).collect();
     let ways: Vec<api::Way> = db_pois
@@ -49,7 +49,7 @@ fn get_items_for_team(db: &impl Db, id: i32) -> TmouResult<api::Items> {
 
 pub fn get_info(db: &impl Db, team: db::Team) -> TmouResult<api::TeamInfo> {
     let state = get_team_state(db, team.id)?;
-    let pois = get_pois_for_team(db, team.position)?;
+    let pois = get_pois_for_position(db, team.position)?;
     let items = get_items_for_team(db, team.id)?;
     Ok(api::TeamInfo {
         state: state,
