@@ -129,6 +129,7 @@
         <!--Sifry na trase-->
         <item name="puzzles-2" type="puzzles" description="šifra 2"
               url="https://drive.google.com/file/d/1rd9fUt3NNnLpCgUAOZ-IEl2g3JZWIgPR/view?usp=sharing" level="2">
+            <condition><![CDATA[ level == 1 ]]></condition>
             <node id="449442784"/> <!--mapy.cz/s/bajukelupa-->
             <node id="449442776"/> <!--mapy.cz/s/bajukelupa-->
             <node id="449442785"/> <!--mapy.cz/s/bajukelupa-->
@@ -137,6 +138,7 @@
         <item name="puzzles-3" type="puzzles" description="šifra 3"
               url="https://drive.google.com/file/d/18pmSx5GS092wiL9CYKtq49QOClReHoAW/view?usp=sharing" level="3">
             <node id="440885619"/> <!--Netopyrky pomnik-->
+            <condition><![CDATA[ has(items, "puzzles-2") ]]></condition>
         </item>
         <item name="puzzles-4" type="puzzles" description="šifra 4"
               url="https://drive.google.com/file/d/1sBWjHteOfGLxnbs2AchqM8x3CO2io1ya/view?usp=sharing" level="4">

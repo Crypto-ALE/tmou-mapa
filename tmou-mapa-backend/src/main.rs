@@ -499,7 +499,7 @@ fn admin_put_item(
 }
 
 #[allow(unused)]
-#[post("/admin/items/<item_name>/nodes", data ="<node_ids>")]
+#[post("/admin/items/<item_name>/nodes", data = "<node_ids>")]
 fn admin_post_node(
     _admin: Admin,
     conn: PostgresDbConn,
