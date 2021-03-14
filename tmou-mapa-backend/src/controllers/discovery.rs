@@ -1,3 +1,4 @@
+use evalexpr::*;
 use std::env;
 
 use chrono::prelude::*;
@@ -47,7 +48,8 @@ pub fn discover_node(
         match item.type_.as_ref() {
             "puzzles" => {
                 // all puzzles up to level+1 are visible
-                let visible = item.level <= player_level + 1;
+                //let visible = item.level <= player_level + 1;
+                let visible = is_item_visible(item, inventory, player_level)?;
                 //but only those at least your level are active
                 let active = item.level >= player_level;
                 event = if visible {
@@ -242,4 +244,49 @@ pub fn get_puzzle_welcome_message(game_state: Vec<i64>, inventory: Items) -> Tmo
     };
 
     Ok(format!("{} Jste tu {}. {}", welcome, ranking, bonus_line))
+}
+
+pub fn has<'a>(needle: String, haystack: Vec<String>) -> bool {
+    haystack.contains(&needle)
+}
+
+pub fn evaluate_condition(
+    condition: &str,
+    inventory: &Items,
+    player_level: i16,
+) -> TmouResult<bool> {
+    let itemstr: String = inventory
+        .iter()
+        .map(|i| i.name.clone())
+        .collect::<Vec<String>>()
+        .join(";");
+    let context = context_map!
+    {
+        "level" => player_level as i64,
+        "items" => itemstr,
+        "has" => Function::new(Box::new(|argument| {
+            let arguments = argument.as_tuple()?;
+            if let (Value::String(haystack), Value::String(needle)) = (&arguments[0], &arguments[1]) {
+                // TODO: includes some false positives, e. g. if inventory is "dikobraz;medved"
+                // it will also return true for "kobra" or "dve" because it is string search
+                // solutions:
+                // - make function work with captured local variable (items) -> then the grammar gets simpler
+                // - pad name with special character (eg "[dikobraz][medved]" doesn't include "[kobra]")
+                let res = haystack.contains(needle);
+                Ok(Value::Boolean(res))
+            } else {
+                Err(EvalexprError::expected_number(argument.clone()))
+            }
+        }))
+    }.unwrap();
+    let res = eval_boolean_with_context(condition, &context)?;
+    Ok(res)
+}
+
+fn is_item_visible(item: &db::Item, inventory: &Items, player_level: i16) -> TmouResult<bool>
+{
+    match &item.condition {
+        Some(cond) => evaluate_condition(&cond, inventory, player_level),
+        None => Ok(true)
+    }
 }

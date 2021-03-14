@@ -81,4 +81,13 @@ impl From<chrono::format::ParseError> for TmouError {
     }
 }
 
+impl From<evalexpr::EvalexprError> for TmouError {
+    fn from(err: evalexpr::EvalexprError) -> Self {
+        TmouError {
+            message: err.to_string(),
+            response: 500,
+        }
+    }
+}
+
 pub type TmouResult<T> = Result<T, TmouError>;

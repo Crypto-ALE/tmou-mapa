@@ -78,6 +78,7 @@ pub struct Item {
     pub level: i16,
     pub name: String,
     pub description: Option<String>,
+    pub condition: Option<String>,
 }
 
 #[derive(Serialize, Deserialize, Clone, Queryable, Insertable, Debug)]

@@ -16,6 +16,7 @@ table! {
         level -> Int2,
         name -> Varchar,
         description -> Nullable<Text>,
+        condition -> Nullable<Varchar>,
     }
 }
 

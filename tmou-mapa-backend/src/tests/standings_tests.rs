@@ -18,6 +18,7 @@ fn item(t: &str, l: i16, n: &str) -> db::Item {
         level: l,
         name: n.to_string(),
         description: None,
+        condition: None,
     }
 }
 

@@ -104,6 +104,7 @@ impl Db for PostgresDb {
                 items::level,
                 items::name,
                 items::description,
+                items::condition,
             ))
             .load(&*self.conn)?;
         Ok(items)
@@ -119,6 +120,7 @@ impl Db for PostgresDb {
                 items::level,
                 items::name,
                 items::description,
+                items::condition,
             ))
             .load(&*self.conn)?;
         Ok(items)

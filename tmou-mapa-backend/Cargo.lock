@@ -338,6 +338,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "evalexpr"
+version = "5.0.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5a8619223d40c23279f9120e2646712ec3eeeb68b546ed993c619d77682bdef8"
+
+[[package]]
 name = "fake-simd"
 version = "0.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1452,6 +1458,7 @@ dependencies = [
  "chrono",
  "diesel",
  "diesel_migrations",
+ "evalexpr",
  "http-auth-basic",
  "itertools",
  "jsonwebtoken",
