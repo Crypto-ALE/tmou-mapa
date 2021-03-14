@@ -255,19 +255,11 @@ pub fn evaluate_condition(
     inventory: &Items,
     player_level: i16,
 ) -> TmouResult<bool> {
-    let items: Vec<String> = inventory
-        .iter()
-        .map(|i| i.name.clone())
-        .collect::<Vec<String>>();
+    let items: Vec<String> = inventory.iter().map(|i| i.name.clone()).collect();
     let context = context_map! {
         "level" => player_level as i64,
         "has" => Function::new(Box::new(move |argument| {
-            if let Ok(item) = argument.as_string()
-            {
-                Ok(Value::Boolean(items.contains(&item)))
-            } else {
-                Err(EvalexprError::expected_string(argument.clone()))
-            }
+            argument.as_string().and_then(|item| Ok(Value::Boolean(items.contains(&item))))
         }))
     }
     .unwrap();
