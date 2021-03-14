@@ -594,7 +594,7 @@ fn evaluate_condition_returns_level_between_false() -> TmouResult<()> {
 #[test]
 fn evaluate_condition_returns_has_single_true() -> TmouResult<()> {
     let inventory = vec![item("puzzles", 0, "logika")];
-    let res = dis::evaluate_condition("has(items,\"logika\")", &inventory, 0)?;
+    let res = dis::evaluate_condition("has(\"logika\")", &inventory, 0)?;
     assert!(res);
     Ok(())
 }
@@ -602,7 +602,7 @@ fn evaluate_condition_returns_has_single_true() -> TmouResult<()> {
 #[test]
 fn evaluate_condition_returns_has_single_false() -> TmouResult<()> {
     let inventory = vec![item("puzzles", 0, "fyzika")];
-    let res = dis::evaluate_condition("has(items,\"logika\")", &inventory, 0)?;
+    let res = dis::evaluate_condition("has(\"logika\")", &inventory, 0)?;
     assert!(!res);
     Ok(())
 }
@@ -610,11 +610,7 @@ fn evaluate_condition_returns_has_single_false() -> TmouResult<()> {
 #[test]
 fn evaluate_condition_returns_has_oneof_true() -> TmouResult<()> {
     let inventory = vec![item("puzzles", 0, "fyzika")];
-    let res = dis::evaluate_condition(
-        "has(items,\"logika\") || has(items,\"fyzika\")",
-        &inventory,
-        0,
-    )?;
+    let res = dis::evaluate_condition("has(\"logika\") || has(\"fyzika\")", &inventory, 0)?;
     assert!(res);
     Ok(())
 }
@@ -622,11 +618,7 @@ fn evaluate_condition_returns_has_oneof_true() -> TmouResult<()> {
 #[test]
 fn evaluate_condition_returns_has_oneof_false() -> TmouResult<()> {
     let inventory = vec![item("puzzles", 0, "matematika")];
-    let res = dis::evaluate_condition(
-        "has(items,\"logika\") || has(items,\"fyzika\")",
-        &inventory,
-        0,
-    )?;
+    let res = dis::evaluate_condition("has(\"logika\") || has(\"fyzika\")", &inventory, 0)?;
     assert!(!res);
     Ok(())
 }
@@ -638,11 +630,7 @@ fn evaluate_condition_returns_has_both_true() -> TmouResult<()> {
         item("puzzles", 0, "matematika"),
         item("puzzles", 0, "logika"),
     ];
-    let res = dis::evaluate_condition(
-        "has(items,\"logika\") && has(items,\"fyzika\")",
-        &inventory,
-        0,
-    )?;
+    let res = dis::evaluate_condition("has(\"logika\") && has(\"fyzika\")", &inventory, 0)?;
     assert!(res);
     Ok(())
 }
@@ -653,11 +641,7 @@ fn evaluate_condition_returns_has_both_false() -> TmouResult<()> {
         item("puzzles", 0, "fyzika"),
         item("puzzles", 0, "matematika"),
     ];
-    let res = dis::evaluate_condition(
-        "has(items,\"logika\") && has(items,\"fyzika\")",
-        &inventory,
-        0,
-    )?;
+    let res = dis::evaluate_condition("has(\"logika\") && has(\"fyzika\")", &inventory, 0)?;
     assert!(!res);
     Ok(())
 }
@@ -670,7 +654,7 @@ fn evaluate_condition_returns_complex_true() -> TmouResult<()> {
         item("puzzles", 0, "logika"),
     ];
     let res = dis::evaluate_condition(
-        "has(items,\"logika\") && has(items,\"fyzika\") && level > 10",
+        "has(\"logika\") && has(\"fyzika\") && level > 10",
         &inventory,
         11,
     )?;
@@ -686,7 +670,7 @@ fn evaluate_condition_returns_complex_false() -> TmouResult<()> {
         item("puzzles", 0, "logika"),
     ];
     let res = dis::evaluate_condition(
-        "has(items,\"logika\") && has(items,\"fyzika\") && level > 10",
+        "has(\"logika\") && has(\"fyzika\") && level > 10",
         &inventory,
         10,
     )?;
