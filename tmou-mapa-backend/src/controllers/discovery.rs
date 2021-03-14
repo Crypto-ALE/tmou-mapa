@@ -255,38 +255,29 @@ pub fn evaluate_condition(
     inventory: &Items,
     player_level: i16,
 ) -> TmouResult<bool> {
-    let itemstr: String = inventory
+    let items: Vec<String> = inventory
         .iter()
         .map(|i| i.name.clone())
-        .collect::<Vec<String>>()
-        .join(";");
-    let context = context_map!
-    {
+        .collect::<Vec<String>>();
+    let context = context_map! {
         "level" => player_level as i64,
-        "items" => itemstr,
-        "has" => Function::new(Box::new(|argument| {
-            let arguments = argument.as_tuple()?;
-            if let (Value::String(haystack), Value::String(needle)) = (&arguments[0], &arguments[1]) {
-                // TODO: includes some false positives, e. g. if inventory is "dikobraz;medved"
-                // it will also return true for "kobra" or "dve" because it is string search
-                // solutions:
-                // - make function work with captured local variable (items) -> then the grammar gets simpler
-                // - pad name with special character (eg "[dikobraz][medved]" doesn't include "[kobra]")
-                let res = haystack.contains(needle);
-                Ok(Value::Boolean(res))
+        "has" => Function::new(Box::new(move |argument| {
+            if let Ok(item) = argument.as_string()
+            {
+                Ok(Value::Boolean(items.contains(&item)))
             } else {
-                Err(EvalexprError::expected_number(argument.clone()))
+                Err(EvalexprError::expected_string(argument.clone()))
             }
         }))
-    }.unwrap();
+    }
+    .unwrap();
     let res = eval_boolean_with_context(condition, &context)?;
     Ok(res)
 }
 
-fn is_item_visible(item: &db::Item, inventory: &Items, player_level: i16) -> TmouResult<bool>
-{
+fn is_item_visible(item: &db::Item, inventory: &Items, player_level: i16) -> TmouResult<bool> {
     match &item.condition {
         Some(cond) => evaluate_condition(&cond, inventory, player_level),
-        None => Ok(true)
+        None => Ok(true),
     }
 }

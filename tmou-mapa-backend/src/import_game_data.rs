@@ -77,7 +77,6 @@ fn parse_item<'a>(node: roxmltree::Node<'a, 'a>) -> TmouResult<(db::Item, Vec<i6
         .next()
         .and_then(|e| Some(e.text()))
         .and_then(|s| Some(s.unwrap().to_string()));
-        
 
     Ok((
         db::Item {

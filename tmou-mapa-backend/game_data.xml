@@ -138,7 +138,7 @@
         <item name="puzzles-3" type="puzzles" description="šifra 3"
               url="https://drive.google.com/file/d/18pmSx5GS092wiL9CYKtq49QOClReHoAW/view?usp=sharing" level="3">
             <node id="440885619"/> <!--Netopyrky pomnik-->
-            <condition><![CDATA[ has(items, "puzzles-2") ]]></condition>
+            <condition><![CDATA[ has("puzzles-2") ]]></condition>
         </item>
         <item name="puzzles-4" type="puzzles" description="šifra 4"
               url="https://drive.google.com/file/d/1sBWjHteOfGLxnbs2AchqM8x3CO2io1ya/view?usp=sharing" level="4">
