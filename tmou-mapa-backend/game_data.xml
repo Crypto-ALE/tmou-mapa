@@ -1,313 +1,141 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <game name="iTmou">
     <items>
-        <!--Start a casti prvni sifry-->
-        <item name="puzzles-0" type="puzzles" description="šifry startu"
-              url="https://drive.google.com/file/d/19HlXka-TSK-fI-UnzLevczZCTMC44XZM/view?usp=sharing" level="0">
-            <node id="1514002375"/> <!--Vstup do ZOO-->
-            <node id="455637134"/> <!--Vstup do ZOO-->
+      <item name="zkusebni-start" type="puzzles" description="Start AVATARA"
+              url="https://drive.google.com/file/d/1hyvr6gJkxWogzeSZet7y-F_ByFAxU6Wb/view?usp=sharing" level="1">
+            <node id="3331519170"/> <!--Ceska 10-->
+            <node id="3331519171"/> <!--Ceska 10-->
+            <node id="3859003115"/> <!--Ceska 10-->
+            <node id="83483383"/> <!--Ceska 10-->
         </item>
-        <item name="puzzles-1a" type="puzzles" description="šifra 1a"
-              url="https://drive.google.com/file/d/1c0ZWkxsd1V2VVP8OoPF_rZxNQucQHU4V/view?usp=sharing" level="1">
-            <node id="6196861828"/> <!-- MHD Podveska -->
-            <node id="1433264722"/> <!-- MHD Podveska -->
-            <node id="6196861827"/> <!-- MHD Podveska -->
+        <item name="ceitec-mu" type="puzzles" description="Zkušební návštěva"
+              url="https://drive.google.com/file/d/1Q04nbtH7lIjN6mh-MTixo76qsoATYKGJ/view?usp=sharing" level="1">
+            <node id="3351512287"/> <!--Kamenice, budova A26-->
         </item>
-        <item name="puzzles-1b" type="puzzles" description="šifra 1b"
-              url="https://drive.google.com/file/d/1_4U1rnTjvQNfoYxw9NquVRgRSZEUSJvP/view?usp=sharing" level="1">
-            <node id="300806310"/> <!--Ulice Podlesi-->
+        <item name="otazka" type="puzzles" description="Testovací otázka"
+              url="https://drive.google.com/file/d/1C4Unt_iGDu9u6jApOJSGSz72Zh4mO4b6/view?usp=sharing" level="1">
+            <node id="3351514995"/> <!--Ceitec A35-->
         </item>
-        <item name="puzzles-1c" type="puzzles" description="šifra 1c"
-              url="https://drive.google.com/file/d/18rBB1wKEaLVLMxY36aAj33Caslxz1Rwo/view?usp=sharing" level="1">
-            <node id="2188851998"/> <!--Turisticky pristresek Kozi Hora-->
-            <node id="550471938"/> <!--Turisticky pristresek Kozi Hora-->
+        <item name="odpoved" type="puzzles" description="Odpověď na testovací otázku"
+              url="https://drive.google.com/file/d/1hrKvm-OkFjWxJPCtNgLy3Wf7CNHZUnvr/view?usp=sharing" level="1">
+            <node id="3351512286"/> <!--Kamenice, budova A26-->
         </item>
-        <item name="puzzles-1d" type="puzzles" description="šifra 1d"
-              url="https://drive.google.com/file/d/1M2gKqe7u5sGEbvDugCJOp2EyppZyhlIZ/view?usp=sharing" level="1">
-            <node id="4467743910"/> <!--Technicka Jih-->
-            <node id="247224257"/> <!--Technicka Jih-->
-            <node id="1635691861"/> <!--Technicka Jih-->
-            <node id="2095518015"/> <!--Technicka Jih-->
+        <item name="vysetrovatel-1" type="puzzles" description="Vyšetřovatel"
+              url="https://drive.google.com/file/d/1s0Ew59yXuhbDM38CTihRSJ643JnqRuAd/view?usp=sharing" level="1">
+            <node id="346650210"/> <!--Bratislavská 13-->
         </item>
-        <item name="puzzles-1e" type="puzzles" description="šifra 1e"
-              url="https://drive.google.com/file/d/1mFHC3gNBRGO7EBIh0jKJFhJWTKXgdsGz/view?usp=sharing" level="1">
-            <node id="5911236701"/> <!--Slovinska U kavarny-->
+        <item name="klub-logiku" type="puzzles" description="Klub Logiků"
+              url="https://drive.google.com/file/d/1ckE3bQhVqqGWPb2_bIKA1RM1JWcw9e-1/view?usp=sharing" level="1">
+            <node id="6087503180"/> <!--Vida-->
+            <node id="6086432060"/> <!--Vida-->
+            <node id="3329672408"/> <!--Vida-->
+            <node id="3788716863"/> <!--Vida-->
         </item>
-        <item name="puzzles-1f" type="puzzles" description="šifra 1f"
-              url="https://drive.google.com/file/d/122FN1DfkNgI2Uv0RdKDCJU7ZTdtgRc0x/view?usp=sharing" level="1">
-            <node id="496831101"/> <!--Privrat x Topolky-->
-            <node id="1655802121"/> <!--Privrat x Topolky-->
-            <node id="1661061231"/> <!--Privrat x Topolky-->
-            <node id="1661061196"/> <!--Privrat x Topolky-->
-            <node id="2163944290"/> <!--Privrat x Topolky-->
-            <node id="3302272023"/> <!--Privrat x Topolky-->
-            <node id="3302272025"/> <!--Privrat x Topolky-->
-            <node id="6010745747"/> <!--Privrat x Topolky-->
+        <item name="klub-fyziku" type="puzzles" description="Klub Fyziků"
+              url="https://drive.google.com/file/d/1ckE3bQhVqqGWPb2_bIKA1RM1JWcw9e-1/view?usp=sharing" level="1">
+            <node id="4293446635"/> <!--Kotlářská MU, pavilon 6 (roh mezi 6 a 9)-->
+            <node id="4293446634"/> <!--Kotlářská MU, pavilon 6 (roh mezi 6 a 9)-->
+            <node id="986150598"/> <!--Kotlářská MU, pavilon 6 (roh mezi 6 a 9)-->
         </item>
-        <item name="puzzles-1g" type="puzzles" description="šifra 1g"
-              url="https://drive.google.com/file/d/1_khSEbfaeJVK65YHt-y5lbWrd2lEwBfA/view?usp=sharing" level="1">
-            <node id="5679722662"/> <!--Dubova jih-->
-            <node id="300804164"/> <!--Dubova jih-->
-            <node id="5679722677"/> <!--Dubova jih-->
-            <node id="5679722690"/> <!--Dubova jih-->
+        <item name="klub-chemiku" type="puzzles" description="Klub Chemiků"
+              url="https://drive.google.com/file/d/1HMznxw-KCKxjUR1-U8t-51qXSICmRsIS/view?usp=sharing" level="1">
+            <node id="489464332"/> <!--Kamenice, vstup do budovy A10-->
+            <node id="489464327"/> <!--Kamenice, vstup do budovy A10-->
+            <node id="489464329"/> <!--Kamenice, vstup do budovy A10-->
         </item>
-        <item name="puzzles-1h" type="puzzles" description="šifra 1h"
-              url="https://drive.google.com/file/d/1PRBpTYXFiGGd4ECrgFURekADZUhDsvln/view?usp=sharing" level="1">
-            <node id="654588693"/> <!--Holedna-->
+        <item name="klub-biologu" type="puzzles" description="Klub Biologů"
+              url="https://drive.google.com/file/d/1sdJiDgFuKiffQxaDvWWq9Fza3XVCy5iz/view?usp=sharing" level="1">
+            <node id="27605259"/>  <!--Mendelu, křiž. Zemědělská a Durďákova-->
+            <node id="143578541"/> <!--Mendelu, křiž. Zemědělská a Durďákova-->
+            <node id="688417038"/> <!--Mendelu, křiž. Zemědělská a Durďákova-->
         </item>
-        <item name="puzzles-1i" type="puzzles" description="šifra 1i"
-              url="https://drive.google.com/file/d/13CBkVUx2j_Ma-rX1xtypqKAfcqRyxGqw/view?usp=sharing" level="1">
-            <node id="2188851967"/> <!--Horova Z-->
-            <node id="2189030292"/> <!--Horova Z-->
-            <node id="2189030295"/> <!--Horova Z-->
-            <node id="3302271996"/> <!--Horova Z-->
-            <node id="3381802012"/> <!--Horova Z-->
-            <node id="3381802017"/> <!--Horova Z-->
-            <node id="3381802025"/> <!--Horova Z-->
-            <node id="3381802028"/> <!--Horova Z-->
-            <node id="3381802034"/> <!--Horova Z-->
-            <node id="4829022721"/> <!--Horova Z-->
-            <node id="4829022722"/> <!--Horova Z-->
-            <node id="7218108294"/> <!--Horova Z-->
+        <item name="godeluv-dum-1" type="puzzles" description="Adéla Godelová"
+              url="https://drive.google.com/file/d/1T-7cI4gRnUxBjQp2_-Y3rcKKeg5M8F03/view?usp=sharing" level="1">
+            <node id="5882867070"/>  <!--Pellicova 8c-->
+            <node id="21645315"/>  <!--Pellicova 8c-->
         </item>
-        <item name="puzzles-1j" type="puzzles" description="šifra 1j"
-              url="https://drive.google.com/file/d/15Y29uLNsEn8X2dukwUEsSe5E51nXPIIh/view?usp=sharing" level="1">
-            <node id="524156243"/> <!--Rakovec tocna-->
-            <node id="149002476"/> <!--Rakovec tocna-->
-            <node id="3343440903"/> <!--Rakovec tocna-->
-            <node id="524156242"/> <!--Rakovec tocna-->
-            <node id="149002485"/> <!--Rakovec tocna-->
-            <node id="524156255"/> <!--Rakovec tocna-->
+        <item name="tajemnik" type="puzzles" description="Tajemník"
+              url="https://drive.google.com/file/d/1T-7cI4gRnUxBjQp2_-Y3rcKKeg5M8F03/view?usp=sharing" level="1">
+            <node id="379107107"/>  <!--Pellicova 47-->
         </item>
-
-        <!--Fake puzzles-->
-        <item name="puzzles-1a-fake" type="puzzles-fake" description="šifra 1a"
-              url="https://drive.google.com/file/d/1c0ZWkxsd1V2VVP8OoPF_rZxNQucQHU4V/view?usp=sharing" level="1">
-            <node id="1280463264"/> <!--Dzelady a paovce-->
+        <item name="hospodyne" type="puzzles" description="Hospodyně"
+              url="https://drive.google.com/file/d/1DYZEA6TR7Qj6SFi9XurnbSpHi9BbnDuN/view?usp=sharing" level="1">
+            <node id="369643307"/>  <!--Anenská 20-->
         </item>
-        <item name="puzzles-1b-fake" type="puzzles-fake" description="šifra 1b"
-              url="https://drive.google.com/file/d/1_4U1rnTjvQNfoYxw9NquVRgRSZEUSJvP/view?usp=sharing" level="1">
-            <node id="1280463264"/> <!--Dzelady a paovce-->
+        <item name="asistent" type="puzzles" description="Asistent"
+              url="https://drive.google.com/file/d/1q8lJuRyCWs_d-zoqSl92RNserQlNQbsU/view?usp=sharing" level="1">
+            <node id="3859003082"/>  <!--Bar, který neexistuje, roh Dvořákovi  a Kozí-->
+            <node id="3859003083"/>  <!--Bar, který neexistuje, roh Dvořákovi  a Kozí-->
         </item>
-        <item name="puzzles-1c-fake" type="puzzles-fake" description="šifra 1c"
-              url="https://drive.google.com/file/d/18rBB1wKEaLVLMxY36aAj33Caslxz1Rwo/view?usp=sharing" level="1">
-            <node id="1280463264"/> <!--Dzelady a paovce-->
+        <item name="pythagorovci" type="puzzles" description="Pythagorovci"
+              url="https://drive.google.com/file/d/1BTzLSLPbrZAOnPP5sFRWPWMLIbspk49T/view?usp=sharing" level="1">
+            <condition><![CDATA[ has("klub-logiku") ]]></condition>
+            <node id="3692979401"/>  <!--FI, Hrnčířská-->
         </item>
-        <item name="puzzles-1d-fake" type="puzzles-fake" description="šifra 1d"
-              url="https://drive.google.com/file/d/1M2gKqe7u5sGEbvDugCJOp2EyppZyhlIZ/view?usp=sharing" level="1">
-            <node id="1280463264"/> <!--Dzelady a paovce-->
+        <item name="fyzikalni-ustav" type="puzzles" description="Fyzikální ústav"
+              url="https://drive.google.com/file/d/1n9EIuN5kyEm7D15VEgBy9j9mDGZf5VpR/view?usp=sharing" level="1">
+            <condition><![CDATA[ has("klub-fyziku") ]]></condition>
+            <node id="4793979114"/>  <!--CEITEC science park, Purkyňova 123c-->
+            <node id="4793979115"/>  <!--CEITEC science park, Purkyňova 123c-->
+            <node id="4793979782"/>  <!--CEITEC science park, Purkyňova 123c-->
+            <node id="4793979781"/>  <!--CEITEC science park, Purkyňova 123c-->
         </item>
-        <item name="puzzles-1e-fake" type="puzzles-fake" description="šifra 1e"
-              url="https://drive.google.com/file/d/1mFHC3gNBRGO7EBIh0jKJFhJWTKXgdsGz/view?usp=sharing" level="1">
-            <node id="1280463264"/> <!--Dzelady a paovce-->
+        <item name="chemicky-ustav" type="puzzles" description="Chemický ústav"
+              url="https://drive.google.com/file/d/1JiGY_6nJqjWH666pGI6tW1ML_CIKiOIN/view?usp=sharing" level="1">
+            <condition><![CDATA[ has("klub-chemiku") ]]></condition>
+            <node id="1643667259"/>  <!--Chemická fakulta, Purkyňova 118-->
+            <node id="1643667277"/>  <!--Chemická fakulta, Purkyňova 118-->
+            <node id="571644975"/>  <!--Chemická fakulta, Purkyňova 118-->
         </item>
-        <item name="puzzles-1f-fake" type="puzzles-fake" description="šifra 1f"
-              url="https://drive.google.com/file/d/122FN1DfkNgI2Uv0RdKDCJU7ZTdtgRc0x/view?usp=sharing" level="1">
-            <node id="1280463264"/> <!--Dzelady a paovce-->
+        <item name="mykolog" type="puzzles" description="Mykolog"
+              url="https://drive.google.com/file/d/18GO8ecwXACiQYMHOjYE67NQOmq1dH0IL/view?usp=sharing" level="1">
+            <node id="3899852890"/>  <!--Ustav biologie AV, Květná 13-->
         </item>
-        <item name="puzzles-1g-fake" type="puzzles-fake" description="šifra 1g"
-              url="https://drive.google.com/file/d/1_khSEbfaeJVK65YHt-y5lbWrd2lEwBfA/view?usp=sharing" level="1">
-            <node id="1280463264"/> <!--Dzelady a paovce-->
+        <item name="prof-sokol" type="puzzles" description="Prof. Sokol"
+              url="https://drive.google.com/file/d/1Cmbo1Ws_0eu_f_Awt7kYy6XlEg95oXhp/view?usp=sharing" level="1">
+            <node id="635101441"/>  <!--dvur Staré radnice, Radnická12-->
+            <node id="635101436"/>  <!--dvur Staré radnice, Radnická12-->
+            <node id="635101439"/>  <!--dvur Staré radnice, Radnická12-->
         </item>
-        <item name="puzzles-1h-fake" type="puzzles-fake" description="šifra 1h"
-              url="https://drive.google.com/file/d/1PRBpTYXFiGGd4ECrgFURekADZUhDsvln/view?usp=sharing" level="1">
-            <node id="1280463264"/> <!--Dzelady a paovce-->
+        <item name="doc-skala" type="puzzles" description="Doc. Skála"
+              url="https://drive.google.com/file/d/1dXeYe5s-ocZHb79se9Avac-YjOD49aQm/view?usp=sharing" level="1">
+            <node id="673391967"/>  <!--Filosofická fakulta, budova  A-->
+            <node id="3745672282"/>  <!--Filosofická fakulta, budova  A-->
+            <node id="673391971"/>  <!--Filosofická fakulta, budova  A-->
         </item>
-        <item name="puzzles-1i-fake" type="puzzles-fake" description="šifra 1i"
-              url="https://drive.google.com/file/d/13CBkVUx2j_Ma-rX1xtypqKAfcqRyxGqw/view?usp=sharing" level="1">
-            <node id="1280463264"/> <!--Dzelady a paovce-->
+        <item name="biologicky-ustav" type="puzzles" description="Biologický ústav"
+              url="https://drive.google.com/file/d/1e9Ffl5DxLtznSkMUEdfGuo-7o80YzdvZ/view?usp=sharing" level="1">
+            <condition><![CDATA[ has("klub-biologu") ]]></condition>
+            <node id="4467743928"/>  <!--Biofyzikální ústav, Královopolská 135-->
+            <node id="4467743923"/>  <!--Biofyzikální ústav, Královopolská 135-->
+            <node id="4467743938"/>  <!--Biofyzikální ústav, Královopolská 135-->
+            <node id="4467743920"/>  <!--Biofyzikální ústav, Královopolská 135-->
         </item>
-        <item name="puzzles-1j-fake" type="puzzles-fake" description="šifra 1j"
-              url="https://drive.google.com/file/d/15Y29uLNsEn8X2dukwUEsSe5E51nXPIIh/view?usp=sharing" level="1">
-            <node id="1280463264"/> <!--Dzelady a paovce-->
+        <item name="godeluv-dum-2" type="puzzles" description="Pracovna prof. Godela"
+              url="https://drive.google.com/file/d/1l_TAIXI_uf0fBHldtp0J8A8-796I0sL2/view?usp=sharing" level="1">
+            <condition><![CDATA[ has("fyzikalni-ustav") ]]></condition>
+            <node id="5882867069"/>  <!--Pellicova 8c-->
         </item>
-
-        <!--Reseni sifer ze startu-->
-        <item name="checkpoint-start" type="checkpoint-start" description="řešení šifer ze startu" url="" level="0">
-            <node id="1280463264"/> <!--Dzelady a paovce-->
+        <item name="vysetrovatel-2" type="puzzles" description="Vyšetřovací oddělení"
+              url="https://drive.google.com/file/d/1mAEKcBx-KCvwB6tBqAhUTi9O-ugElXZp/view?usp=sharing" level="1">
+            <condition><![CDATA[ has("klub-logiku") ]]></condition>
+            <node id="6833844438"/>  <!--Bratislavská 13-->
         </item>
-        <!--Sifry na trase-->
-        <item name="puzzles-2" type="puzzles" description="šifra 2"
-              url="https://drive.google.com/file/d/1rd9fUt3NNnLpCgUAOZ-IEl2g3JZWIgPR/view?usp=sharing" level="2">
-            <condition><![CDATA[ level == 1 ]]></condition>
-            <node id="449442784"/> <!--mapy.cz/s/bajukelupa-->
-            <node id="449442776"/> <!--mapy.cz/s/bajukelupa-->
-            <node id="449442785"/> <!--mapy.cz/s/bajukelupa-->
-            <node id="449442775"/> <!--mapy.cz/s/bajukelupa-->
+        <item name="tajemnik-live" type="puzzles" description="Výslech tajemníka"
+              url="https://drive.google.com/file/d/12gBfMwiUs3epWtmhPUXnhlTStiuNj4MB/view?usp=sharing" level="1">
+            <condition><![CDATA[ has("klub-logiku") ]]></condition>
+            <node id="5882867067"/>  <!--Pellicova 47-->
         </item>
-        <item name="puzzles-3" type="puzzles" description="šifra 3"
-              url="https://drive.google.com/file/d/18pmSx5GS092wiL9CYKtq49QOClReHoAW/view?usp=sharing" level="3">
-            <node id="440885619"/> <!--Netopyrky pomnik-->
-            <condition><![CDATA[ has("puzzles-2") ]]></condition>
+        <item name="hospodyne-live" type="puzzles" description="Výslech hospodyně"
+              url="https://drive.google.com/file/d/1zA0YMgGJVVOQNNgMDTqHcQ8hRXiJTLhN/view?usp=sharing" level="1">
+            <condition><![CDATA[ has("klub-logiku") ]]></condition>
+            <node id="5381469662"/>  <!--Anenská 20-->
         </item>
-        <item name="puzzles-4" type="puzzles" description="šifra 4"
-              url="https://drive.google.com/file/d/1sBWjHteOfGLxnbs2AchqM8x3CO2io1ya/view?usp=sharing" level="4">
-            <node id="1605280440"/> <!--BOSNE-->
-            <node id="1605280467"/> <!--BOSNE-->
-            <node id="1605280479"/> <!--BOSNE-->
-            <node id="1605280515"/> <!--BOSNE-->
-        </item>
-        <item name="puzzles-5" type="puzzles" description="šifra 5"
-              url="https://drive.google.com/file/d/1AqYuvXywKjgr3od9ibHWJNe6-TVpOXX0/view?usp=sharing" level="5">
-            <node id="3912016903"/> <!--NA NADRAZI CESKA-->
-            <node id="3909580319"/> <!--NA NADRAZI CESKA-->
-            <node id="3909580313"/> <!--NA NADRAZI CESKA-->
-            <node id="6021233620"/> <!--NA NADRAZI CESKA-->
-            <node id="5984588784"/> <!--NA NADRAZI CESKA-->
-            <node id="5984589785"/> <!--NA NADRAZI CESKA-->
-        </item>
-        <item name="puzzles-6" type="puzzles" description="šifra 6"
-              url="https://drive.google.com/file/d/19Ccv2YmPcuIZtNkLgOEXJQtxXvN86AsO/view?usp=sharing" level="6">
-            <node id="388841885"/> <!--U LESA/U MLÝNA pomnik-->
-            <node id="1389926926"/> <!--U LESA/U MLÝNA pomnik-->
-        </item>
-        <item name="puzzles-7" type="puzzles" description="šifra 7"
-              url="https://drive.google.com/file/d/11mDp5RTok9CFx-O8IrdE4xkZtjrDcHPr/view?usp=sharing" level="7">
-            <node id="344272007"/> <!--Zamilec restuarace-->
-        </item>
-        <item name="puzzles-8" type="puzzles" description="šifra 8"
-              url="https://drive.google.com/file/d/1zF2vAfHoq_nZYdBB_eMUs3iUIStZF2Nk/view?usp=sharing" level="8">
-            <node id="21673279"/> <!--V jecne-->
-        </item>
-        <item name="puzzles-9" type="puzzles" description="šifra 9"
-              url="https://drive.google.com/file/d/1IhZ_Pd19oPrhsN6Kb_uzjHV0Y8iqSDKz/view?usp=sharing" level="9">
-            <node id="1603482906"/> <!--JEZIRKO KOCIANKA VYCH KONEC-->
-        </item>
-        <item name="puzzles-10" type="puzzles" description="šifra 10"
-              url="https://drive.google.com/file/d/1bnbpNxZHE1WMNlIUxzAUdX2DwkZDTV0W/view?usp=sharing" level="10">
-            <node id="7253725760"/> <!--Sady národního odboje pomník-->
-        </item>
-        <item name="puzzles-11" type="puzzles" description="šifra 11"
-              url="https://drive.google.com/file/d/1mMbZRGFZSmPKM88dviYlptdk3bvcMjui/view?usp=sharing" level="11">
-            <node id="1526309910"/> <!--KOSTELJZ (Kravi Hora)-->
-            <node id="3889079085"/> <!--KOSTELJZ (Kravi Hora)-->
-            <node id="1390744652"/> <!--KOSTELJZ (Kravi Hora)-->
-        </item>
-        <item name="puzzles-12a" type="puzzles" description="šifra 12a"
-              url="https://drive.google.com/file/d/1h9UiZiTvQpioczV6Data3kLQdSVWDnzp/view?usp=sharing" level="12">
-            <node id="748847427"/> <!--TAM KDE ZAČINALA KULATA TMOU (Velodrom)-->
-        </item>
-        <item name="puzzles-12b" type="puzzles" description="šifra 12b"
-              url="https://drive.google.com/file/d/1HITYb1jt6CFjTMfnAfsmq_ZygdVWB6Ko/view?usp=sharing" level="12">
-            <node id="3109375881"/> <!--TAM KDE ZAČINALA KULATA TMOU (Vystaviste)-->
-        </item>
-        <item name="puzzles-13" type="puzzles" description="šifra 13"
-              url="https://drive.google.com/file/d/1BQPAWTPrAW483rYoJoWVb7K1hCXXFSYQ/view?usp=sharing" level="13">
-            <node id="379107095"/> <!--Uvoz schody-->
-            <node id="3720411796"/> <!--Uvoz schody-->
-            <node id="379107066"/> <!--Uvoz schody-->
-            <node id="379107059"/> <!--Uvoz schody-->
-        </item>
-        <item name="puzzles-14" type="puzzles" description="šifra 14"
-              url="https://drive.google.com/file/d/1NikkMlTL6v7zAy0WVBfUP1iHS2T665J1/view?usp=sharing" level="14">
-            <node id="164990742"/> <!--Cesta x Řeka, vede na most na Vídeňské-->
-            <node id="164990756"/> <!--Cesta x Řeka, vede na most na Vídeňské-->
-        </item>
-        <item name="puzzles-15" type="puzzles" description="cíl"
-              url="https://drive.google.com/file/d/1Zyk8RwWaROEkMyJf17ic7kkLbBGNtlp6/view?usp=sharing" level="15">
-            <node id="1734974700"/> <!--Hlavni nadrazi-->
-        </item>
-        <!--Deady-->
-        <item name="dead-1" type="dead" description="řešení šifry 1" url="https://mapy.cz/s/bajukelupa" level="1"/>
-        <item name="dead-2" type="dead" description="řešení šifry 2" url="https://mapy.cz/s/delogajupo" level="2"/>
-        <item name="dead-3" type="dead" description="řešení šifry 3" url="https://mapy.cz/s/makecurala" level="3"/>
-        <item name="dead-4" type="dead" description="řešení šifry 4" url="https://mapy.cz/s/cubujecefu" level="4"/>
-        <item name="dead-5" type="dead" description="řešení šifry 5" url="https://mapy.cz/s/gereluruca" level="5"/>
-        <item name="dead-6" type="dead" description="řešení šifry 6" url="https://mapy.cz/s/busohetura" level="6"/>
-        <item name="dead-7" type="dead" description="řešení šifry 7" url="https://mapy.cz/s/fukofapevu" level="7"/>
-        <item name="dead-8" type="dead" description="řešení šifry 8" url="https://mapy.cz/s/logolefagu" level="8"/>
-        <item name="dead-9" type="dead" description="řešení šifry 9" url="https://mapy.cz/s/retenehore" level="9"/>
-        <item name="dead-10" type="dead" description="řešení šifry 10" url="https://mapy.cz/s/lojugoheba" level="10"/>
-        <item name="dead-11" type="dead" description="řešení šifry 11" url="https://mapy.cz/s/rahopucure" level="11"/>
-        <item name="dead-12" type="dead" description="řešení šifry 12" url="https://mapy.cz/s/jerevuheco" level="12"/>
-        <item name="dead-13" type="dead" description="řešení šifry 13" url="https://mapy.cz/s/fulusapuba" level="13"/>
-        <item name="dead-14" type="dead" description="řešení šifry 14" url="https://mapy.cz/s/horecukohe" level="14"/>
-        <!-- Badges -->
-        <item name="badge-bonus-1" type="badge" description="2100 pohádka" url="" level="-1">
-            <node id="25950178"/> <!--Krpole hasici krizovatka SZ-->
-        </item>
-        <item name="badge-bonus-2" type="badge" description="2200 korálky" url="" level="-1">
-            <node id="5859584280"/> <!--Amfiteatr Lesna-->
-            <node id="588566725"/> <!--Amfiteatr Lesna-->
-            <node id="3721292005"/> <!--Amfiteatr Lesna-->
-        </item>
-        <item name="badge-bonus-3" type="badge" description="2300 the high adventure" url="" level="-1">
-            <node id="357879396"/> <!--Jungle park -->
-        </item>
-        <item name="badge-bonus-4" type="badge" description="0000 fotka" url="" level="-1">
-            <node id="5998348194"/> <!--Kóta 250 nad strání Planýrka-->
-        </item>
-        <item name="badge-bonus-5" type="badge" description="0100 I" url="" level="-1">
-            <node id="300813110"/> <!--49.2128N 16.6293E-->
-        </item>
-        <item name="badge-bonus-6" type="badge" description="0200 centimetro" url="" level="-1">
-            <node id="21668545"/> <!--Nam Londyn, Semafor na křižovatce před.-->
-        </item>
-        <item name="badge-bonus-7" type="badge" description="0300 barvy a čtverečky" url="" level="-1">
-            <node id="1352787806"/> <!--LAVKA J CACOVICKY OSTROV-->
-            <node id="1352787805"/> <!--LAVKA J CACOVICKY OSTROV-->
-            <node id="868525633"/> <!--LAVKA J CACOVICKY OSTROV-->
-            <node id="868525544"/> <!--LAVKA J CACOVICKY OSTROV-->
-        </item>
-        <item name="badge-bonus-8" type="badge" description="0400 sloučenina" url="" level="-1">
-            <node id="393178514"/> <!--Parnas-->
-            <node id="5328177242"/> <!--Parnas-->
-        </item>
-        <item name="badge-bonus-9" type="badge" description="0500 Zátopek" url="" level="-1">
-            <node id="837559122"/> <!--Sokolsky stadion pod schody-->
-            <node id="837558897"/> <!--Sokolsky stadion pod schody-->
-        </item>
-        <item name="badge-bonus-10" type="badge" description="0600 QR" url="" level="-1">
-            <node id="335351415"/> <!--Liliova zvonec-->
-            <node id="335351386"/> <!--Liliova zvonec-->
-        </item>
-        <item name="badge-bonus-11" type="badge" description="0700 webcam" url="" level="-1">
-            <node id="6138748949"/> <!--Scala-->
-            <node id="3859003362"/> <!--Scala-->
-        </item>
-        <item name="badge-bonus-12" type="badge" description="0800 palestina" url="" level="-1">
-            <node id="577564821"/> <!--Pramen Florian-->
-            <node id="6876132364"/> <!--Pramen Florian-->
-            <node id="1057718760"/> <!--Pramen Florian-->
+        <item name="asistent-live" type="puzzles" description="Výslech asistenta"
+              url="https://drive.google.com/file/d/15koqY4mjQFl_OV8EwEJJZjjzw7rnuv5s/view?usp=sharing" level="1">
+            <condition><![CDATA[ has("klub-logiku") ]]></condition>
+            <node id="21470352"/>  <!--Bar, který neexistuje, roh Dvořákovi  a Kozí-->
+            <node id="401274545"/>  <!--Bar, který neexistuje, roh Dvořákovi  a Kozí-->
         </item>
     </items>
-    <bonuses>  <!--Bonusy-->
-        <!-- WARNING: time offset (+01:00) is ignored-->
-        <bonus label="bonus-1" description="bonus 21:00"
-               url="https://drive.google.com/file/d/1b2aa3gfQqJ0ViIo7j4x9Z8HIdbN0okOA/view?usp=sharing"
-               display-time="2020-11-06T21:00:00+01:00"/>
-        <bonus label="bonus-2" description="bonus 22:00"
-               url="https://drive.google.com/file/d/1Unr6hiQt56NlARXsJjPr9PVz95eIoXsr/view?usp=sharing"
-               display-time="2020-11-06T22:00:00+01:00"/>
-        <bonus label="bonus-3" description="bonus 23:00"
-               url="https://drive.google.com/file/d/14sOlmxcqV6VEZhSrOg_GfneW3kiECgac/view?usp=sharing"
-               display-time="2020-11-06T23:00:00+01:00"/>
-        <bonus label="bonus-4" description="bonus 00:00"
-               url="https://drive.google.com/file/d/1zY_v9IGXg7EIXzMTZeBxk2DAVZ23bIhe/view?usp=sharing"
-               display-time="2020-11-07T00:00:00+01:00"/>
-        <bonus label="bonus-5" description="bonus 01:00"
-               url="https://drive.google.com/file/d/1eGPmC6KYDnXSVm5E9FW9uJN3-u42SDOE/view?usp=sharing"
-               display-time="2020-11-07T01:00:00+01:00"/>
-        <bonus label="bonus-6" description="bonus 02:00"
-               url="https://drive.google.com/file/d/1Vb8XOiw5Gv7qS6LucEI9gS3at_jx6Ja3/view?usp=sharing"
-               display-time="2020-11-07T02:00:00+01:00"/>
-        <bonus label="bonus-7" description="bonus 03:00"
-               url="https://drive.google.com/file/d/1CTruj0K5KH3csOxkbVRLnu6tNsHy5SIB/view?usp=sharing"
-               display-time="2020-11-07T03:00:00+01:00"/>
-        <bonus label="bonus-8" description="bonus 04:00"
-               url="https://drive.google.com/file/d/1h7TwvLjg3UFu0mKKYOifNhi1YSuTVgU4/view?usp=sharing"
-               display-time="2020-11-07T04:00:00+01:00"/>
-        <bonus label="bonus-9" description="bonus 05:00"
-               url="https://drive.google.com/file/d/1SGw2lnMaqRIg2iXOlSfYyfT_Vz34oGKy/view?usp=sharing"
-               display-time="2020-11-07T05:00:00+01:00"/>
-        <bonus label="bonus-10" description="bonus 06:00"
-               url="https://drive.google.com/file/d/1QDFzGFyat85Evt4C83aU-xT8_80phz69/view?usp=sharing"
-               display-time="2020-11-07T06:00:00+01:00"/>
-        <bonus label="bonus-11" description="bonus 07:00"
-               url="https://drive.google.com/file/d/19a0hgOnLA1xC__7SFQ2qek-j4DPWdRqR/view?usp=sharing"
-               display-time="2020-11-07T07:00:00+01:00"/>
-        <bonus label="bonus-12" description="bonus 08:00"
-               url="https://drive.google.com/file/d/124jX0-8d-g_mHnKNl8aqERL1pqEw2q_X/view?usp=sharing"
-               display-time="2020-11-07T08:00:00+01:00"/>
-    </bonuses>
 </game>
