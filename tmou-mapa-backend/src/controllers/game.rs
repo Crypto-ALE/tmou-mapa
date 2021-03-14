@@ -75,11 +75,11 @@ pub fn discover_node<T: Db + MessagesDb>(
     let node_contents = db.get_items_in_node(team.position)?;
     let team_inventory = db.get_team_items(team.id)?;
     let evt = disc::discover_node(Utc::now(), &team_inventory, &node_contents)?;
-    let inventory = evt.updated_inventory.clone();
     db.put_team_items(team.id, evt.updated_inventory)?;
-    if has_new_puzzle(&evt.newly_discovered_items) {
-        send_puzzle_welcome_message(db, inventory, team)?;
-    }
+    //let inventory = evt.updated_inventory.clone();
+    //if has_new_puzzle(&evt.newly_discovered_items) {
+        //send_puzzle_welcome_message(db, inventory, team)?;
+    //}
     let api_event = event_to_api_event(&evt.event);
     let api_newly_discovered_items = items_to_api_items(&evt.newly_discovered_items);
     Ok(api::DiscoveryEvent {
