@@ -9,6 +9,7 @@ import {
 } from "leaflet";
 import {Item, Node, way, MessageWithTimestamp, Bonus, BadgeClass} from './types';
 import {discover, getTeamState, moveTeam, fetchMessages, fetchBonuses, skip, checkSkip, skipStartPuzzle} from './api';
+import {translations} from './translation';
 
 const mapInstance = getMap('map', [49.195, 16.609], 15);
 
@@ -20,6 +21,7 @@ async function run() {
   const localContainer = [];
 
   // Check after page load, init
+  drawTranslations(translations);
   messagesHandler();
   bonusesHandler();
   checkSkipHandler();
@@ -62,7 +64,7 @@ async function run() {
     const {event, newItems} = await discover(secretPhrase);
     switch (event) {
       case "nothing": {
-        showTextPopup('Bohužel...', 'Na toto místo žádná šifra nevede, zkuste to jinde.', 'shrug');
+        showTextPopup(translations.popup_failed_heading, translations.popup_failed_search_text, 'shrug');
         break;
       }
       case "badge-found": {
@@ -70,7 +72,7 @@ async function run() {
           const {name} = newItems[0];
           showBadgePopup(name);
         } else {
-          showTextPopup('No...', 'Jste tu správně, ale odznáček už máte.', 'shrug');
+          showTextPopup(translations.popup_neutral_heading, translations.popup_neutral_badge_text, 'shrug');
         }
         // badge can trigger lower limit for skip, check it
         checkSkipHandler();
@@ -78,17 +80,17 @@ async function run() {
       }
       case "puzzles-found": {
         if (newItems.length) {
-          showTextPopup('Hurá!', 'Jste tu správně!', 'get_puzzle');
+          showTextPopup(translations.popup_success_heading, translations.popup_success_search_text, 'get_puzzle');
         } else {
-          showTextPopup('No...', 'Jste tu sice správně, ale už jste tu získali všechno, co šlo.', 'shrug');
+          showTextPopup(translations.popup_neutral_heading, translations.popup_neutral_search_text, 'shrug');
         }
         break;
       }
       case "checkpoint-start-visited": {
         if (newItems.length) {
-          showSelectPopup('Jaké řešení byste chtěli?', newItems, 'get_puzzle');
+          showSelectPopup(translations.popup_checkpoint_select, newItems, 'get_puzzle');
         } else {
-          showTextPopup('Bohužel...', 'Teď žádné řešení nedostanete.', 'shrug');
+          showTextPopup(translations.popup_neutral_heading, translations.popup_neutral_checkpoint_text, 'shrug');
         }
         break;
       }
@@ -96,13 +98,13 @@ async function run() {
     let {items} = await getTeamState(secretPhrase);
     drawInventory(items);
     } catch (e) {
-        alert("Došlo k chybě. Zkuste to znovu a případně kontaktujte organizátory.");
+        alert(translations.error);
         console.error(e);
     }
   }
 
   document.getElementById('skip').onclick = async () => {
-    const validate = window.confirm("Opravdu chcete přeskočit šifru?");
+    const validate = window.confirm(translations.skip_confirmation);
     if (validate) {
       // skip puzzle
       try {
@@ -111,7 +113,7 @@ async function run() {
         // skip used, disable control
         updateSkipControl(false);
       } catch (e) {
-        alert("Došlo k chybě. Zkuste to znovu a případně kontaktujte organizátory.");
+        alert(translations.error);
         console.error(e);
       }
     }
@@ -122,7 +124,7 @@ async function run() {
     try {
       ({allowed} = await checkSkip(secretPhrase));
     } catch (e) {
-      alert("Došlo k chybě. Zkuste to znovu a případně kontaktuje organizátory.");
+      alert(translations.error);
       console.error(e);
     }
     updateSkipControl(allowed);
@@ -146,7 +148,7 @@ async function run() {
       const messages = await fetchMessages(secretPhrase);
       drawMessages(messages);
     } catch (e) {
-        alert("Došlo k chybě při získávání zpráv. Obnovte stránku a případně kontaktujte organizátory.");
+        alert(translations.error_messages);
         console.error(e);
     }
   }
@@ -157,8 +159,7 @@ async function run() {
   }
 
   function showBadgePopup(name: string) {
-    const message = 'Řešení je správně, získali jste za něj odznáček.';
-    showTextPopup('Hurá!', message, name as BadgeClass);
+    showTextPopup(translations.popup_success_heading, translations.popup_success_badge_text, name as BadgeClass);
   }
 
 
@@ -173,7 +174,7 @@ async function run() {
         const newItems = await skipStartPuzzle(data, secretPhrase);
         drawInventory(newItems);
       } catch (e) {
-        alert("Došlo k chybě. Zkuste to znovu a případně kontaktujte organizátory.");
+        alert(translations.error);
         console.error(e);
       }
   }
@@ -285,7 +286,7 @@ async function run() {
     if (!messagesElements) {
       messagesElements =`
         <div>
-          <p>Tady se můžou objevit zprávy od organizátorů.</p>
+          <p>${translations.no_messages_yet}</p>
         </div>
       `
     }
@@ -335,8 +336,18 @@ async function run() {
     const bonuses = items
       .map(({url, description}) => `<li><a href="${url}" target="_blank">${description}</a>`);
 
-    document.querySelector('#bonuses>#bonuses-list').innerHTML = `<ul>${bonuses.join('')}</ul>`;
+    if (bonuses.length > 0) {
+      document.querySelector('#bonuses>#bonuses-list').innerHTML = `<ul>${bonuses.join('')}</ul>`;
+    }
+  }
 
+  function drawTranslations(translations: { [key: string]: string }) {
+    for (const [id, val] of Object.entries(translations)) {
+      const el = document.querySelector(`[data-translation='${id}']`);
+      if (el) {
+        el.textContent = val;
+      }
+    }
   }
 
   // Attach debugging current node function for teams in troubles
