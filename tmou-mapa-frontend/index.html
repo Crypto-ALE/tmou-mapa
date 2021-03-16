@@ -26,10 +26,10 @@
     <h1>iTmou</h1>
   </div>
   {% if gameFinished %}
-    <div id="flash" class="wrong">Hra už skončila. Můžete se procházet po mapě, ale nic už nezískáte.</div>
+    <div id="flash" class="wrong" data-translation="flash_game_finished"></div>
   {% endif %}
   <div id="header_right">
-    <span id="team">Přihlášený tým: <span id="teamName">teamName</span></span>
+    <span id="team" data-translation="team"></span> <span id="teamName"></span>
     {% if not secretPhrase %}
         | <a href="{{main_game_url}}/logout">Logout</a>
     {% endif %}
@@ -40,28 +40,28 @@
 
     <div id="panel">
       <div class="section" id="puzzles">
-        <h2>Zadání šifer</h2>
+        <h2 data-translation="section_puzzles"></h2>
         <div id="puzzles-list" class="items">
-          <p>Zatím jste si žádné zadání nevyzvedli.</p>
+          <p data-translation="no_puzzles_yet"></p>
         </div>
       </div>
       <div class="section" id="bonuses">
-        <h2>Zadání bonusů</h2>
+        <h2 data-translation="section_bonuses"></h2>
         <div id="bonuses-list" class="items">
-          <p>Žádný bonus ještě nebyl zveřejněn.</p>
+          <p data-translation="no_bonuses_yet"></p>
         </div>
       </div>
 
       <div class="section" id="navigation">
         <div>
-          <h2>Akce</h2>
+          <h2 data-translation="section_actions"></h2>
           <div id="control">
-            <button id="discover"{% if gameFinished %} disabled="disabled" {% endif %}>Prohledat okolí</button>
-            <button id="skip" class="disabled" disabled="disabled" >Přeskočit šifru</button>
+            <button id="discover"{% if gameFinished %} disabled="disabled" {% endif %} data-translation="action_search"></button>
+            <button id="skip" class="disabled" disabled="disabled" data-translation="action_skip"></button>
           </div>
         </div>
         <div>
-          <h2>Změnit mapu</h2>
+          <h2 data-translation="map_switch"></h2>
           <ul>
             <li><a href="#" id="mapSelectorMO">Mapy.cz - outdoor</a></li>
             <li><a href="#" id="mapSelectorMB">Mapy.cz - základ</a></li>
@@ -71,13 +71,13 @@
       </div>
 
       <div class="section">
-        <h2>Zprávy</h2>
+        <h2 data-translation="section_messages"></h2>
         <div id="messages">
         </div>
       </div>
 
       <div class="section">
-        <h2>Získané odznáčky</h2>
+        <h2 data-translation="section_badges"></h2>
         <div id="badges">
         </div>
       </div>
@@ -93,11 +93,11 @@
         <span class="label"></span>
       </div>
       <div class="popup_text">
-        <h2>Bohužel...</h2>
+        <h2 data-translation="popup_failed_search_heading"></h2>
         <div>
-          <p>Na toto místo žádná šifra nevede, zkuste to jinde.</p>
+          <p data-translation="popup_failed_search_text"></p>
         </div>
-        <button id="continue">Pokračovat</button>
+        <button id="continue" data-translation="popup_action_continue"></button>
       </div>
     </div>
   <!-- END POPUP -->

@@ -608,7 +608,7 @@ fn team_index(
         }
         None => {
             let url: String =
-                env::var("LOGIN_REDIRECT").unwrap_or("https://www.tmou.cz".to_string());
+                env::var("LOGIN_REDIRECT").unwrap();
             Err(Redirect::temporary(url))
         }
     }
@@ -621,7 +621,7 @@ fn index(
 ) -> Template {
     context.insert(
         "main_game_url".to_string(),
-        env::var("MAIN_GAME_URL").unwrap_or("https://www.tmou.cz/22/page".to_string()),
+        env::var("MAIN_GAME_URL").unwrap(),
     );
     match (started, running) {
         (Some(_), Some(_)) => Template::render("index", context),
