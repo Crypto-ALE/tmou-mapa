@@ -12,8 +12,12 @@
               url="https://drive.google.com/file/d/1Q04nbtH7lIjN6mh-MTixo76qsoATYKGJ/view?usp=sharing" level="1">
             <node id="3351512287"/> <!--Kamenice, budova A26-->
         </item>
-        <item name="otazka" type="puzzles" description="Testovací otázka"
+        <item name="krajsky-urad" type="puzzles" description="Testovací otázka I"
               url="https://drive.google.com/file/d/1C4Unt_iGDu9u6jApOJSGSz72Zh4mO4b6/view?usp=sharing" level="1">
+            <node id="3377755085"/> <!--Žerotínovo nám. 3-->
+        </item>
+        <item name="otazka" type="puzzles" description="Testovací otázka"
+              url="https://drive.google.com/drive/folders/1AYqFQbcuxUmHjTkKyWjEPqD6ADGdpy2f" level="1">
             <node id="3351514995"/> <!--Ceitec A35-->
         </item>
         <item name="odpoved" type="puzzles" description="Odpověď na testovací otázku"
@@ -67,10 +71,10 @@
             <node id="3859003082"/>  <!--Bar, který neexistuje, roh Dvořákovi  a Kozí-->
             <node id="3859003083"/>  <!--Bar, který neexistuje, roh Dvořákovi  a Kozí-->
         </item>
-        <item name="pythagorovci" type="puzzles" description="Pythagorovci"
+        <item name="pythagorovci" type="puzzles" description="pythagorovec Johan Semper"
               url="https://drive.google.com/file/d/1BTzLSLPbrZAOnPP5sFRWPWMLIbspk49T/view?usp=sharing" level="1">
             <condition><![CDATA[ has("klub-logiku") ]]></condition>
-            <node id="3692979401"/>  <!--FI, Hrnčířská-->
+            <node id="3692979401"/>  <!--Fakulta informatiky, Hrnčířská-->
         </item>
         <item name="fyzikalni-ustav" type="puzzles" description="Fyzikální ústav"
               url="https://drive.google.com/file/d/1n9EIuN5kyEm7D15VEgBy9j9mDGZf5VpR/view?usp=sharing" level="1">
@@ -86,6 +90,8 @@
             <node id="1643667259"/>  <!--Chemická fakulta, Purkyňova 118-->
             <node id="1643667277"/>  <!--Chemická fakulta, Purkyňova 118-->
             <node id="571644975"/>  <!--Chemická fakulta, Purkyňova 118-->
+            <node id="456306231"/>  <!--Chemická fakulta, Purkyňova 118-->
+            <node id="1154250603"/>  <!--Chemická fakulta, Purkyňova 118-->
         </item>
         <item name="mykolog" type="puzzles" description="Mykolog"
               url="https://drive.google.com/file/d/18GO8ecwXACiQYMHOjYE67NQOmq1dH0IL/view?usp=sharing" level="1">
