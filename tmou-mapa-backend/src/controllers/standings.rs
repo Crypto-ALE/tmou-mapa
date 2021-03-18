@@ -1,5 +1,5 @@
 use std::cmp::Ordering;
-use std::collections::{HashMap, HashSet};
+use std::collections::{HashMap};
 
 use itertools::*;
 
@@ -19,28 +19,21 @@ fn item_vec_to_standing(name: String, its: Vec<ResultItem>) -> api::TeamStanding
     // partition to puzzles, deads, badges; throw away rest (puzzle-fakes)
     let (mut puzzles_vec, non_puzzles): (Vec<ResultItem>, Vec<ResultItem>) =
         its.into_iter().partition(|i| i.type_.eq("puzzles"));
-    let (deads, non_deads): (Vec<ResultItem>, Vec<ResultItem>) =
-        non_puzzles.into_iter().partition(|i| i.type_.eq("dead"));
-    let (badges, _): (Vec<ResultItem>, Vec<ResultItem>) =
-        non_deads.into_iter().partition(|i| i.type_.eq("badge"));
     // badge count is trivial
-    let badge_count = badges.len() as u16;
+    let badge_count = 0;
     // so is start puzzles count
-    let start_puzzles_solved = puzzles_vec.iter().filter(|p| p.level == 1).count() as u16;
-    // convert dead vector to set of dead levels for better use
-    let dead_set: HashSet<i16> = deads.into_iter().map(|d| d.level).collect();
+    let start_puzzles_solved = 0;
     // sort puzzles by time descending so that last puzzle (earliest) with the same level ends up in the hash map
     puzzles_vec.sort_by(|a, b| b.timestamp.cmp(&a.timestamp));
-    let puzzles: HashMap<u16, api::PuzzleResult> = puzzles_vec
+    let puzzles: HashMap<String, api::PuzzleResult> = puzzles_vec
         .into_iter()
         // take all except start
         //.filter(|p| p.level > 0)
         // set dead if dead set does not contain its level
         .map(|p| {
-            (p.level as u16, {
-                let dead = dead_set.contains(&p.level);
+            (p.name, {
                 api::PuzzleResult {
-                    dead,
+                    dead: false,
                     timestamp: p.timestamp,
                 }
             })
@@ -58,60 +51,14 @@ fn item_vec_to_standing(name: String, its: Vec<ResultItem>) -> api::TeamStanding
 fn solved_puzzles_count(ts: &api::TeamStanding) -> usize {
     ts.puzzles
         .iter()
-        .filter(|(k, _)| {
-            ts.puzzles
-                .get(&(*k - 1))
-                .and_then(|p| Some(!p.dead))
-                .or(Some(false))
-                .unwrap()
-        })
         .count()
-}
-
-fn highest_solved_level(ts: &api::TeamStanding) -> Option<(u16, chrono::NaiveDateTime)> {
-    // fortunately, HashMap is O(1)
-    // take all puzzles on level k such that
-    // there is a puzzle on level k-1 and it is solved (no dead on previous)
-    // then select maximum level of such puzzle, and create pair level, timestamp
-    ts.puzzles
-        .iter()
-        .filter(|(k, _)| {
-            ts.puzzles
-                .get(&(*k - 1))
-                .and_then(|p| Some(!p.dead))
-                .or(Some(false))
-                .unwrap()
-        })
-        .max_by_key(|(k, _)| *k)
-        .and_then(|(k, v)| Some((*k, v.timestamp)))
 }
 
 pub fn is_better_team(l: &api::TeamStanding, r: &api::TeamStanding) -> Ordering {
     match solved_puzzles_count(l).cmp(&solved_puzzles_count(r)) {
-        // more puzzles lower ranking
         Ordering::Greater => Ordering::Less,
         Ordering::Less => Ordering::Greater,
-        _ => {
-            let l_hio = highest_solved_level(l);
-            let r_hio = highest_solved_level(r);
-            match (l_hio, r_hio) {
-                (None, None) => l.name.cmp(&r.name), // neither solved anything: alphabetical
-                (Some(_), None) => Ordering::Less,   // something is always better
-                (None, Some(_)) => Ordering::Greater,
-                (Some(l_hi), Some(r_hi)) => match l_hi.0.cmp(&r_hi.0) {
-                    // higher level lower ranking
-                    Ordering::Greater => Ordering::Less,
-                    Ordering::Less => Ordering::Greater,
-                    _ => match l_hi.1.cmp(&r_hi.1) {
-                        // lower time lower ranking
-                        Ordering::Less => Ordering::Less,
-                        Ordering::Greater => Ordering::Greater,
-                        // alphabetical
-                        _ => l.name.cmp(&r.name),
-                    },
-                },
-            }
-        }
+        _ => Ordering::Equal
     }
 }
 

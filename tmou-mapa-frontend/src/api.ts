@@ -163,7 +163,7 @@ export async function getStandings(): Promise<Standings> {
   const standings = stats_json.standings.map((s: any) => {
     const puzzles = {};
     for (const [k, v] of Object.entries(s.puzzles)) {
-      puzzles[parseInt(k, 10)] = {
+      puzzles[k] = {
         dead: (v as any).dead,
         timestamp: Date.parse((v as any).timestamp+"+00:00")//disgusting hack
       }

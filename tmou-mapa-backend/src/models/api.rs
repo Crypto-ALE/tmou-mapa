@@ -140,7 +140,7 @@ pub struct PuzzleResult {
 pub struct TeamStanding {
     pub rank: u16,
     pub name: String,
-    pub puzzles: HashMap<u16, PuzzleResult>,
+    pub puzzles: HashMap<String, PuzzleResult>,
     pub badge_count: u16,
     pub start_puzzles_solved: u16,
 }
