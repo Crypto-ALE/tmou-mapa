@@ -10,7 +10,7 @@ import {getTeamsPositions, sendMessage, getStandings} from './api';
 const mapInstance = getMap('map', [49.195, 16.609], 15);
 const teamsPositionsLayer = layerGroup();
 teamsPositionsLayer.addTo(mapInstance);
-const colors = ['#ff55ff', '#55ffff', '#00aaaa', '#0000aa', '#aaaaff', '#000000'];
+const colors = ['#ff55ff', '#ff0000', '#00aaaa', '#0000aa', '#aaaaff', '#000000'];
 
 async function run() {
   await updateTeamsPositions();
