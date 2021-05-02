@@ -2,11 +2,11 @@
 extern crate diesel;
 
 mod models;
+mod game_data_reader;
+mod game_data_reader_tests;
 
 use std::env;
-use std::fs::read_to_string;
 
-use chrono::NaiveDateTime;
 use diesel::insert_into;
 use diesel::prelude::*;
 use regex::Regex;
@@ -17,103 +17,9 @@ use models::schema::bonuses::dsl as bonuses;
 use models::schema::items::dsl as items;
 use models::schema::nodes_items::dsl as nodes_items;
 
-fn error<T>(message: &str) -> TmouResult<T> {
-    Err(TmouError {
-        message: message.to_string(),
-        response: 404,
-    })
-}
+use game_data_reader::{read_game_data};
 
-fn err(message: &str) -> TmouError {
-    TmouError {
-        message: message.to_string(),
-        response: 404,
-    }
-}
-
-fn parse_game<'a>(node: roxmltree::Node<'a, 'a>) -> TmouResult<String> {
-    assert!(node.has_tag_name("game"));
-    match node.attribute("name") {
-        Some(a) => Ok(a.to_string()),
-        None => error("game node does not have name"),
-    }
-}
-
-fn parse_item<'a>(node: roxmltree::Node<'a, 'a>) -> TmouResult<(db::Item, Vec<i64>)> {
-    let type_ = node
-        .attribute("type")
-        .ok_or(err("type not found"))?
-        .to_string();
-    let url = node
-        .attribute("url")
-        .ok_or(err("url not found"))?
-        .to_string();
-    let level = node
-        .attribute("level")
-        .and_then(|a| a.parse::<i16>().ok())
-        .ok_or(err("missing or malformed level"))?;
-    let name = node
-        .attribute("name")
-        .ok_or(err("name not found"))?
-        .to_string();
-    let description = node
-        .attribute("description")
-        .ok_or(err("description not found"))?
-        .to_string();
-    let mut nodes = Vec::new();
-    for n in node
-        .children()
-        .filter(|c| c.is_element() && c.has_tag_name("node"))
-    {
-        match n.attribute("id").and_then(|a| a.parse::<i64>().ok()) {
-            Some(id) => nodes.push(id),
-            _ => (),
-        }
-    }
-
-    let condition = node
-        .children()
-        .filter(|c| c.is_element() && c.has_tag_name("condition"))
-        .next()
-        .and_then(|e| Some(e.text()))
-        .and_then(|s| Some(s.unwrap().to_string()));
-
-    Ok((
-        db::Item {
-            type_,
-            url,
-            level,
-            name: name,
-            description: Some(description),
-            condition: condition,
-        },
-        nodes,
-    ))
-}
-
-fn import_items(conn: &mut PgConnection, items_node: &roxmltree::Node) -> TmouResult<()> {
-    let mut db_items = Vec::new();
-    let mut db_nodes_items = Vec::new();
-    for n in items_node.children().filter(|c| c.is_element()) {
-        match parse_item(n) {
-            Ok((item, node_ids)) => {
-                let name = item.name.clone();
-                db_items.push(item);
-                for node_id in node_ids {
-                    db_nodes_items.push(db::NodeToItem {
-                        node_id,
-                        item_name: name.clone(),
-                    })
-                }
-            }
-            Err(e) => println!(
-                "malformed node {}: {}, moving on",
-                n.tag_name().name(),
-                e.message
-            ),
-        }
-    }
-
+fn import_items(conn: &mut PgConnection, db_items: Vec<db::Item>, db_nodes_items: Vec<db::NodeToItem>) -> TmouResult<()> {
     println!("Inserting {} items into db", db_items.len());
     match insert_into(items::items).values(db_items).execute(conn) {
         Err(e) => println!("Failed with {}; continuing...", e.to_string()),
@@ -127,44 +33,7 @@ fn import_items(conn: &mut PgConnection, items_node: &roxmltree::Node) -> TmouRe
     Ok(())
 }
 
-fn parse_bonus<'a>(node: roxmltree::Node<'a, 'a>) -> TmouResult<db::Bonus> {
-    let label = node
-        .attribute("label")
-        .ok_or(err("label not found"))?
-        .to_string();
-    let description = node
-        .attribute("description")
-        .ok_or(err("description not found"))?
-        .to_string();
-    let url = node
-        .attribute("url")
-        .ok_or(err("url not found"))?
-        .to_string();
-    let display_time = node
-        .attribute("display-time")
-        .and_then(|a| NaiveDateTime::parse_from_str(a, "%Y-%m-%dT%H:%M:%S%z").ok())
-        .ok_or(err("missing or malformed display-time"))?;
-    Ok(db::Bonus {
-        label,
-        description: Some(description),
-        url,
-        display_time,
-    })
-}
-
-fn import_bonuses(conn: &mut PgConnection, bonuses_node: &roxmltree::Node) -> TmouResult<()> {
-    let mut db_bonuses = Vec::new();
-    for n in bonuses_node.children().filter(|c| c.is_element()) {
-        match parse_bonus(n) {
-            Ok(bonus) => db_bonuses.push(bonus),
-            Err(e) => println!(
-                "malformed node {}: {}, moving on",
-                n.tag_name().name(),
-                e.message
-            ),
-        }
-    }
-
+fn import_bonuses(conn: &mut PgConnection, db_bonuses: Vec<db::Bonus>) -> TmouResult<()> {
     println!("Inserting {} bonuses into db", db_bonuses.len());
     match insert_into(bonuses::bonuses)
         .values(db_bonuses)
@@ -189,30 +58,11 @@ fn get_db_connection() -> TmouResult<PgConnection> {
 
 fn import_game_data(path: &String) -> TmouResult<()> {
     println!("Reading Game data from {}", path);
-    let xml = read_to_string(path)?;
-    let doc = roxmltree::Document::parse(&xml)?;
-    let game_node = doc.root().first_child().ok_or(TmouError {
-        message: "no root node".to_string(),
-        response: 404,
-    })?;
-    let game_name = parse_game(game_node)?;
-
+    let game_data = read_game_data(path)?;
     let mut conn = get_db_connection()?;
 
-    println!("Parsing data for {}", game_name);
-    let items: Vec<roxmltree::Node> = game_node
-        .children()
-        .filter(|n| n.has_tag_name("items"))
-        .collect();
-    assert_eq!(items.len(), 1);
-    import_items(&mut conn, &items[0])?;
-
-    let bonuses: Vec<roxmltree::Node> = game_node
-        .children()
-        .filter(|n| n.has_tag_name("bonuses"))
-        .collect();
-    assert_eq!(bonuses.len(), 1);
-    import_bonuses(&mut conn, &bonuses[0])?;
+    import_items(&mut conn, game_data.items, game_data.nodes_items)?;
+    import_bonuses(&mut conn, game_data.bonuses)?;
 
     Ok(())
 }
