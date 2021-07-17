@@ -1,10 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <osm>
-  <node id="2786017388" lat="49.1530286" lon="16.6959334" version="1"/>
-  <node id="8421420711" lat="29.9748764" lon="31.1380792"/>
+  <node id="2786017388" lat="49.1530286" lon="16.6959334" version="1">
+  	  <tag k="tag" v="Europe"/>
+  </node>
+  <node id="8421420711" lat="29.9748764" lon="31.1380792">
+  	  <tag k="tag" v="Africa"/>
+  </node>
     <way id="999999000">
   	  <nd ref="2786017388"/>
   	  <nd ref="8421420711"/>
   	  <tag k="highway" v="airway"/>
+  	  <tag k="tag" v="Europe->Africa"/>
     </way>
 </osm>

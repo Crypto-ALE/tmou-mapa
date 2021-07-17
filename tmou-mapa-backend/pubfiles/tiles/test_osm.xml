@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<osm>
+  <node id="666" lat="49.1530286" lon="16.6959334" version="1">
+  </node>
+  <node id="777" lat="29.9748764" lon="31.1380792">
+  	  <tag k="tag" v="Africa"/>
+  </node>
+    <way id="888">
+  	  <nd ref="666"/>
+  	  <nd ref="777"/>
+  	  <tag k="highway" v="airway"/>
+    </way>
+</osm>

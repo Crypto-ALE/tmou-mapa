@@ -17,12 +17,13 @@ use models::db;
 use models::errors::*;
 use models::schema::nodes::dsl as nodes;
 use models::schema::ways_nodes::dsl as ways_nodes;
+use models::schema::ways::dsl as ways;
 use osm_reader::*;
 
-fn import_osm(path: &String) -> TmouResult<()> {
+fn import_osm(path: &String, default_tag: &str) -> TmouResult<()> {
     print!("{}: ", Utc::now());
     println!("Reading OSM data from {}", path);
-    let osm = read_osm_from_file(path)?;
+    let osm = read_osm_from_file(path, default_tag)?;
     let db_nodes: Vec<db::Node> = osm
         .nodes
         .into_iter()
@@ -58,11 +59,11 @@ fn import_osm(path: &String) -> TmouResult<()> {
     }
 
     let mut ways2nodes: Vec<models::db::WaysToNodes> = Vec::new();
-    for (_, w) in osm.ways {
-        for (i, n) in w.nodes.into_iter().enumerate() {
+    for (_, w) in osm.ways.iter() {
+        for (i, n) in w.nodes.iter().enumerate() {
             ways2nodes.push(models::db::WaysToNodes {
                 way_id: w.id,
-                node_id: n,
+                node_id: *n,
                 node_order: i as i16,
             });
         }
@@ -84,12 +85,32 @@ fn import_osm(path: &String) -> TmouResult<()> {
         }
     }
 
+    let ways: Vec<models::db::Way> = osm.ways
+        .into_iter()
+        .map(|(_, w)| models::db::Way{id: w.id, tag: w.tag})
+        .collect();
+
+    print!("{}: ", Utc::now());
+    println!("Inserting {} ways into db", ways.len());
+    for chunk in ways.chunks(chunk_size) {
+        print!("{}: ", Utc::now());
+        println!("Inserting batch...");
+        match insert_into(ways::ways)
+            .values(chunk)
+            .execute(&conn)
+        {
+            Err(e) => println!("Failed with {}; continuing...", e.to_string()),
+            _ => (),
+        }
+    }
+
     Ok(())
 }
 
 fn usage() -> TmouResult<()> {
     println!("Usage:");
     println!("import-osm-data <osm_data_file_path>");
+    println!("import-osm-data <osm_data_file_path> <default_tag>");
     Ok(())
 }
 
@@ -97,7 +118,8 @@ fn main() {
     println!("OSM Data Importer");
     let args: Vec<String> = env::args().collect();
     let res = match args.len() {
-        2 => import_osm(&args[1]),
+        3 => import_osm(&args[1], &args[2]),
+        2 => import_osm(&args[1], ""),
         _ => usage(),
     };
     print!("{}: ", Utc::now());
