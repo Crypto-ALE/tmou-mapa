@@ -99,6 +99,7 @@ fn read_node(n: &roxmltree::Node) -> Option<(i64, Node)> {
             lat,
             lon,
             r#type: "ordinary".to_string(),
+            tag: None, //TODO: get tag as parameter
         },
     ))
 }
@@ -118,5 +119,5 @@ fn read_way(n: &roxmltree::Node) -> Option<(i64, Way)> {
         .filter(|a| a.tag_name().name() == "nd" && a.has_attribute("ref"))
         .map(|a| a.attribute("ref").unwrap().parse::<i64>().unwrap())
         .collect();
-    Some((id, Way { id, nodes }))
+    Some((id, Way { id, nodes, tag:None })) //TODO: get tag as parameter
 }

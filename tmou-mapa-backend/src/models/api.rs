@@ -16,6 +16,7 @@ pub struct Node {
     pub y: f32,
     pub r#type: String,
     pub data: String,
+    pub tag: Option<String>,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -88,6 +89,7 @@ pub struct Phrase {
 pub struct Way {
     pub id: i64,
     pub nodes: Vec<i64>,
+    pub tag: Option<String>,
 }
 
 #[derive(Serialize, Deserialize)]

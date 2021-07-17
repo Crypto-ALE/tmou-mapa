@@ -11,6 +11,7 @@ pub struct Node {
     pub lat: f32,
     pub lon: f32,
     pub type_: String,
+    pub tag: Option<String>,
 }
 
 #[derive(Serialize, Deserialize, Queryable, Insertable, Debug)]
@@ -19,6 +20,13 @@ pub struct WaysToNodes {
     pub way_id: i64,
     pub node_id: i64,
     pub node_order: i16,
+}
+
+#[derive(Serialize, Deserialize, Queryable, Insertable, Debug)]
+#[table_name = "ways"]
+pub struct Way {
+    pub id: i64,
+    pub tag: Option<String>,
 }
 
 impl std::cmp::PartialEq for WaysToNodes // for unique()
@@ -50,6 +58,7 @@ impl std::cmp::PartialOrd for WaysToNodes // for dedup
 pub struct Pois {
     pub nodes: Vec<Node>,
     pub ways_to_nodes: Vec<WaysToNodes>,
+    pub ways: Vec<Way>,
 }
 
 #[derive(Serialize, Deserialize, Clone, Default, Debug, Insertable)]

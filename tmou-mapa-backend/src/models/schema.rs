@@ -44,6 +44,7 @@ table! {
         type_ -> Varchar,
         lat -> Float4,
         lon -> Float4,
+        tag -> Nullable<Varchar>,
     }
 }
 
@@ -74,6 +75,13 @@ table! {
 }
 
 table! {
+    ways (id) {
+        id -> Int8,
+        tag -> Nullable<Varchar>,
+    }
+}
+
+table! {
     ways_nodes (way_id, node_id) {
         way_id -> Int8,
         node_id -> Int8,
@@ -96,5 +104,6 @@ allow_tables_to_appear_in_same_query!(
     nodes_items,
     teams,
     teams_items,
+    ways,
     ways_nodes,
 );

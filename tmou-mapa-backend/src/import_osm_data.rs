@@ -30,6 +30,7 @@ fn import_osm(path: &String) -> TmouResult<()> {
             id: n.id,
             lat: n.lat,
             lon: n.lon,
+            tag: n.tag,
             type_: n.r#type,
         })
         .collect();

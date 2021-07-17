@@ -5,11 +5,13 @@ pub struct Node {
     pub lat: f32,
     pub lon: f32,
     pub r#type: String,
+    pub tag: Option<String>,
 }
 
 pub struct Way {
     pub id: i64,
     pub nodes: Vec<i64>,
+    pub tag: Option<String>,
 }
 
 impl std::cmp::PartialEq for Way // for unique()
