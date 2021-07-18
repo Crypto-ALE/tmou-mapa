@@ -3,7 +3,7 @@
   <node id="666" lat="49.1530286" lon="16.6959334" version="1">
   </node>
   <node id="777" lat="29.9748764" lon="31.1380792">
-  	  <tag k="tag" v="Africa"/>
+  	  <tag k="tag" v="Something"/>
   </node>
     <way id="888">
   	  <nd ref="666"/>
