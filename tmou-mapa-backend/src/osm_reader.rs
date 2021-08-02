@@ -11,12 +11,12 @@ fn get_osm_element<'a>(doc: &'a roxmltree::Document) -> TmouResult<roxmltree::No
     })
 }
 
-pub fn read_osm_from_file(path: &str) -> TmouResult<Osm> {
+pub fn read_osm_from_file(path: &str, tag: &str) -> TmouResult<Osm> {
     let xml = read_to_string(path)?;
-    read_osm_from_string(&xml)
+    read_osm_from_string(&xml, tag)
 }
 
-pub fn read_osm_from_string(xml: &str) -> TmouResult<Osm> {
+pub fn read_osm_from_string(xml: &str, default_tag: &str) -> TmouResult<Osm> {
     let doc = roxmltree::Document::parse(&xml)?;
     let mut osm = Osm {
         nodes: HashMap::new(),
@@ -25,7 +25,7 @@ pub fn read_osm_from_string(xml: &str) -> TmouResult<Osm> {
     for el in get_osm_element(&doc)?.children() {
         match el.tag_name().name() {
             "node" => {
-                let on = read_node(&el);
+                let on = read_node(&el, default_tag);
                 match on {
                     Some(n) => {
                         osm.nodes.insert(n.0, n.1);
@@ -38,7 +38,7 @@ pub fn read_osm_from_string(xml: &str) -> TmouResult<Osm> {
                 }
             }
             "way" => {
-                let on = read_way(&el);
+                let on = read_way(&el, default_tag);
                 match on {
                     Some(n) => {
                         osm.ways.insert(n.0, n.1);
@@ -88,10 +88,21 @@ fn add_node_types(osm: &mut Osm) {
     osm.nodes.retain(|_, n| n.r#type != "pruned".to_string());
 }
 
-fn read_node(n: &roxmltree::Node) -> Option<(i64, Node)> {
+fn read_node(n: &roxmltree::Node, default_tag: &str) -> Option<(i64, Node)> {
     let id = n.attribute("id").and_then(|l| l.parse::<i64>().ok())?;
     let lat = n.attribute("lat").and_then(|l| l.parse::<f32>().ok())?;
     let lon = n.attribute("lon").and_then(|l| l.parse::<f32>().ok())?;
+    let tag_n = n.children().find(|a| 
+        a.tag_name().name() == "tag" &&
+        a.has_attribute("k") &&
+        a.attribute("k").unwrap().to_string() == "tag" &&
+        a.has_attribute("v"));
+    let tag: String = match tag_n
+    {
+        Some(t) => t.attribute("v").unwrap().to_string(),
+        None => String::from(default_tag)
+    };
+
     Some((
         id,
         Node {
@@ -99,11 +110,12 @@ fn read_node(n: &roxmltree::Node) -> Option<(i64, Node)> {
             lat,
             lon,
             r#type: "ordinary".to_string(),
+            tag: Some(tag),
         },
     ))
 }
 
-fn read_way(n: &roxmltree::Node) -> Option<(i64, Way)> {
+fn read_way(n: &roxmltree::Node, default_tag: &str) -> Option<(i64, Way)> {
     let id = n.attribute("id").and_then(|i| i.parse::<i64>().ok())?;
     if !n.children().any(|a| {
         a.tag_name().name() == "tag"
@@ -113,10 +125,21 @@ fn read_way(n: &roxmltree::Node) -> Option<(i64, Way)> {
         return None;
     }
 
+    let tag_n = n.children().find(|a| 
+        a.tag_name().name() == "tag" &&
+        a.has_attribute("k") &&
+        a.attribute("k").unwrap().to_string() == "tag" &&
+        a.has_attribute("v"));
+    let tag: String = match tag_n
+    {
+        Some(t) => t.attribute("v").unwrap().to_string(),
+        None => String::from(default_tag)
+    };
+
     let nodes = n
         .children()
         .filter(|a| a.tag_name().name() == "nd" && a.has_attribute("ref"))
         .map(|a| a.attribute("ref").unwrap().parse::<i64>().unwrap())
         .collect();
-    Some((id, Way { id, nodes }))
+    Some((id, Way { id, nodes, tag: Some(tag) })) //TODO: get tag as parameter
 }

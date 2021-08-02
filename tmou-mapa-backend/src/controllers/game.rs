@@ -1,5 +1,6 @@
 use chrono::Utc;
 use itertools::*;
+use std::collections::HashMap;
 
 use crate::controllers::discovery as disc;
 use crate::controllers::message::send_message_to_team;
@@ -18,15 +19,22 @@ use super::get_player_level;
 ////////////////////////////////////////////////////////////////////
 
 pub fn get_pois_for_position(db: &impl Db, position: i64) -> TmouResult<api::Pois> {
-    let db_pois = db.get_reachable_nodes(position)?;
-    let nodes: Vec<api::Node> = db_pois.nodes.iter().map(|n| n.into()).collect();
-    let ways: Vec<api::Way> = db_pois
-        .ways_to_nodes
+    let db::Pois{nodes:n, ways_to_nodes:w2n, ways:w, } = db.get_reachable_nodes(position)?;
+
+    let nodes: Vec<api::Node> = n.iter().map(|n| n.into()).collect();
+    let w_tags: HashMap<i64, Option<String>> = w
+        .into_iter()
+        .map(|w| (w.id,w.tag))
+        .collect();
+    let ways: Vec<api::Way> = w2n
         .into_iter()
         .map(|w2n| (w2n.way_id, w2n.node_id))
         .into_group_map()
         .into_iter()
-        .map(|(k, v)| api::Way { id: k, nodes: v })
+        .map(|(k, v)| api::Way { 
+            id: k, 
+            nodes: v, 
+            tag: w_tags.get(&k).unwrap_or(&None).clone()})
         .collect();
     Ok(api::Pois { nodes, ways })
 }
@@ -215,6 +223,7 @@ impl From<&db::Node> for api::Node {
             y: value.lat.clone(),
             x: value.lon.clone(),
             r#type: value.type_.clone(),
+            tag: value.tag.clone(),
             data: "<none>".to_string(),
         }
     }

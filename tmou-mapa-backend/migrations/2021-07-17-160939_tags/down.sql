@@ -1,0 +1,2 @@
+ALTER TABLE nodes DROP COLUMN tag;
+DROP TABLE ways;

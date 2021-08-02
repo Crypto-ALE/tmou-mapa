@@ -15,6 +15,7 @@ use crate::models::schema::nodes_items::dsl as nodes_items;
 use crate::models::schema::teams::dsl as teams;
 use crate::models::schema::teams_items::dsl as teams_items;
 use crate::models::schema::ways_nodes::dsl as ways_nodes;
+use crate::models::schema::ways::dsl as ways;
 
 // HOWTO debug query?
 // use diesel::debug_query;
@@ -80,14 +81,21 @@ impl Db for PostgresDb {
             .order_by(ways_nodes::node_order)
             .load(&*self.conn)?;
 
+            
+        let ways: Vec<Way> = ways::ways
+            .filter(ways::id.eq_any(w2n_level_1.iter().map(|w2n| w2n.way_id)))
+            .select((ways::id, ways::tag))
+            .load(&*self.conn)?;
+
         let nodes: Vec<Node> = nodes::nodes
             .filter(nodes::id.eq_any(w2n_level_1.iter().map(|w2n| w2n.node_id)))
-            .select((nodes::id, nodes::lat, nodes::lon, nodes::type_))
+            .select((nodes::id, nodes::lat, nodes::lon, nodes::type_, nodes::tag))
             .load(&*self.conn)?;
 
         Ok(Pois {
             nodes: nodes,
             ways_to_nodes: w2n_level_1,
+            ways: ways
         })
     }
 

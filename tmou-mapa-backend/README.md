@@ -70,12 +70,29 @@ Databáze se plní command-line tooly, které jsou součástí projektu.
 Postup:
 
 1. Smazat data v databázi
-2. Naimportovat mapová data: `{target}/import-osm-data pubfiles/tiles/osmdata.xml`
+2. Naimportovat mapová data: `{target}/import-osm-data <osm_file.xml> <default_tag> `
+   * uzlům a cestám, které nemají svůj tag (viz níže), se přiřadí <default_tag>
+   * pokud není <default_tag> zadaný, použije se prázdný řetězec
 3. Naimportovat šifrová data: `{target}/import-game-data sample_game_data.xml`
 4. Vytvořit v tabulce teams tým
 
 ### Struktura souboru OSM DATA
 Používá se standardní Open Street Map XML, detaily [zde](https://wiki.openstreetmap.org/wiki/OSM_XML).
+Pokud obsahuje uzel nebo cesta v datech element tag s klíčem "tag", použije se při importu jeho hodnota jako tag, jinak se použije <default_tag> z příkazové řádky. Např. pro soubor:
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<osm>
+  <node id="1" lat="49.1" lon="16.6">
+  	  <tag k="tag" v="Kremilek"/>
+  </node>
+  <node id="2" lat="49.2" lon="16.7"/>
+</osm>
+``` 
+
+po zavolání `import-osm-data file.xml Vochomurka` bude mít uzel č. 1 tag `Kremilek` a uzel č. 2 tag `Vochomurka`.
+
+
 
 ### Struktura souboru GAME DATA
 XML popisuje herní prvky, z implementačních důvodů rozdelěné do dvou kategorií (`items`, `bonuses`).
