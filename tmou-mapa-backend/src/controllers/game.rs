@@ -3,6 +3,7 @@ use itertools::*;
 use std::collections::HashMap;
 
 use crate::controllers::discovery as disc;
+use crate::controllers::tmou22 as tmou22;
 use crate::controllers::message::send_message_to_team;
 use crate::controllers::skip;
 use crate::database::db::{Db, MessagesDb};
@@ -57,8 +58,9 @@ fn get_items_for_team(db: &impl Db, id: i32) -> TmouResult<api::Items> {
 
 pub fn get_info(db: &impl Db, team: db::Team) -> TmouResult<api::TeamInfo> {
     let state = get_team_state(db, team.id)?;
-    let pois = get_pois_for_position(db, team.position)?;
+    let pois_raw =get_pois_for_position(db, team.position)?;
     let items = get_items_for_team(db, team.id)?;
+    let pois = tmou22::filter_pois_by_tag(pois_raw, &items)?;
     Ok(api::TeamInfo {
         state: state,
         pois: pois,

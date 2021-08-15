@@ -10,17 +10,7 @@ use crate::models::db;
 #[allow(unused_imports)]
 use crate::models::errors::*;
 #[allow(unused_imports)]
-#[allow(unused)]
-fn item(t: &str, l: i16, n: &str) -> db::Item {
-    db::Item {
-        type_: t.to_string(),
-        url: "Dummy".to_string(),
-        level: l,
-        name: n.to_string(),
-        description: None,
-        condition: None,
-    }
-}
+use super::item;
 
 #[allow(unused)]
 fn team(rank: u16, name: &str, ps: Vec<(u16, bool, u32)>) -> api::TeamStanding {

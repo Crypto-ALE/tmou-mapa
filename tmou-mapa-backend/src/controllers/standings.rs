@@ -10,7 +10,9 @@ use crate::models::errors::*;
 struct ResultItem {
     pub type_: String, // puzzles | badge | message
     pub level: i16,
+    #[allow(unused)]
     pub name: String,
+    #[allow(unused)]
     pub description: String,
     pub timestamp: chrono::NaiveDateTime,
 }
