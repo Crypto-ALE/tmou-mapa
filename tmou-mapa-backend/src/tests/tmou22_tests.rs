@@ -28,6 +28,7 @@ fn way(id: i64, n1: i64, n2: i64, tag: &str) ->api::Way {
     }
 }
 
+#[allow(unused)]
 fn default_pois() -> api::Pois {
     api::Pois{
         nodes: vec![
@@ -271,6 +272,44 @@ fn tmou22_filter_returns_europe_sifra11_for_level0_sifra11() -> TmouResult<()> {
         ways: vec![
             way(1,1,2, "Europe"),
             way(10,1,11, "Sifra11")
+        ]
+    };
+
+    let new_pois = filter_pois_by_tag(pois, &items)?;
+    assert_eq!(new_pois, expected_pois);
+    Ok(())
+}
+
+#[test]
+fn tmou22_filter_returns_consistent_data_on_inconsistent_input() -> TmouResult<()> {
+    let pois = api::Pois{
+        nodes: vec![
+            node(1, "Europe"),
+            node(2, "Europe"),
+            node(3, "Africa"),
+            node(4, "Europe"),
+            node(5, "Africa")
+        ],
+        ways: vec![
+            way(1,1,2, "Europe"),
+            way(2,2,3, "Europe"),
+            way(2,4,5, "Europe")
+        ]
+    };
+
+    let items = api::Items{
+        items: vec![
+            api_item("puzzle", 0, "puzzles-12")
+        ]
+    };
+
+    let expected_pois = api::Pois{
+        nodes: vec![
+            node(1, "Europe"),
+            node(2, "Europe"),
+        ],
+        ways: vec![
+            way(1,1,2, "Europe")
         ]
     };
 

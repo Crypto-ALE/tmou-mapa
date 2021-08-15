@@ -85,7 +85,7 @@ pub struct Phrase {
     pub value: String,
 }
 
-#[derive(Serialize, Deserialize, Debug, PartialEq)]
+#[derive(Serialize, Deserialize, Debug, PartialEq, Eq, Hash)]
 pub struct Way {
     pub id: i64,
     pub nodes: Vec<i64>,

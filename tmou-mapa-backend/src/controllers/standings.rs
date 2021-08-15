@@ -10,10 +10,8 @@ use crate::models::errors::*;
 struct ResultItem {
     pub type_: String, // puzzles | badge | message
     pub level: i16,
-    #[allow(unused)]
-    pub name: String,
-    #[allow(unused)]
-    pub description: String,
+//    pub _name: String,
+//    pub _description: String,
     pub timestamp: chrono::NaiveDateTime,
 }
 
@@ -128,8 +126,8 @@ pub fn calculate_teams_standings(
                 Some(_) => Some(ResultItem {
                     type_: t.type_.unwrap(),
                     level: t.level.unwrap(),
-                    name: t.name.unwrap(),
-                    description: t.description.unwrap(),
+                    //_name: t.name.unwrap(),
+                    //_description: t.description.unwrap(),
                     timestamp: t.timestamp.unwrap(),
                 }),
                 None => None,
