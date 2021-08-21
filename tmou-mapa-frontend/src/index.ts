@@ -10,6 +10,7 @@ import {
 import {Item, Node, way, MessageWithTimestamp, Bonus, BadgeClass} from './types';
 import {discover, getTeamState, moveTeam, fetchMessages, fetchBonuses, skip, checkSkip, skipStartPuzzle} from './api';
 import {translations} from './translation';
+import {config} from './config';
 
 const mapInstance = getMap('map', [49.195, 16.609], 15);
 
@@ -37,6 +38,7 @@ async function run() {
   const latLng: LatLngLiteral = nodes.get(state.position)!.latLng;
   let currentNodeCoords: LatLng = new LatLng(latLng.lat, latLng.lng);
   let currentNode: Circle;
+  let currentNodeColor: string;
 
   const lastNodesAndWays = window.localStorage.getItem('nodesAndWays');
   if (lastNodesAndWays) {
@@ -224,11 +226,13 @@ async function run() {
   function drawNodesAndWays(nodes: Map<string, Node>, ways: Map<string, way>) {
     storeNodesAndWays(nodes, ways);
     if (currentNode) {
-      currentNode.setStyle({color: "#000000b5"});
+      currentNode.setStyle({color: currentNodeColor});
     }
+    
     for (const [id, way] of ways) {
       if (!renderedWays.has(id)) {
-        const l = new Polyline(way, {color: "#00000066", weight: 3, interactive: false});
+      	const color = config.tagColors[way.tag] || '#0085C766';
+        const l = new Polyline(way.latLng, {color, weight: 3, interactive: false});
         lines.push(l);
         l.bringToBack();
         l.addTo(mapInstance);
@@ -243,14 +247,15 @@ async function run() {
           await handleNodeClick(e.target, id);
         }
         const radius = node.type === 'junction' ? 6 : 3;
-        c = circleFactory(nodeCoords, id, "#000000b5", radius, clickHandler);
+      	currentNodeColor = config.tagColors[node.tag] || '#0085C766';
+        c = circleFactory(nodeCoords, id, currentNodeColor, radius, clickHandler);
         c.addTo(mapInstance);
         c.bringToFront();
         renderedNodes.set(id, c);
       }
 
       if (currentNodeCoords.equals(nodeCoords)) {
-        c.setStyle({color: "#FFEC01"});
+        c.setStyle({color: "#ff7b00"});
         currentNode = c;
       }
     }
