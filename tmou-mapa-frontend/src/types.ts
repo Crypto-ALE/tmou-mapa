@@ -22,7 +22,7 @@ export interface Items {
 
 export interface Node {
   latLng: LatLngLiteral,
-  type: "ordinary" | "junction",
+  type: "ordinary" | "junction" | "checkpoint",
   data?: string,
   tag?: string,
 }

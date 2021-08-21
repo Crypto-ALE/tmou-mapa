@@ -1,7 +1,6 @@
 import {getMap, switchToMapyCzBase, switchToMapyCzOutdoor, switchToOSM} from './map';
-import {circleFactory} from "./circle";
+import {circleFactory, squareFactory, MapCircle, MapRectangle} from "./nodes";
 import {
-  Circle,
   LatLng,
   LatLngLiteral,
   LeafletMouseEvent,
@@ -11,13 +10,14 @@ import {Item, Node, way, MessageWithTimestamp, Bonus, BadgeClass} from './types'
 import {discover, getTeamState, moveTeam, fetchMessages, fetchBonuses, skip, checkSkip, skipStartPuzzle} from './api';
 import {translations} from './translation';
 import {config} from './config';
+type MapNode = MapCircle | MapRectangle;
 
 const mapInstance = getMap('map', [49.195, 16.609], 15);
 
 async function run() {
   // Data, init
   const secretPhrase = document.querySelector("body").dataset.secretphrase || null;
-  const renderedNodes = new Map<string, Circle>();
+  const renderedNodes = new Map<string, MapNode>();
   const renderedWays = new Set();
   const localContainer = [];
 
@@ -37,7 +37,7 @@ async function run() {
   const lines: Polyline[] = [];
   const latLng: LatLngLiteral = nodes.get(state.position)!.latLng;
   let currentNodeCoords: LatLng = new LatLng(latLng.lat, latLng.lng);
-  let currentNode: Circle;
+  let currentNode: MapNode;
   let currentNodeColor: string;
 
   const lastNodesAndWays = window.localStorage.getItem('nodesAndWays');
@@ -243,12 +243,17 @@ async function run() {
       const nodeCoords = node.latLng;
       let c = renderedNodes.get(id);
       if (!c) {
+        currentNodeColor = config.tagColors[node.tag] || '#0085C766';
         const clickHandler = async function (e: LeafletMouseEvent) {
           await handleNodeClick(e.target, id);
         }
-        const radius = node.type === 'junction' ? 6 : 3;
-      	currentNodeColor = config.tagColors[node.tag] || '#0085C766';
-        c = circleFactory(nodeCoords, id, currentNodeColor, radius, clickHandler);
+        if (node.type === 'checkpoint') {
+          c = squareFactory(nodeCoords, id, currentNodeColor, clickHandler);
+        }
+        else {
+          const radius = node.type === 'junction' ? 6 : 3;
+          c = circleFactory(nodeCoords, id, currentNodeColor, radius, clickHandler);
+        }
         c.addTo(mapInstance);
         c.bringToFront();
         renderedNodes.set(id, c);
@@ -300,7 +305,7 @@ async function run() {
     messagesEl.innerHTML = messagesElements;
   }
 
-  async function handleNodeClick(node: Circle, nodeId: string) {
+  async function handleNodeClick(node: MapNode, nodeId: string) {
     //mapInstance.setView(node.getLatLng(), mapInstance.getZoom());
     currentNodeCoords = node.getLatLng();
     const {nodes, ways, items} = await moveTeam(nodeId, secretPhrase);
