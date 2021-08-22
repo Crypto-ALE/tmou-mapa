@@ -81,12 +81,5 @@ interface Message {
   type: MessageType;
 }
 
-export interface Skip {
-  allowed: boolean;
-}
-
-export interface SkipResult {
-  newItems: Item[];
-}
 
 export type BadgeClass = 'badge' | 'shrug' | 'get_puzzle';

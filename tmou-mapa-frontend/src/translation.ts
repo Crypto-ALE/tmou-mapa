@@ -24,5 +24,4 @@ export const translations = {
   team: "Přihlášený tým:",
   error: "Došlo k chybě. Zkuste to znovu a případně kontaktujte organizátory.",
   error_messages: "Došlo k chybě při získávání zpráv. Obnovte stránku a případně kontaktujte organizátory.",
-  skip_confirmation: "Opravdu chcete přeskočit šifru?",
 };

@@ -7,10 +7,11 @@ import {
   Polyline
 } from "leaflet";
 import {Item, Node, way, MessageWithTimestamp, BadgeClass} from './types';
-import {discover, getTeamState, moveTeam, fetchMessages, skip, checkSkip, skipStartPuzzle} from './api';
+import {discover, getTeamState, moveTeam, fetchMessages, skipStartPuzzle} from './api';
 import {translations} from './translation';
 import {config} from './config';
 import { initBonuses } from './modules/bonuses/index';
+import { initSkip, checkSkipHandler } from './modules/skip/index';
 
 const mapInstance = getMap('map', [49.195, 16.609], 15);
 type MapNode = MapCircle | MapRectangle;
@@ -18,22 +19,24 @@ type MapNode = MapCircle | MapRectangle;
 async function run() {
   // Data, init
   const secretPhrase = document.querySelector("body").dataset.secretphrase || null;
-  const renderedNodes = new Map<string, MapNode>();
   const bonusesEnabled = (document.querySelector("#bonuses") as HTMLElement)?.dataset.bonusesenabled || false;
-  const renderedWays = new Set();
+  const skipEnabled = (document.querySelector("#skip") as HTMLElement)?.dataset.skipenabled || false;
   const localContainer = [];
 
+  const renderedNodes = new Map<string, MapNode>();
+  const renderedWays = new Set();
   // Check after page load, init
   drawTranslations(translations);
   messagesHandler();
-  checkSkipHandler();
   // Set periodic checks
   setInterval(messagesHandler, 10000);
-  setInterval(checkSkipHandler, 60000);
 
   // MODULES LOADING
   if (bonusesEnabled) {
     await initBonuses(drawTranslations);
+  }
+  if (skipEnabled) {
+    await initSkip(drawTranslations, drawInventory, secretPhrase);
   }
 
   // Find team position, init
@@ -81,7 +84,9 @@ async function run() {
           showTextPopup(translations.popup_neutral_heading, translations.popup_neutral_badge_text, 'shrug');
         }
         // badge can trigger lower limit for skip, check it
-        checkSkipHandler();
+        if (skipEnabled) {
+          checkSkipHandler();
+        }
         break;
       }
       case "puzzles-found": {
@@ -109,45 +114,7 @@ async function run() {
     }
   }
 
-  document.getElementById('skip').onclick = async () => {
-    const validate = window.confirm(translations.skip_confirmation);
-    if (validate) {
-      // skip puzzle
-      try {
-        let {newItems} = await skip(validate, secretPhrase);
-        drawInventory(newItems);
-        // skip used, disable control
-        updateSkipControl(false);
-      } catch (e) {
-        alert(translations.error);
-        console.error(e);
-      }
-    }
-  }
 
-  async function checkSkipHandler() {
-    let allowed: boolean;
-    try {
-      ({allowed} = await checkSkip(secretPhrase));
-    } catch (e) {
-      alert(translations.error);
-      console.error(e);
-    }
-    updateSkipControl(allowed);
-  }
-
-  function updateSkipControl(enable: boolean) {
-    const skipEl = document.getElementById("skip");
-    if (enable) {
-      skipEl.removeAttribute('disabled');
-      skipEl.classList.remove('disabled');
-      skipEl.classList.add('enabled');
-    } else {
-      skipEl.setAttribute('disabled', 'disabled');
-      skipEl.classList.remove('enabled');
-      skipEl.classList.add('disabled');
-    }
-  }
 
   async function messagesHandler() {
     try {

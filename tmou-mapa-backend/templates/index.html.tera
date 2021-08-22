@@ -56,7 +56,9 @@
           <h2 data-translation="section_actions"></h2>
           <div id="control">
             <button id="discover"{% if gameFinished %} disabled="disabled" {% endif %} data-translation="action_search"></button>
-            <button id="skip" class="disabled" disabled="disabled" data-translation="action_skip"></button>
+           {% if skipEnabled == "1" %}
+             {% include "skip" %}
+           {% endif %} 
           </div>
         </div>
         <div>

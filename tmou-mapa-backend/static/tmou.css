@@ -159,7 +159,7 @@ a{
 
 #control {
   display: flex;
-  justify-content: space-between;
+  justify-content: space-evenly;
 }
 
 #control>button {

@@ -624,6 +624,7 @@ fn index(
         env::var("MAIN_GAME_URL").unwrap(),
     );
     context.insert("bonusesEnabled".to_string(), env::var("BONUSES_ENABLED").unwrap_or("0".to_string()));
+    context.insert("skipEnabled".to_string(), env::var("SKIP_ENABLED").unwrap_or("0".to_string()));
     match (started, running) {
         (Some(_), Some(_)) => Template::render("index", context),
         (Some(_), None) => {
