@@ -20,6 +20,7 @@ export default [{
                 { src: 'static/tmou.css', dest: '../tmou-mapa-backend/static/' },
                 { src: 'index.html', dest: '../tmou-mapa-backend/templates/', rename: 'index.html.tera' },
                 { src: 'not_started.html', dest: '../tmou-mapa-backend/templates/', rename: 'not_started.html.tera' },
+                { src: 'src/modules/bonuses/index.html', dest: '../tmou-mapa-backend/templates/', rename: 'bonuses.html.tera' },
             ],
         }),
         typescript(),

@@ -10,7 +10,7 @@ import {Item, Node, way, MessageWithTimestamp, BadgeClass} from './types';
 import {discover, getTeamState, moveTeam, fetchMessages, skip, checkSkip, skipStartPuzzle} from './api';
 import {translations} from './translation';
 import {config} from './config';
-import { bonusesHandler } from './modules/bonuses';
+import { initBonuses } from './modules/bonuses/index';
 
 const mapInstance = getMap('map', [49.195, 16.609], 15);
 type MapNode = MapCircle | MapRectangle;
@@ -31,9 +31,9 @@ async function run() {
   setInterval(messagesHandler, 10000);
   setInterval(checkSkipHandler, 60000);
 
+  // MODULES LOADING
   if (bonusesEnabled) {
-    await bonusesHandler();
-    setInterval(bonusesHandler, 60000);
+    await initBonuses(drawTranslations);
   }
 
   // Find team position, init

@@ -46,6 +46,7 @@ LOGIN_REDIRECT | url | https://www.tmou.cz | Adresa pro přihlášení týmu př
 PROJECT_PATH | string | tmou-mapa-backend | Cesta k adresáři s backendem _pouze Heroku_
 ROCKET_ENV | dev/stage/prod | dev | Specifikace prostředí pro [Rocket](https://rocket.rs/v0.4/guide/configuration/#environment)
 HOST | string | i.tmou.cz | Adresa webu, používaná pro přesměrování z http na https
+BONUSES_ENABLED | string | 1/0 | Zapíná modul pro bonusy (např. iTMOU 2020)
 
 ## Přihlášení týmu
 Tým se může přihlásit dvěma způsoby - buď může využít své přihlášené z webu TMOU nebo může přistupovat na svou url ve tvaru `base-url/{url-tymu}`, kde `url-tymu` odpovídá sloupci `phrase` v databázi. Ve výchozím stavu je toto přihlášení přes url považování za admin přístup a chráněno stejným přihlášením.
