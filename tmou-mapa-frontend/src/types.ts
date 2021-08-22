@@ -51,11 +51,6 @@ export interface MessageWithTimestamp extends Message {
   timestamp: unix_timestamp;
 }
 
-export interface Bonus {
-  url: string,
-  label: string,
-  description: string,
-}
 
 export type MessageType = "success" | "fail" | "info";
 

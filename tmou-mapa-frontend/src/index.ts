@@ -6,31 +6,35 @@ import {
   LeafletMouseEvent,
   Polyline
 } from "leaflet";
-import {Item, Node, way, MessageWithTimestamp, Bonus, BadgeClass} from './types';
-import {discover, getTeamState, moveTeam, fetchMessages, fetchBonuses, skip, checkSkip, skipStartPuzzle} from './api';
+import {Item, Node, way, MessageWithTimestamp, BadgeClass} from './types';
+import {discover, getTeamState, moveTeam, fetchMessages, skip, checkSkip, skipStartPuzzle} from './api';
 import {translations} from './translation';
 import {config} from './config';
-type MapNode = MapCircle | MapRectangle;
+import { bonusesHandler } from './modules/bonuses';
 
 const mapInstance = getMap('map', [49.195, 16.609], 15);
+type MapNode = MapCircle | MapRectangle;
 
 async function run() {
   // Data, init
   const secretPhrase = document.querySelector("body").dataset.secretphrase || null;
   const renderedNodes = new Map<string, MapNode>();
+  const bonusesEnabled = (document.querySelector("#bonuses") as HTMLElement)?.dataset.bonusesenabled || false;
   const renderedWays = new Set();
   const localContainer = [];
 
   // Check after page load, init
   drawTranslations(translations);
   messagesHandler();
-  bonusesHandler();
   checkSkipHandler();
   // Set periodic checks
   setInterval(messagesHandler, 10000);
-  setInterval(bonusesHandler, 60000);
   setInterval(checkSkipHandler, 60000);
 
+  if (bonusesEnabled) {
+    await bonusesHandler();
+    setInterval(bonusesHandler, 60000);
+  }
 
   // Find team position, init
   let {nodes, ways, state, items} = await getTeamState(secretPhrase);
@@ -55,7 +59,7 @@ async function run() {
   drawInventory(items);
   drawNodesAndWays(nodes, ways);
   document.getElementById('teamName').innerText = state.name;
-  
+
   // Controls Handlers
   document.getElementById("mapSelectorMO").onclick = switchToMapyCzOutdoor;
   document.getElementById("mapSelectorMB").onclick = switchToMapyCzBase;
@@ -155,10 +159,6 @@ async function run() {
     }
   }
 
-  async function bonusesHandler() {
-    const bonuses = await fetchBonuses();
-    drawBonuses(bonuses);
-  }
 
   function showBadgePopup(name: string) {
     showTextPopup(translations.popup_success_heading, translations.popup_success_badge_text, name as BadgeClass);
@@ -228,7 +228,7 @@ async function run() {
     if (currentNode) {
       currentNode.setStyle({color: currentNodeColor});
     }
-    
+
     for (const [id, way] of ways) {
       if (!renderedWays.has(id)) {
       	const color = config.tagColors[way.tag] || '#0085C766';
@@ -342,14 +342,6 @@ async function run() {
 
   }
 
-  function drawBonuses(items: Bonus[]) {
-    const bonuses = items
-      .map(({url, description}) => `<li><a href="${url}" target="_blank">${description}</a>`);
-
-    if (bonuses.length > 0) {
-      document.querySelector('#bonuses>#bonuses-list').innerHTML = `<ul>${bonuses.join('')}</ul>`;
-    }
-  }
 
   function drawTranslations(translations: { [key: string]: string }) {
     for (const [id, val] of Object.entries(translations)) {
