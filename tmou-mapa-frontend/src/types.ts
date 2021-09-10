@@ -51,11 +51,6 @@ export interface MessageWithTimestamp extends Message {
   timestamp: unix_timestamp;
 }
 
-export interface Bonus {
-  url: string,
-  label: string,
-  description: string,
-}
 
 export type MessageType = "success" | "fail" | "info";
 
@@ -86,12 +81,5 @@ interface Message {
   type: MessageType;
 }
 
-export interface Skip {
-  allowed: boolean;
-}
-
-export interface SkipResult {
-  newItems: Item[];
-}
 
 export type BadgeClass = 'badge' | 'shrug' | 'get_puzzle';

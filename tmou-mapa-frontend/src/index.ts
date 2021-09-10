@@ -6,31 +6,38 @@ import {
   LeafletMouseEvent,
   Polyline
 } from "leaflet";
-import {Item, Node, way, MessageWithTimestamp, Bonus, BadgeClass} from './types';
-import {discover, getTeamState, moveTeam, fetchMessages, fetchBonuses, skip, checkSkip, skipStartPuzzle} from './api';
+import {Item, Node, way, MessageWithTimestamp, BadgeClass} from './types';
+import {discover, getTeamState, moveTeam, fetchMessages, skipStartPuzzle} from './api';
 import {translations} from './translation';
 import {config} from './config';
-type MapNode = MapCircle | MapRectangle;
+import { initBonuses } from './modules/bonuses/index';
+import { initSkip, checkSkipHandler } from './modules/skip/index';
 
 const mapInstance = getMap('map', [49.195, 16.609], 15);
+type MapNode = MapCircle | MapRectangle;
 
 async function run() {
   // Data, init
   const secretPhrase = document.querySelector("body").dataset.secretphrase || null;
-  const renderedNodes = new Map<string, MapNode>();
-  const renderedWays = new Set();
+  const bonusesEnabled = (document.querySelector("#bonuses") as HTMLElement)?.dataset.bonusesenabled || false;
+  const skipEnabled = (document.querySelector("#skip") as HTMLElement)?.dataset.skipenabled || false;
   const localContainer = [];
 
+  const renderedNodes = new Map<string, MapNode>();
+  const renderedWays = new Set();
   // Check after page load, init
   drawTranslations(translations);
   messagesHandler();
-  bonusesHandler();
-  checkSkipHandler();
   // Set periodic checks
   setInterval(messagesHandler, 10000);
-  setInterval(bonusesHandler, 60000);
-  setInterval(checkSkipHandler, 60000);
 
+  // MODULES LOADING
+  if (bonusesEnabled) {
+    await initBonuses(drawTranslations);
+  }
+  if (skipEnabled) {
+    await initSkip(drawTranslations, drawInventory, secretPhrase);
+  }
 
   // Find team position, init
   let {nodes, ways, state, items} = await getTeamState(secretPhrase);
@@ -55,7 +62,7 @@ async function run() {
   drawInventory(items);
   drawNodesAndWays(nodes, ways);
   document.getElementById('teamName').innerText = state.name;
-  
+
   // Controls Handlers
   document.getElementById("mapSelectorMO").onclick = switchToMapyCzOutdoor;
   document.getElementById("mapSelectorMB").onclick = switchToMapyCzBase;
@@ -77,7 +84,9 @@ async function run() {
           showTextPopup(translations.popup_neutral_heading, translations.popup_neutral_badge_text, 'shrug');
         }
         // badge can trigger lower limit for skip, check it
-        checkSkipHandler();
+        if (skipEnabled) {
+          checkSkipHandler();
+        }
         break;
       }
       case "puzzles-found": {
@@ -105,45 +114,7 @@ async function run() {
     }
   }
 
-  document.getElementById('skip').onclick = async () => {
-    const validate = window.confirm(translations.skip_confirmation);
-    if (validate) {
-      // skip puzzle
-      try {
-        let {newItems} = await skip(validate, secretPhrase);
-        drawInventory(newItems);
-        // skip used, disable control
-        updateSkipControl(false);
-      } catch (e) {
-        alert(translations.error);
-        console.error(e);
-      }
-    }
-  }
 
-  async function checkSkipHandler() {
-    let allowed: boolean;
-    try {
-      ({allowed} = await checkSkip(secretPhrase));
-    } catch (e) {
-      alert(translations.error);
-      console.error(e);
-    }
-    updateSkipControl(allowed);
-  }
-
-  function updateSkipControl(enable: boolean) {
-    const skipEl = document.getElementById("skip");
-    if (enable) {
-      skipEl.removeAttribute('disabled');
-      skipEl.classList.remove('disabled');
-      skipEl.classList.add('enabled');
-    } else {
-      skipEl.setAttribute('disabled', 'disabled');
-      skipEl.classList.remove('enabled');
-      skipEl.classList.add('disabled');
-    }
-  }
 
   async function messagesHandler() {
     try {
@@ -155,10 +126,6 @@ async function run() {
     }
   }
 
-  async function bonusesHandler() {
-    const bonuses = await fetchBonuses();
-    drawBonuses(bonuses);
-  }
 
   function showBadgePopup(name: string) {
     showTextPopup(translations.popup_success_heading, translations.popup_success_badge_text, name as BadgeClass);
@@ -228,7 +195,7 @@ async function run() {
     if (currentNode) {
       currentNode.setStyle({color: currentNodeColor});
     }
-    
+
     for (const [id, way] of ways) {
       if (!renderedWays.has(id)) {
       	const color = config.tagColors[way.tag] || '#0085C766';
@@ -342,14 +309,6 @@ async function run() {
 
   }
 
-  function drawBonuses(items: Bonus[]) {
-    const bonuses = items
-      .map(({url, description}) => `<li><a href="${url}" target="_blank">${description}</a>`);
-
-    if (bonuses.length > 0) {
-      document.querySelector('#bonuses>#bonuses-list').innerHTML = `<ul>${bonuses.join('')}</ul>`;
-    }
-  }
 
   function drawTranslations(translations: { [key: string]: string }) {
     for (const [id, val] of Object.entries(translations)) {

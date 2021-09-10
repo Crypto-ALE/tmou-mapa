@@ -18,6 +18,8 @@
 
 {% if secretPhrase %}
   <body data-secretPhrase="{{ secretPhrase }}">
+{% else %}
+  <body>
 {% endif %}
 
 <div class="container">
@@ -45,19 +47,18 @@
           <p data-translation="no_puzzles_yet"></p>
         </div>
       </div>
-      <div class="section" id="bonuses">
-        <h2 data-translation="section_bonuses"></h2>
-        <div id="bonuses-list" class="items">
-          <p data-translation="no_bonuses_yet"></p>
-        </div>
-      </div>
+     {% if bonusesEnabled == "1" %}
+       {% include "bonuses" %}
+     {% endif %} 
 
       <div class="section" id="navigation">
         <div>
           <h2 data-translation="section_actions"></h2>
           <div id="control">
             <button id="discover"{% if gameFinished %} disabled="disabled" {% endif %} data-translation="action_search"></button>
-            <button id="skip" class="disabled" disabled="disabled" data-translation="action_skip"></button>
+           {% if skipEnabled == "1" %}
+             {% include "skip" %}
+           {% endif %} 
           </div>
         </div>
         <div>
