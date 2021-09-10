@@ -5,12 +5,18 @@ pub mod game;
 pub mod message;
 pub mod skip;
 pub mod standings;
+pub mod tmou22;
 
 use std::vec::Vec;
 
-use crate::db::Item;
+use crate::db as db;
+use crate::api as api;
 
 // helper function for controllers
-pub fn get_player_level(items: &Vec<Item>) -> i16 {
+pub fn get_team_level(items: &Vec<db::Item>) -> i16 {
+    items.iter().map(|item| item.level).max().unwrap_or(-1)
+}
+
+pub fn get_team_level_api(items: &Vec<api::Item>) -> i16 {
     items.iter().map(|item| item.level).max().unwrap_or(-1)
 }

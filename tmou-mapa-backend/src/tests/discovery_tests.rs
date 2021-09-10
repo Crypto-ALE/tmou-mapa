@@ -9,18 +9,7 @@ use crate::controllers::discovery as dis;
 use crate::models::db;
 #[allow(unused_imports)]
 use crate::models::errors::*;
-
-#[allow(unused)]
-fn item(t: &str, l: i16, n: &str) -> db::Item {
-    db::Item {
-        type_: t.to_string(),
-        url: "Dummy".to_string(),
-        level: l,
-        name: n.to_string(),
-        description: None,
-        condition: None,
-    }
-}
+use super::item;
 
 #[test]
 fn discovery_returns_unchanged_inventory_when_nothing_found() -> TmouResult<()> {

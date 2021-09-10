@@ -9,7 +9,7 @@ pub struct NodeAction {
     pub nodeId: i64,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, PartialEq)]
 pub struct Node {
     pub id: i64,
     pub x: f32,
@@ -85,14 +85,14 @@ pub struct Phrase {
     pub value: String,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, PartialEq, Eq, Hash)]
 pub struct Way {
     pub id: i64,
     pub nodes: Vec<i64>,
     pub tag: Option<String>,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, PartialEq, Debug)]
 pub struct Pois {
     pub nodes: Vec<Node>,
     pub ways: Vec<Way>,
