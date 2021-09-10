@@ -11,7 +11,7 @@ use crate::models::api;
 use crate::models::db;
 use crate::models::errors::*;
 
-use super::get_player_level;
+use super::get_team_level;
 
 // const FILLOVA_X_BROZIKOVA_NODE_ID: i64 = 3750367566;
 
@@ -129,8 +129,8 @@ pub fn skip_current_puzzle(db: &mut impl Db, team: db::Team) -> TmouResult<api::
         true => {
             let mut items = db.get_team_items(team.id)?;
             // assumption: puzzles always have the highest level
-            let player_level = get_player_level(&items);
-            let dead_item = db.get_dead_item_for_level(player_level)?;
+            let team_level = get_team_level(&items);
+            let dead_item = db.get_dead_item_for_level(team_level)?;
             items.push(dead_item);
             let updated_items = items.iter().map_into().collect();
             db.put_team_items(team.id, items)?;

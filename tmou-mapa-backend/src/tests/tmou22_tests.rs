@@ -81,29 +81,6 @@ fn tmou22_filter_returns_europe_for_level_minus1() -> TmouResult<()> {
     Ok(())
 }
 
-#[test]
-fn tmou22_filter_returns_europe_for_level_0() -> TmouResult<()> {
-    let pois = default_pois();
-    let items = api::Items{
-        items: vec![
-            api_item("puzzle", 0, "puzzles-12")
-        ]
-    };
-
-    let expected_pois =     api::Pois{
-        nodes: vec![
-            node(1, "Europe"),
-            node(2, "Europe"),
-        ],
-        ways: vec![
-            way(1,1,2, "Europe"),
-        ]
-    };
-
-    let new_pois = filter_pois_by_tag(pois, &items)?;
-    assert_eq!(new_pois, expected_pois);
-    Ok(())
-}
 
 #[test]
 fn tmou22_filter_returns_europe_and_africa_for_level1() -> TmouResult<()> {
@@ -255,11 +232,11 @@ fn tmou22_filter_returns_all_for_level4() -> TmouResult<()> {
 }
 
 #[test]
-fn tmou22_filter_returns_europe_sifra11_for_level0_sifra11() -> TmouResult<()> {
+fn tmou22_filter_returns_europe_sifra11_for_level0() -> TmouResult<()> {
     let pois = default_pois();
     let items = api::Items{
         items: vec![
-            api_item("puzzle", 0, "puzzles-11")
+            api_item("puzzle", 0, "puzzles-1")
         ]
     };
 

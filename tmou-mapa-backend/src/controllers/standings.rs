@@ -10,8 +10,6 @@ use crate::models::errors::*;
 struct ResultItem {
     pub type_: String, // puzzles | badge | message
     pub level: i16,
-//    pub _name: String,
-//    pub _description: String,
     pub timestamp: chrono::NaiveDateTime,
 }
 
@@ -33,9 +31,6 @@ fn item_vec_to_standing(name: String, its: Vec<ResultItem>) -> api::TeamStanding
     puzzles_vec.sort_by(|a, b| b.timestamp.cmp(&a.timestamp));
     let puzzles: HashMap<u16, api::PuzzleResult> = puzzles_vec
         .into_iter()
-        // take all except start
-        //.filter(|p| p.level > 0)
-        // set dead if dead set does not contain its level
         .map(|p| {
             (p.level as u16, {
                 let dead = dead_set.contains(&p.level);
@@ -126,8 +121,6 @@ pub fn calculate_teams_standings(
                 Some(_) => Some(ResultItem {
                     type_: t.type_.unwrap(),
                     level: t.level.unwrap(),
-                    //_name: t.name.unwrap(),
-                    //_description: t.description.unwrap(),
                     timestamp: t.timestamp.unwrap(),
                 }),
                 None => None,

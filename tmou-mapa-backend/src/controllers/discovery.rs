@@ -8,7 +8,7 @@ use crate::controllers::skip::get_skips_limits;
 use crate::models::db;
 use crate::models::errors::*;
 
-use super::get_player_level;
+use super::get_team_level;
 
 #[derive(PartialEq, Debug)]
 pub enum EventType {
@@ -37,7 +37,7 @@ pub fn discover_node(
     node_contents: &Items,
 ) -> TmouResult<DiscoveryEvent> {
     // player-level is the maximum level of any item, or -1 at start (eligible for puzzles level 0)
-    let player_level = get_player_level(&inventory);
+    let team_level = get_team_level(&inventory);
 
     // intermediate collections, accumulated during controllers::discovery of all items in node
     let mut event = EventType::Nothing; // last event wins - should be only one
@@ -48,10 +48,10 @@ pub fn discover_node(
         match item.type_.as_ref() {
             "puzzles" => {
                 // all puzzles up to level+1 are visible
-                //let visible = item.level <= player_level + 1;
-                let visible = is_item_visible(item, inventory, player_level)?;
+                //let visible = item.level <= team_level + 1;
+                let visible = is_item_visible(item, inventory, team_level)?;
                 //but only those at least your level are active
-                let active = item.level >= player_level;
+                let active = item.level >= team_level;
                 event = if visible {
                     EventType::PuzzlesFound
                 } else {
@@ -64,7 +64,7 @@ pub fn discover_node(
             }
             "badge" => {
                 // badge on same or lower level is visible
-                let visible = item.level <= player_level;
+                let visible = item.level <= team_level;
                 event = if visible {
                     EventType::BadgeFound
                 } else {
@@ -79,7 +79,7 @@ pub fn discover_node(
                 event = EventType::CheckpointStartVisited;
                 // pass all fake puzzles to the function
                 let new_items =
-                    get_fake_puzzles(time, player_level, &current_inventory, item, &node_contents)?;
+                    get_fake_puzzles(time, team_level, &current_inventory, item, &node_contents)?;
                 // not included in inventory
                 newly_discovered_items.extend(new_items);
             }
@@ -103,7 +103,7 @@ pub fn discover_fake_puzzle(
     puzzle_name: &String,
 ) -> TmouResult<Items> {
     // player-level is the maximum level of any item, or -1 at start (eligible for puzzles level 0)
-    let player_level = inventory.iter().map(|item| item.level).max().unwrap_or(-1);
+    let team_level = inventory.iter().map(|item| item.level).max().unwrap_or(-1);
     let checkpoint = node_contents
         .iter()
         .find(|i| i.type_ == String::from("checkpoint-start"))
@@ -111,7 +111,7 @@ pub fn discover_fake_puzzle(
             message: String::from("not on checkpoint"),
             response: 404,
         })?;
-    let puzzles = get_fake_puzzles(time, player_level, inventory, &checkpoint, &node_contents)?;
+    let puzzles = get_fake_puzzles(time, team_level, inventory, &checkpoint, &node_contents)?;
     match puzzles.iter().find(|i| i.name.eq(puzzle_name)) {
         Some(p) => {
             let mut updated_inventory = inventory.clone();
@@ -253,11 +253,11 @@ pub fn has<'a>(needle: String, haystack: Vec<String>) -> bool {
 pub fn evaluate_condition(
     condition: &str,
     inventory: &Items,
-    player_level: i16,
+    team_level: i16,
 ) -> TmouResult<bool> {
     let items: Vec<String> = inventory.iter().map(|i| i.name.clone()).collect();
     let context = context_map! {
-        "level" => player_level as i64,
+        "level" => team_level as i64,
         "has" => Function::new(Box::new(move |argument| {
             argument.as_string().and_then(|item| Ok(Value::Boolean(items.contains(&item))))
         }))
@@ -267,9 +267,9 @@ pub fn evaluate_condition(
     Ok(res)
 }
 
-fn is_item_visible(item: &db::Item, inventory: &Items, player_level: i16) -> TmouResult<bool> {
+fn is_item_visible(item: &db::Item, inventory: &Items, team_level: i16) -> TmouResult<bool> {
     match &item.condition {
-        Some(cond) => evaluate_condition(&cond, inventory, player_level),
+        Some(cond) => evaluate_condition(&cond, inventory, team_level),
         None => Ok(true),
     }
 }

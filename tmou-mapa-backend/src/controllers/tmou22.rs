@@ -1,23 +1,21 @@
 // file for game-specific logic for TMOU 22
 use crate::models::api;
 use crate::models::errors::*;
-use super::get_player_level_api;
+use super::get_team_level_api;
 use std::collections::HashSet;
 
 pub fn filter_pois_by_tag(pois: api::Pois, items: &api::Items) -> TmouResult<api::Pois>
 {
-    let level = get_player_level_api(&items.items);
-    let has11:bool = items.items.iter().any(|i| ->bool { i.name == "puzzles-11"});
-    let predicate = match (level, has11) {
-        (-1,_) => |s:&String| s == "Europe",
-        (0,false) => |s:&String|s == "Europe",
-        (0,true) => |s:&String| s == "Europe" || s == "Sifra11",
-        (1,_) => |s:&String| s == "Europe" || s == "" || 
-                             s == "Europe,Africa" || s == "Africa",
-        (2,_) => |s:&String| s == "Europe" || s == "" || 
-                             s == "Europe,Africa" || s == "Africa" ||
-                             s == "Africa,Asia" || s == "Asia",
-        (3,_) => |s:&String| s == "Europe" || s == "" || 
+    let level = get_team_level_api(&items.items);
+    let predicate = match level {
+        -1 => |s:&String| s == "Europe",
+        0 => |s:&String| s == "Europe" || s == "Sifra11",
+        1 => |s:&String| s == "Europe" || s == "" || 
+                            s == "Europe,Africa" || s == "Africa",
+        2 => |s:&String| s == "Europe" || s == "" || 
+                            s == "Europe,Africa" || s == "Africa" ||
+                            s == "Africa,Asia" || s == "Asia",
+        3 => |s:&String| s == "Europe" || s == "" || 
                              s == "Europe,Africa" || s == "Africa" ||
                              s == "Africa,Asia" || s == "Asia" ||
                              s == "Asia,Australia" || s == "Australia",
