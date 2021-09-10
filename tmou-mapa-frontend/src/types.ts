@@ -22,11 +22,12 @@ export interface Items {
 
 export interface Node {
   latLng: LatLngLiteral,
-  type: "ordinary" | "junction",
+  type: "ordinary" | "junction" | "checkpoint",
   data?: string,
+  tag?: string,
 }
 
-export type way = LatLngLiteral[][];
+export type way = {latLng: LatLngLiteral[][], tag?: string};
 
 export interface TeamState {
   nodes: Map<string, Node>;

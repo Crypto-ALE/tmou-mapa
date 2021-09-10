@@ -185,10 +185,10 @@ function parseJson(res: any): TeamState {
   const nodes: Map<string, Node> = new Map(
       pois.nodes
           // .filter((node) => node.type === 'junction')
-          .map((node: any) => [node.id, {latLng:{lat: node.y, lng: node.x}, type: node.type, data: node.data}])
+          .map((node: any) => [node.id, {latLng:{lat: node.y, lng: node.x}, type: node.type, data: node.data, tag: node.tag}])
   );
   const ways: Map<string, way> = new Map(
-    pois.ways.map((way: any) => [way.id, way.nodes.map(nodeId => nodes.get(nodeId)!.latLng)])
+    pois.ways.map((way: any) => [way.id, {latLng: way.nodes.map(nodeId => nodes.get(nodeId)!.latLng), tag: way.tag}])
   );
   const parsed_items = timestampMapper(items.items);
   return {nodes, ways, state, items: parsed_items};
