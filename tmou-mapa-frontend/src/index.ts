@@ -79,7 +79,8 @@ async function run() {
       case "badge-found": {
         if (newItems.length) {
           const {name} = newItems[0];
-          showBadgePopup(name);
+          console.log(name, newItems);
+          name.startsWith('teleport') ? showTeleportBadgePopup() : showBadgePopup(name);
         } else {
           showTextPopup(translations.popup_neutral_heading, translations.popup_neutral_badge_text, 'shrug');
         }
@@ -130,6 +131,10 @@ async function run() {
 
   function showBadgePopup(name: string) {
     showTextPopup(translations.popup_success_heading, translations.popup_success_badge_text, name as BadgeClass);
+  }
+
+  function showTeleportBadgePopup() {
+    showTextPopup(translations.popup_success_heading, translations.popup_success_teleport_text, "teleport" as BadgeClass);
   }
 
 
