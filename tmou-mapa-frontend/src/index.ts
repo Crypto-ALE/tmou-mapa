@@ -79,8 +79,7 @@ async function run() {
       case "badge-found": {
         if (newItems.length) {
           const {name} = newItems[0];
-          console.log(name, newItems);
-          name.startsWith('teleport') ? showTeleportBadgePopup() : showBadgePopup(name);
+          name.startsWith('teleport') ? showTeleportBadgePopup() : showBadgePopup(name, name.slice(-2));
         } else {
           showTextPopup(translations.popup_neutral_heading, translations.popup_neutral_badge_text, 'shrug');
         }
@@ -129,12 +128,12 @@ async function run() {
   }
 
 
-  function showBadgePopup(name: string) {
-    showTextPopup(translations.popup_success_heading, translations.popup_success_badge_text, name as BadgeClass);
+  function showBadgePopup(name: string, label?: string) {
+    showTextPopup(translations.popup_success_heading, translations.popup_success_badge_text, name as BadgeClass, label);
   }
 
   function showTeleportBadgePopup() {
-    showTextPopup(translations.popup_success_heading, translations.popup_success_teleport_text, "teleport" as BadgeClass);
+    showTextPopup(translations.popup_success_heading, translations.popup_success_teleport_text, 'get_puzzle' as BadgeClass);
   }
 
 
@@ -157,14 +156,17 @@ async function run() {
     showPopup(heading, form, badgeClass, clickHandler);
   }
 
-  function showTextPopup(heading: string, text: string, badgeClass: BadgeClass) {
-    showPopup(heading, `<p>${text}</p>`, badgeClass);
+  function showTextPopup(heading: string, text: string, badgeClass: BadgeClass, label?: string) {
+    showPopup(heading, `<p>${text}</p>`, badgeClass, null, label);
   }
 
-  function showPopup(heading: string, content: string, badgeClass: BadgeClass, clickHandler?: (e: Event) => void) {
+  function showPopup(heading: string, content: string, badgeClass: BadgeClass, clickHandler?: (e: Event) => void, badgeLabel?: string) {
     document.querySelector('.popup_text>h2').textContent = heading;
     document.querySelector('.popup_text>div').innerHTML = content;
     document.querySelector('#popup .large_badge').classList.add(badgeClass);
+    if (badgeLabel) {
+      document.querySelector('#popup .label').textContent = badgeLabel;
+    }
     document.getElementById('popup').classList.remove('popup__hidden');
     document.getElementById('overlay').classList.remove('overlay__hidden');
     document.getElementById('popup').classList.add('popup__visible');
@@ -304,8 +306,10 @@ async function run() {
       .filter((item) => item.type === "badge")
       .filter((item) => item.description !== "invisible")
       .sort((a, b) => a.timestamp - b.timestamp)
-      .map(({name, description}) => {
-        return `<div class="badge badge-bonus-1" title="${description}"></div>`
+      .map(({name, description, level, timestamp}) => {
+        return `<div class="badge lvl${level}" title="${description}">
+          <span class="time">${formatTimestamp(timestamp)}</span>
+          <span class="label">${description.slice(-2)}</span></div>`
       })
       .join('');
 
