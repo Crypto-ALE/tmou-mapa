@@ -106,8 +106,9 @@ async function run() {
         break;
       }
     }
-    let {items} = await getTeamState(secretPhrase);
+    let {nodes, ways, items} = await getTeamState(secretPhrase);
     drawInventory(items);
+    drawNodesAndWays(nodes, ways);
     } catch (e) {
         alert(translations.error);
         console.error(e);
