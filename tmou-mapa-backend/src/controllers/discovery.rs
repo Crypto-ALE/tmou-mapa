@@ -40,22 +40,21 @@ pub fn discover_node(
     let team_level = get_team_level(&inventory);
 
     // intermediate collections, accumulated during controllers::discovery of all items in node
-    let mut event = EventType::Nothing; // last event wins - should be only one
     let mut current_inventory = inventory[..].to_vec();
     let mut newly_discovered_items = Vec::new();
+    // in some situations, there can be multiple events in one node
+    // last visible event wins, default event is Nothing 
+    let mut event = EventType::Nothing;
 
     for item in node_contents.iter() {
         match item.type_.as_ref() {
             "puzzles" => {
                 // all puzzles up to level+1 are visible
-                //let visible = item.level <= team_level + 1;
                 let visible = is_item_visible(item, inventory, team_level)?;
                 //but only those at least your level are active
                 let active = item.level >= team_level;
-                event = if visible {
-                    EventType::PuzzlesFound
-                } else {
-                    EventType::Nothing
+                if visible {
+                    event = EventType::PuzzlesFound;
                 };
                 if visible && active && !current_inventory.contains(item) {
                     current_inventory.push(item.clone());
@@ -63,12 +62,9 @@ pub fn discover_node(
                 }
             }
             "badge" => {
-                // badge on same or lower level is visible
                 let visible = is_item_visible(item, inventory, team_level)?;
-                event = if visible {
-                    EventType::BadgeFound
-                } else {
-                    EventType::Nothing
+                if visible {
+                    event = EventType::BadgeFound;
                 };
                 if visible && !current_inventory.contains(item) {
                     current_inventory.push(item.clone());
