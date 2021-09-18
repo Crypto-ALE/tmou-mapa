@@ -9,6 +9,7 @@ use crate::controllers::discovery as dis;
 use crate::models::db;
 #[allow(unused_imports)]
 use crate::models::errors::*;
+use crate::tests::item_with_condition;
 use super::item;
 
 #[test]
@@ -266,17 +267,36 @@ fn discovery_returns_final_badge_when_on_proper_level() -> TmouResult<()> {
 }
 
 #[test]
-fn discovery_returns_nothing_when_on_badge_but_insufficient_level() -> TmouResult<()> {
+fn discovery_returns_nothing_when_on_badge_but_condition_not_met() -> TmouResult<()> {
     // ready for a new badge
     let inventory = vec![item("puzzles", 13, "puzzles-13")];
 
     // new badge
-    let node_contents = vec![item("badge", 14, "final-badge")];
+    let node_contents = vec![item_with_condition("badge", 14, "final-badge", "has(\"badge-13\")")];
 
     let evt = dis::discover_node(Utc::now(), &inventory, &node_contents)?;
     assert_eq!(evt.event, dis::EventType::Nothing);
     assert_eq!(evt.updated_inventory, inventory);
     assert_eq!(evt.newly_discovered_items, Vec::new());
+    Ok(())
+}
+
+#[test]
+fn discovery_returns_badge_when_on_badge_condition_is_met() -> TmouResult<()> {
+    // ready for a new badge
+    let inventory = vec![item("puzzles", 13, "puzzles-13")];
+    let expected_inventory = vec![
+        item("puzzles", 13, "puzzles-13"),
+        item_with_condition("badge", 14, "final-badge", "has(\"puzzles-13\")"),
+    ];
+
+    // new badge
+    let node_contents = vec![item_with_condition("badge", 14, "final-badge", "has(\"puzzles-13\")")];
+
+    let evt = dis::discover_node(Utc::now(), &inventory, &node_contents)?;
+    assert_eq!(evt.event, dis::EventType::BadgeFound);
+    assert_eq!(evt.updated_inventory, expected_inventory);
+    assert_eq!(evt.newly_discovered_items,  vec![item_with_condition("badge", 14, "final-badge", "has(\"puzzles-13\")")]);
     Ok(())
 }
 

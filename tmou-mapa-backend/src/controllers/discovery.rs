@@ -64,7 +64,7 @@ pub fn discover_node(
             }
             "badge" => {
                 // badge on same or lower level is visible
-                let visible = item.level <= team_level;
+                let visible = is_item_visible(item, inventory, team_level)?;
                 event = if visible {
                     EventType::BadgeFound
                 } else {
