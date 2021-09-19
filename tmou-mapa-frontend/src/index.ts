@@ -204,6 +204,7 @@ async function run() {
       currentNode.setStyle({color: currentNodeColor});
     }
 
+
     for (const [id, way] of ways) {
       if (!renderedWays.has(id)) {
       	const color = config.tagColors[way.tag] || '#0085C766';
@@ -218,16 +219,16 @@ async function run() {
       const nodeCoords = node.latLng;
       let c = renderedNodes.get(id);
       if (!c) {
-        currentNodeColor = config.tagColors[node.tag] || '#0085C766';
+        const color = config.tagColors[node.tag] || '#0085C766';
         const clickHandler = async function (e: LeafletMouseEvent) {
           await handleNodeClick(e.target, id);
         }
         if (node.type === 'checkpoint') {
-          c = squareFactory(nodeCoords, id, currentNodeColor, clickHandler);
+          c = squareFactory(nodeCoords, id, color, clickHandler);
         }
         else {
           const radius = node.type === 'junction' ? 6 : 3;
-          c = circleFactory(nodeCoords, id, currentNodeColor, radius, clickHandler);
+          c = circleFactory(nodeCoords, id, color, radius, clickHandler);
         }
         c.addTo(mapInstance);
         c.bringToFront();
@@ -235,6 +236,7 @@ async function run() {
       }
 
       if (currentNodeCoords.equals(nodeCoords)) {
+        currentNodeColor = c.getElement().getAttribute('stroke');
         c.setStyle({color: "#ff7b00"});
         currentNode = c;
       }
