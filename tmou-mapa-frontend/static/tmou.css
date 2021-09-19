@@ -247,43 +247,40 @@ button#skip.enabled {
   display: inline-block;
 }
 
-.badge-bonus-1{
-  background-image: url("./img/badge-bonus-1.png")
-  }
+.badge.lvl0, .badge-11, .badge-12, .badge-13, .badge-14 {
+  background-image: url("./img/badge1.png")
+}
+.badge.lvl1, .badge-21, .badge-22, .badge-23 {
+  background-image: url("./img/badge2.png")
+}
+.badge.lvl2, .badge-31, .badge-32  {
+  background-image: url("./img/badge3.png")
+}
+.badge.lvl3, .badge-41 {
+  background-image: url("./img/badge4.png")
+}
+.badge.lvl4, .badge-51 {
+  background-image: url("./img/badge5g.png")
+}
 
-.badge-bonus-2{
-  background-image: url("./img/badge-bonus-2.png")
-  }
-.badge-bonus-3{
-  background-image: url("./img/badge-bonus-3.png")
-  }
-.badge-bonus-4{
-  background-image: url("./img/badge-bonus-4.png")
-  }
-.badge-bonus-5{
-  background-image: url("./img/badge-bonus-5.png")
-  }
-.badge-bonus-6{
-  background-image: url("./img/badge-bonus-6.png")
-  }
-.badge-bonus-7{
-  background-image: url("./img/badge-bonus-7.png")
-  }
-.badge-bonus-8{
-  background-image: url("./img/badge-bonus-8.png")
-  }
-.badge-bonus-9{
-  background-image: url("./img/badge-bonus-9.png")
-  }
-.badge-bonus-10{
-  background-image: url("./img/badge-bonus-10.png")
-  }
-.badge-bonus-11{
-  background-image: url("./img/badge-bonus-11.png")
-  }
-.badge-bonus-12{
-  background-image: url("./img/badge-bonus-12.png")
-  }
+.badge span.time{
+  width:100%;
+  text-align:center;
+  font-weight:300;
+  display:inline-block;
+  font-size: 0.85vw;
+}
+
+.badge span.label{
+  width:100%;
+  text-align:center;
+  color:black;
+  font-weight:300;
+  display:inline-block;
+  line-height:2vw;
+  font-size:3vw;
+  padding-top: 0.2vw;
+}
 
 .large_badge.shrug{
   background-image: url("./img/shrug.png")
@@ -296,6 +293,16 @@ button#skip.enabled {
 
 .large_badge.shrug span{
   display:none;
+}
+
+.large_badge span.label{
+  width:100%;
+  text-align:center;
+  color:black;
+  font-weight:300;
+  display:inline-block;
+  line-height:90px;
+  font-size:90px;
 }
 
 .overlay{

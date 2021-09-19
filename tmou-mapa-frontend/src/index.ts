@@ -79,7 +79,7 @@ async function run() {
       case "badge-found": {
         if (newItems.length) {
           const {name} = newItems[0];
-          showBadgePopup(name);
+          name.startsWith('teleport') ? showTeleportBadgePopup() : showBadgePopup(name, name.slice(-2));
         } else {
           showTextPopup(translations.popup_neutral_heading, translations.popup_neutral_badge_text, 'shrug');
         }
@@ -128,8 +128,12 @@ async function run() {
   }
 
 
-  function showBadgePopup(name: string) {
-    showTextPopup(translations.popup_success_heading, translations.popup_success_badge_text, name as BadgeClass);
+  function showBadgePopup(name: string, label?: string) {
+    showTextPopup(translations.popup_success_heading, translations.popup_success_badge_text, name as BadgeClass, label);
+  }
+
+  function showTeleportBadgePopup() {
+    showTextPopup(translations.popup_success_heading, translations.popup_success_teleport_text, 'get_puzzle' as BadgeClass);
   }
 
 
@@ -152,14 +156,15 @@ async function run() {
     showPopup(heading, form, badgeClass, clickHandler);
   }
 
-  function showTextPopup(heading: string, text: string, badgeClass: BadgeClass) {
-    showPopup(heading, `<p>${text}</p>`, badgeClass);
+  function showTextPopup(heading: string, text: string, badgeClass: BadgeClass, label?: string) {
+    showPopup(heading, `<p>${text}</p>`, badgeClass, null, label);
   }
 
-  function showPopup(heading: string, content: string, badgeClass: BadgeClass, clickHandler?: (e: Event) => void) {
+  function showPopup(heading: string, content: string, badgeClass: BadgeClass, clickHandler?: (e: Event) => void, badgeLabel?: string) {
     document.querySelector('.popup_text>h2').textContent = heading;
     document.querySelector('.popup_text>div').innerHTML = content;
     document.querySelector('#popup .large_badge').classList.add(badgeClass);
+    document.querySelector('#popup .label').textContent = badgeLabel;
     document.getElementById('popup').classList.remove('popup__hidden');
     document.getElementById('overlay').classList.remove('overlay__hidden');
     document.getElementById('popup').classList.add('popup__visible');
@@ -197,6 +202,7 @@ async function run() {
       currentNode.setStyle({color: currentNodeColor});
     }
 
+
     for (const [id, way] of ways) {
       if (!renderedWays.has(id)) {
       	const color = config.tagColors[way.tag] || '#0085C766';
@@ -211,16 +217,16 @@ async function run() {
       const nodeCoords = node.latLng;
       let c = renderedNodes.get(id);
       if (!c) {
-        currentNodeColor = config.tagColors[node.tag] || '#0085C766';
+        const color = config.tagColors[node.tag] || '#0085C766';
         const clickHandler = async function (e: LeafletMouseEvent) {
           await handleNodeClick(e.target, id);
         }
         if (node.type === 'checkpoint') {
-          c = squareFactory(nodeCoords, id, currentNodeColor, clickHandler);
+          c = squareFactory(nodeCoords, id, color, clickHandler);
         }
         else {
           const radius = node.type === 'junction' ? 6 : 3;
-          c = circleFactory(nodeCoords, id, currentNodeColor, radius, clickHandler);
+          c = circleFactory(nodeCoords, id, color, radius, clickHandler);
         }
         c.addTo(mapInstance);
         c.bringToFront();
@@ -228,6 +234,7 @@ async function run() {
       }
 
       if (currentNodeCoords.equals(nodeCoords)) {
+        currentNodeColor = c.getElement().getAttribute('stroke');
         c.setStyle({color: "#ff7b00"});
         currentNode = c;
       }
@@ -299,8 +306,10 @@ async function run() {
       .filter((item) => item.type === "badge")
       .filter((item) => item.description !== "invisible")
       .sort((a, b) => a.timestamp - b.timestamp)
-      .map(({name, description}) => {
-        return `<div class="badge badge-bonus-1" title="${description}"></div>`
+      .map(({name, description, level, timestamp}) => {
+        return `<div class="badge lvl${level}" title="${description}">
+          <span class="time">${formatTimestamp(timestamp)}</span>
+          <span class="label">${description.slice(-2)}</span></div>`
       })
       .join('');
 

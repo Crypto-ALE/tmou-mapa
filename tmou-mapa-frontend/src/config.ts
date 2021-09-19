@@ -12,3 +12,13 @@ export const config = {
 		Sifra11: "#800080",
 	}
 };
+
+
+/*
+
+Blue: 0158FF, 3D7FFF, 2972FF
+				+60,+49; +40,+26
+				+3C,+27; +28, +1A
+Blue new: 0085C7, 3CACC7, 518BFF
+
+*/
