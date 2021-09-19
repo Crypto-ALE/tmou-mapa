@@ -440,38 +440,26 @@ fn format_skip_limit_honors_declinations() -> TmouResult<()> {
 }
 
 #[test]
-fn get_puzzle_welcome_message_returns_nonskippable_before_start() -> TmouResult<()> {
+fn get_puzzle_welcome_message_returns_proper_message_before_start() -> TmouResult<()> {
     let game_state = vec![100, 90, 80, 70];
     let inventory = Vec::new();
     let msg = dis::get_puzzle_welcome_message(game_state, inventory).unwrap();
     assert_eq!(
         msg,
-        String::from("Vítejte před hrou! Jste tu 100. Tuto šifru nelze přeskočit.")
+        String::from("Vítejte před hrou!")
     );
     Ok(())
 }
 
 #[test]
-fn get_puzzle_welcome_message_returns_nonskippable_on_start() -> TmouResult<()> {
+fn get_puzzle_welcome_message_returns_proper_message() -> TmouResult<()> {
     let game_state = vec![100, 90, 80, 70];
     let inventory = vec![item("puzzles", 0, "šifra 0a")];
     let msg = dis::get_puzzle_welcome_message(game_state, inventory).unwrap();
     assert_eq!(
         msg,
-        String::from("Vítejte na startu! Jste tu 100. Tuto šifru nelze přeskočit.")
+        String::from("Vítejte v 1. levelu! Odznáčky ukažte na Náměstí svobody u orloje.")
     );
-    Ok(())
-}
-
-#[test]
-fn get_puzzle_welcome_message_returns_skip_sequence_on_1() -> TmouResult<()> {
-    let game_state = vec![100, 90, 80, 70];
-    let mut item_with_desc = item("puzzles", 1, "puzzle-1");
-    item_with_desc.description = Some("šifra 1".to_string());
-    let inventory = vec![item("puzzles", 0, "puzzles-0"), item_with_desc];
-    let msg = dis::get_puzzle_welcome_message(game_state, inventory).unwrap();
-    assert_eq!(msg, String::from("Vítejte na další šifře! Přibyla vám šifra 1. Jste tu 90. K přeskočení šifry potřebujete, aby šifrou prošlo pro: \
-                                  0 bonusů: 250 týmů; 1 a více bonusů: 200 týmů;"));
     Ok(())
 }
 

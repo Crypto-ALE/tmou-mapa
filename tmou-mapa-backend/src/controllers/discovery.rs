@@ -4,7 +4,6 @@ use std::env;
 use chrono::prelude::*;
 use chrono::{Duration, Utc};
 
-use crate::controllers::skip::get_skips_limits;
 use crate::models::db;
 use crate::models::errors::*;
 
@@ -202,44 +201,22 @@ pub fn format_skip_limit(badges: usize, max_badges: usize, limit: i64) -> String
     format!(" {}: {} týmů;", badges, limit)
 }
 
-pub fn get_puzzle_welcome_message(game_state: Vec<i64>, inventory: Items) -> TmouResult<String> {
+pub fn get_puzzle_welcome_message(_game_state: Vec<i64>, inventory: Items) -> TmouResult<String> {
+    // In current flow, inventory is guaranteed to contain puzzles only; this can change in the future
     let max_puzzle = inventory.iter().max_by_key(|i| i.level);
-    let (welcome, max_puzzle_level): (String, usize) = match max_puzzle {
-        None => (String::from("Vítejte před hrou!"), 0), // defensive; this should not happen
+    let welcome: String = match max_puzzle {
+        None => String::from("Vítejte před hrou!"), // defensive; this should not happen
         Some(x) => match x.level as usize {
-            0 => (String::from("Vítejte na startu!"), 0),
-            15 => (String::from("Gratulujeme k dokončení hry."), 15),
-            l => (
-                format!(
-                    "Vítejte na další šifře! Přibyla vám {}.",
-                    match &x.description {
-                        Some(d) => d,
-                        None => &x.name,
-                    }
-                ),
-                l,
-            ),
+            0 => String::from("Vítejte v 1. levelu! Odznáčky ukažte na Náměstí svobody u orloje."),
+            1 => String::from("Vítejte ve 2. levelu! Odznáčky ukažte ve středu Velké pyramidy."),
+            2 => String::from("Vítejte ve 3. levelu! Odznáčky ukažte v Řetězové bráně u Zdi nářků."),
+            3 => String::from("Vítejte ve 4. levelu! Odznáček ukažte poblíž vlakové stanice Croydon v Melbourne."),
+            4 => String::from("Vítejte v 5. levelu! Získáím posledního odznáčku ukončíte kvalifikaci."),
+            _ => String::from("Stalo se něco neočekávaného, kontaktujte organizátory."),
         },
     };
 
-    let ranking = match max_puzzle_level {
-        x if x >= game_state.len() => 1,
-        x => game_state[x],
-    };
-    let skips_limits = get_skips_limits(max_puzzle_level);
-    let bonus_line = match skips_limits {
-        Some(limits) => limits.iter().enumerate().fold(
-            String::from("K přeskočení šifry potřebujete, aby šifrou prošlo pro:"),
-            |acc, (i, l)| acc + &format_skip_limit(i, limits.len() - 1, *l),
-        ),
-
-        None => match max_puzzle_level {
-            15 => String::from(""),
-            _ => String::from("Tuto šifru nelze přeskočit."),
-        },
-    };
-
-    Ok(format!("{} Jste tu {}. {}", welcome, ranking, bonus_line))
+    Ok(format!("{}", welcome))
 }
 
 pub fn has<'a>(needle: String, haystack: Vec<String>) -> bool {
