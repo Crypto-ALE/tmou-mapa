@@ -248,28 +248,27 @@ button#skip.enabled {
 }
 
 .badge.lvl0, .badge-11, .badge-12, .badge-13, .badge-14 {
-  background-image: url("./img/badge1_yellow.png")
+  background-image: url("./img/badge1.png")
 }
 .badge.lvl1, .badge-21, .badge-22, .badge-23 {
-  background-image: url("./img/badge2_green.png")
+  background-image: url("./img/badge2.png")
 }
 .badge.lvl2, .badge-31, .badge-32  {
-  background-image: url("./img/badge3_blue.png")
+  background-image: url("./img/badge3.png")
 }
 .badge.lvl3, .badge-41 {
-  background-image: url("./img/badge4_red.png")
+  background-image: url("./img/badge4.png")
 }
 .badge.lvl4, .badge-51 {
-  background-image: url("./img/badge5_purple.png")
+  background-image: url("./img/badge5g.png")
 }
 
 .badge span.time{
   width:100%;
   text-align:center;
-  color:black;
   font-weight:300;
   display:inline-block;
-  font-size:18px;
+  font-size: 0.85vw;
 }
 
 .badge span.label{
@@ -280,6 +279,7 @@ button#skip.enabled {
   display:inline-block;
   line-height:2vw;
   font-size:3vw;
+  padding-top: 0.2vw;
 }
 
 .large_badge.shrug{
