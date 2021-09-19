@@ -21,6 +21,17 @@ pub fn item(t: &str, l: i16, n: &str) -> db::Item {
     }
 }
 
+pub fn item_with_condition(t: &str, l: i16, n: &str, c: &str) -> db::Item {
+    db::Item {
+        type_: t.to_string(),
+        url: "Dummy".to_string(),
+        level: l,
+        name: n.to_string(),
+        description: None,
+        condition: Some(c.to_string()),
+    }
+}
+
 #[allow(unused)]
 pub fn api_item(t: &str, l: i16, n: &str) -> api::Item {
     api::Item {

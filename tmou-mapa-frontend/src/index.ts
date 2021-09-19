@@ -106,8 +106,9 @@ async function run() {
         break;
       }
     }
-    let {items} = await getTeamState(secretPhrase);
+    let {nodes, ways, items} = await getTeamState(secretPhrase);
     drawInventory(items);
+    drawNodesAndWays(nodes, ways);
     } catch (e) {
         alert(translations.error);
         console.error(e);
@@ -291,12 +292,12 @@ async function run() {
   function drawInventory(items: Item[]) {
     const puzzles = items
       .filter((item) => item.type === "puzzles" || item.type === "puzzles-fake" || item.type === "dead")
-      .filter((item) => item.description !== "invisible")
       .sort((a, b) => a.level - b.level)
       .map(({url, description}) => `<li><a href="${url}" target="_blank">${description}</a>`);
 
     const badges = items
       .filter((item) => item.type === "badge")
+      .filter((item) => item.description !== "invisible")
       .sort((a, b) => a.timestamp - b.timestamp)
       .map(({name, description}) => {
         return `<div class="badge badge-bonus-1" title="${description}"></div>`
