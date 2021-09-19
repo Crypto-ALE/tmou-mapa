@@ -164,9 +164,7 @@ async function run() {
     document.querySelector('.popup_text>h2').textContent = heading;
     document.querySelector('.popup_text>div').innerHTML = content;
     document.querySelector('#popup .large_badge').classList.add(badgeClass);
-    if (badgeLabel) {
-      document.querySelector('#popup .label').textContent = badgeLabel;
-    }
+    document.querySelector('#popup .label').textContent = badgeLabel;
     document.getElementById('popup').classList.remove('popup__hidden');
     document.getElementById('overlay').classList.remove('overlay__hidden');
     document.getElementById('popup').classList.add('popup__visible');
