@@ -66,14 +66,13 @@ export interface Standings {
 export interface TeamStanding {
   rank: number,
   name: string,
-  puzzles: {
+  badges: {
     [key: number]: {
-      dead: boolean,
-      timestamp: unix_timestamp,
+      [key: number]: unix_timestamp,
     }
   },
   badge_count: number,
-  start_puzzles_solved: number,
+  puzzles_count: number,
 }
 
 interface Message {

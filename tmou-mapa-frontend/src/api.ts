@@ -119,19 +119,19 @@ export async function getStandings(): Promise<Standings> {
   const stats_json = await res.json();
 
   const standings = stats_json.standings.map((s: any) => {
-    const puzzles = {};
-    for (const [k, v] of Object.entries(s.puzzles)) {
-      puzzles[parseInt(k, 10)] = {
-        dead: (v as any).dead,
-        timestamp: Date.parse((v as any).timestamp+"+00:00")//disgusting hack
+    const badges = {};
+    for (const [k, v] of Object.entries(s.badges)) {
+      badges[k] = {};
+      for (const b of v as []) {
+        badges[k][(b as any).name.slice(-2)] = Date.parse((b as any).timestamp+"+00:00")//disgusting hack
       }
     }
     return {
       rank: s.rank,
       name: s.name,
-      puzzles,
+      badges,
       badge_count: s.badge_count,
-      start_puzzles_solved: s.start_puzzles_solved,
+      puzzles_count: s.puzzles_count,
     }
   })
 
