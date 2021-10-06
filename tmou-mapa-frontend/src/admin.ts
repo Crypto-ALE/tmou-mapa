@@ -101,34 +101,33 @@ async function export_results() {
   function gen_header() {
     let s = '<thead><tr><th class="bg-yellow-tmou">Pořadí</th><th class="bg-yellow-tmou">Název týmu</th>';
     for (let i=0; i < 5; i++) {
-      for (let j=1; j <= levelMap[i]; j++) {
-        const puzzleId = (i+1)*10+j;
-        s += `<th class="bg-yellow-tmou">${puzzleId}</th>`;
-      }
+        s += `<th class="bg-yellow-tmou" colspan="${levelMap[i]}">${i+1}. level</th>`;
     }
+        s += `<th class="bg-yellow-tmou"> Čas poslední odpovědi</th>`;
     s += '</tr></thead>';
 
     return s;
   }
 
   let s = '<div class="table-responsive">';
-  s += '<table class="stick-2-left-columns datagrid datagrid-grid w-full" cellspacing="0" cellpadding="0">';
+  s += '<table class="datagrid datagrid-grid w-full" cellspacing="0" cellpadding="0">';
   for (const c of standings.standings) {
     if (c.rank % 50 == 1) {
       s += gen_header();
     }
-    s += `<tr><td class="text-center">${c.rank}</td><td class="text-center">${c.name}</td>`;
+    s += `<tr><td>${c.rank}</td><td>${c.name}</td>`;
     for (let i=0; i < 5; i++) {
       const ts = c.badges[i];
       for (let j=1; j <= levelMap[i]; j++) {
         const puzzleId = (i+1)*10+j;
         if (!ts || !ts[puzzleId]) {
-          s += '<td class="text-center">✗</td>';
+          s += '<td class="text-center bg-fail-tmou">✗</td>';
         } else {
-          s += `<td title="${formatTimestamp(ts[puzzleId])}" class="text-center">✓</td>`;
+          s += `<td title="${formatTimestamp(ts[puzzleId])}" class="text-center bg-success-tmou">✓</td>`;
         }
       }
     }
+    s += `<td class="text-right">${formatTimestamp(c.maxTimestamp)}</td>`;
     s += `</tr>`
   }
     s += '</table></div>';

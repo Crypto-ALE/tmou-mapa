@@ -118,12 +118,16 @@ export async function getStandings(): Promise<Standings> {
   const res = await fetch(`/admin/standings`);
   const stats_json = await res.json();
 
+  let maxTimestamp = 0;
+
   const standings = stats_json.standings.map((s: any) => {
     const badges = {};
     for (const [k, v] of Object.entries(s.badges)) {
       badges[k] = {};
       for (const b of v as []) {
-        badges[k][(b as any).name.slice(-2)] = Date.parse((b as any).timestamp+"+00:00")//disgusting hack
+        const timestamp = Date.parse((b as any).timestamp+"+00:00")//disgusting hack 
+        maxTimestamp = Math.max(maxTimestamp, timestamp);
+        badges[k][(b as any).name.slice(-2)] = timestamp;
       }
     }
     return {
@@ -132,6 +136,7 @@ export async function getStandings(): Promise<Standings> {
       badges,
       badge_count: s.badge_count,
       puzzles_count: s.puzzles_count,
+      maxTimestamp,
     }
   })
 

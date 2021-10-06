@@ -73,6 +73,7 @@ export interface TeamStanding {
   },
   badge_count: number,
   puzzles_count: number,
+  maxTimestamp: unix_timestamp,
 }
 
 interface Message {
