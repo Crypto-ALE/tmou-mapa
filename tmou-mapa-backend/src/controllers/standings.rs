@@ -43,7 +43,7 @@ fn item_vec_to_standing(name: String, its: Vec<ResultItem>) -> api::TeamStanding
             .collect())
         )
         .collect();
-        let badge_count = badges_filtered.values().into_iter().fold(0, |acc, cur| acc + cur.len());
+        let badge_count = badges_filtered.values().fold(0, |acc, cur| acc + cur.len());
 
     api::TeamStanding {
         rank: 0,
