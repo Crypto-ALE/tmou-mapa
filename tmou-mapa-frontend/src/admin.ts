@@ -28,25 +28,38 @@ async function updateTeamsPositions() {
 
 async function updateStandings() {
     const standings = await getStandings();
+    console.log("STANDINGS", standings);
     drawStandings(standings);
 }
 
+  const levelMap = {
+    0: 4,
+    1: 3,
+    2: 2,
+    3: 1,
+    4: 1,
+  }
 
 function drawStandings(standings: Standings) {
   let s = "<table><tr><th>#</th><th>Tým</th>";
-  for (let i=0; i < 16; i++) {
-    s += `<th><span>${i}</span></th>`;
+  for (let i=0; i < 5; i++) {
+    for (let j=1; j <= levelMap[i]; j++) {
+      const puzzleId = (i+1)*10+j;
+      s += `<th><span>${puzzleId}</span></th>`;
+    }
   }
   s += '</tr>';
   for (const t of standings.standings) {
     s += `<tr><td style="text-align: left">${t.rank}</td><td style="text-align: left">${t.name}</td>`;
-    for (let j=0; j < 16; j++) {
-      const ts = t.puzzles[j];
-      if (j == 1) {
-    const start_score = `${t.start_puzzles_solved}/10`;
-        s += `<td title="${ts?.dead ? start_score : ts ? formatTimestamp(ts.timestamp) : ''}">${ ts?.dead ? '💀' : start_score}</td>`;
-      } else {
-      s += `<td title="${ts ? formatTimestamp(ts.timestamp) : ''}">${ ts ? (ts.dead ? '💀' : '✓') : '✗'}</td>`;
+    for (let i=0; i < 5; i++) {
+      const ts = t.badges[i];
+      for (let j=1; j <= levelMap[i]; j++) {
+        const puzzleId = (i+1)*10+j;
+        if (!ts || !ts[puzzleId]) {
+          s += '<td>✗</td>';
+        } else {
+          s += `<td title="${formatTimestamp(ts[puzzleId])}">✓</td>`;
+        }
       }
     }
     s += `</tr>`
@@ -86,34 +99,36 @@ function drawTeamsPositions(teamsPositions: TeamPosition[]) {
 async function export_results() {
   let standings = await getStandings();
   function gen_header() {
-    let s = '<thead><tr><th class="bg-yellow-tmou">Pořadí</th><th class="bg-yellow-tmou">Název týmu</th><th class="bg-yellow-tmou">START</th>';
-    for (let i=1; i < 15; i++) {
-      s += `<th class="bg-yellow-tmou">${i}</th>`;
+    let s = '<thead><tr><th class="bg-yellow-tmou">Pořadí</th><th class="bg-yellow-tmou">Název týmu</th>';
+    for (let i=0; i < 5; i++) {
+        s += `<th class="bg-yellow-tmou" colspan="${levelMap[i]}">${i+1}. level</th>`;
     }
-    s += `<th class="bg-yellow-tmou">Cíl</th><th class="bg-yellow-tmou">Bonusy</th></tr></thead>`;
+        s += `<th class="bg-yellow-tmou"> Čas poslední odpovědi</th>`;
+    s += '</tr></thead>';
 
     return s;
   }
 
   let s = '<div class="table-responsive">';
-  s += '<table class="stick-2-left-columns datagrid datagrid-grid w-full" cellspacing="0" cellpadding="0">';
+  s += '<table class="datagrid datagrid-grid w-full" cellspacing="0" cellpadding="0">';
   for (const c of standings.standings) {
     if (c.rank % 50 == 1) {
       s += gen_header();
     }
-    s += `<tr><td class="text-center">${c.rank}</td><td class="text-center">${c.name}</td>`;
-    for (let i=0; i < 16; i++) {
-      const ts = c.puzzles[i];
-      if (!ts) {
-        s += '<td></td>';
-        continue;
+    s += `<tr><td>${c.rank}</td><td>${c.name}</td>`;
+    for (let i=0; i < 5; i++) {
+      const ts = c.badges[i];
+      for (let j=1; j <= levelMap[i]; j++) {
+        const puzzleId = (i+1)*10+j;
+        if (!ts || !ts[puzzleId]) {
+          s += '<td class="text-center bg-fail-tmou">✗</td>';
+        } else {
+          s += `<td title="${formatTimestamp(ts[puzzleId])}" class="text-center bg-success-tmou">✓</td>`;
+        }
       }
-      const dead_class = ts.dead ? 'bg-fail-tmou' : '';
-      const cell_val = i == 0 ? `${c.start_puzzles_solved}/10` : formatTimestamp(ts.timestamp);
-      s += `<td class="text-center ${dead_class}">${cell_val}</td>`;
     }
-    s += `<td class="text-center">${c.badge_count}</td>`;
-    s += '</tr>';
+    s += `<td class="text-right">${formatTimestamp(c.maxTimestamp)}</td>`;
+    s += `</tr>`
   }
     s += '</table></div>';
   const blob = new Blob([s], {type: "text/plain;charset=utf-8"});

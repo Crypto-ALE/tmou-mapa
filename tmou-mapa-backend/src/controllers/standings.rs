@@ -1,5 +1,5 @@
 use std::cmp::Ordering;
-use std::collections::{HashMap, HashSet};
+use std::collections::{HashMap};
 
 use itertools::*;
 
@@ -11,99 +11,96 @@ struct ResultItem {
     pub type_: String, // puzzles | badge | message
     pub level: i16,
     pub timestamp: chrono::NaiveDateTime,
+    pub name: String,
 }
 
 fn item_vec_to_standing(name: String, its: Vec<ResultItem>) -> api::TeamStanding {
-    // partition to puzzles, deads, badges; throw away rest (puzzle-fakes)
-    let (mut puzzles_vec, non_puzzles): (Vec<ResultItem>, Vec<ResultItem>) =
+    // partition to puzzles, badges; throw away rest (puzzle-fakes)
+    let (puzzles, non_puzzles): (Vec<ResultItem>, Vec<ResultItem>) =
         its.into_iter().partition(|i| i.type_.eq("puzzles"));
-    let (deads, non_deads): (Vec<ResultItem>, Vec<ResultItem>) =
-        non_puzzles.into_iter().partition(|i| i.type_.eq("dead"));
     let (badges, _): (Vec<ResultItem>, Vec<ResultItem>) =
-        non_deads.into_iter().partition(|i| i.type_.eq("badge"));
-    // badge count is trivial
-    let badge_count = badges.len() as u16;
-    // so is start puzzles count
-    let start_puzzles_solved = puzzles_vec.iter().filter(|p| p.level == 1).count() as u16;
-    // convert dead vector to set of dead levels for better use
-    let dead_set: HashSet<i16> = deads.into_iter().map(|d| d.level).collect();
-    // sort puzzles by time descending so that last puzzle (earliest) with the same level ends up in the hash map
-    puzzles_vec.sort_by(|a, b| b.timestamp.cmp(&a.timestamp));
-    let puzzles: HashMap<u16, api::PuzzleResult> = puzzles_vec
+        non_puzzles.into_iter().partition(|i| i.type_.eq("badge") && i.name.starts_with("badge"));
+
+
+
+    // group badges per level
+    let badges_group = badges.into_iter().map(|b| (b.level, b)).into_group_map();
+    // sort badges by time descending so that last puzzle (earliest) with the same level ends up in the hash map
+    let badges_group_f: HashMap<i16, Vec<ResultItem>> = badges_group
         .into_iter()
-        .map(|p| {
-            (p.level as u16, {
-                let dead = dead_set.contains(&p.level);
-                api::PuzzleResult {
-                    dead,
-                    timestamp: p.timestamp,
-                }
-            })
-        })
+        .map(|(l, mut bg)| {bg.sort_by(|a, b| a.timestamp.cmp(&b.timestamp)); (l, bg)})
+        .map(|(l, mut bg)| { 
+            match (l, bg.len()) {
+            (0,4) | (1,3) | (2,2) => {bg.pop(); (l, bg)},
+            _ => (l, bg),
+        }
+    }).collect();
+    let badges_filtered: HashMap<i16, Vec<api::PuzzleResult>> = badges_group_f
+        .into_iter()
+        .map(|(l,bg)| (l,bg
+            .into_iter()
+            .map(|b| api::PuzzleResult{name: b.name, timestamp: b.timestamp})
+            .collect())
+        )
         .collect();
+        let badge_count = badges_filtered.values().fold(0, |acc, cur| acc + cur.len());
+
     api::TeamStanding {
         rank: 0,
         name,
-        puzzles,
-        badge_count,
-        start_puzzles_solved,
+        badges: badges_filtered,
+        badge_count: badge_count as u16,
+        puzzle_count: puzzles.len() as u16,
     }
 }
 
-fn solved_puzzles_count(ts: &api::TeamStanding) -> usize {
-    ts.puzzles
-        .iter()
-        .filter(|(k, _)| {
-            ts.puzzles
-                .get(&(*k - 1))
-                .and_then(|p| Some(!p.dead))
-                .or(Some(false))
-                .unwrap()
-        })
-        .count()
-}
+// fn solved_puzzles_count(ts: &api::TeamStanding) -> usize {
+//     ts.puzzles
+//         .iter()
+//         .filter(|(k, _)| {
+//             ts.puzzles
+//                 .get(&(*k - 1))
+//                 .and_then(|p| Some(!p.dead))
+//                 .or(Some(false))
+//                 .unwrap()
+//         })
+//         .count()
+// }
 
-fn highest_solved_level(ts: &api::TeamStanding) -> Option<(u16, chrono::NaiveDateTime)> {
-    // fortunately, HashMap is O(1)
-    // take all puzzles on level k such that
-    // there is a puzzle on level k-1 and it is solved (no dead on previous)
-    // then select maximum level of such puzzle, and create pair level, timestamp
-    ts.puzzles
+fn last_badge_timestamp(ts: &api::TeamStanding) -> Option<(i16, chrono::NaiveDateTime)> {
+    // take all badges from maximum level
+    // find latest timestamp
+    ts.badges
         .iter()
-        .filter(|(k, _)| {
-            ts.puzzles
-                .get(&(*k - 1))
-                .and_then(|p| Some(!p.dead))
-                .or(Some(false))
-                .unwrap()
-        })
-        .max_by_key(|(k, _)| *k)
-        .and_then(|(k, v)| Some((*k, v.timestamp)))
+        .max_by_key(|(k,_)| *k)
+        .and_then(|(k, v)| v.into_iter().max_by_key(|v| v.timestamp).and_then(|x| Some((*k,x.timestamp))))
 }
 
 pub fn is_better_team(l: &api::TeamStanding, r: &api::TeamStanding) -> Ordering {
-    match solved_puzzles_count(l).cmp(&solved_puzzles_count(r)) {
-        // more puzzles lower ranking
-        Ordering::Greater => Ordering::Less,
+    match l.badge_count.cmp(&r.badge_count) {
+        // more badges, better => lower ranking
+        Ordering::Greater => Ordering::Less, 
         Ordering::Less => Ordering::Greater,
         _ => {
-            let l_hio = highest_solved_level(l);
-            let r_hio = highest_solved_level(r);
-            match (l_hio, r_hio) {
-                (None, None) => l.name.cmp(&r.name), // neither solved anything: alphabetical
-                (Some(_), None) => Ordering::Less,   // something is always better
-                (None, Some(_)) => Ordering::Greater,
-                (Some(l_hi), Some(r_hi)) => match l_hi.0.cmp(&r_hi.0) {
-                    // higher level lower ranking
-                    Ordering::Greater => Ordering::Less,
-                    Ordering::Less => Ordering::Greater,
-                    _ => match l_hi.1.cmp(&r_hi.1) {
-                        // lower time lower ranking
-                        Ordering::Less => Ordering::Less,
-                        Ordering::Greater => Ordering::Greater,
-                        // alphabetical
-                        _ => l.name.cmp(&r.name),
-                    },
+            match l.puzzle_count.cmp(&r.puzzle_count) {
+                // more puzzles, better => lower ranking
+                Ordering::Greater => Ordering::Less, 
+                Ordering::Less => Ordering::Greater,
+                _ => {
+                    let l_timestamp = last_badge_timestamp(l);
+                    let r_timestamp = last_badge_timestamp(r);
+                    match (l_timestamp, r_timestamp) {
+                        (None, None) => l.name.cmp(&r.name), // neither solved anything: alphabetical
+                        (Some(_), None) => Ordering::Less,   // something is always better
+                        (None, Some(_)) => Ordering::Greater,
+                        (Some(l_hi), Some(r_hi)) => match l_hi.1.cmp(&r_hi.1) {
+                            // lower time lower ranking
+                            Ordering::Less => Ordering::Less,
+                            Ordering::Greater => Ordering::Greater,
+                            // same time (impossible), alphabetical ranking
+                            _ => l.name.cmp(&r.name),
+                        },
+                    }
                 },
             }
         }
@@ -121,6 +118,7 @@ pub fn calculate_teams_standings(
                 Some(_) => Some(ResultItem {
                     type_: t.type_.unwrap(),
                     level: t.level.unwrap(),
+                    name: t.name.unwrap(),
                     timestamp: t.timestamp.unwrap(),
                 }),
                 None => None,
@@ -149,9 +147,9 @@ pub fn calculate_teams_standings(
         .map(|(i, v)| api::TeamStanding {
             rank: (i + 1) as u16,
             name: v.name,
-            puzzles: v.puzzles,
+            badges: v.badges,
             badge_count: v.badge_count,
-            start_puzzles_solved: v.start_puzzles_solved,
+            puzzle_count: v.puzzle_count,
         })
         .collect();
     Ok(api::Standings { standings })
