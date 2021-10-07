@@ -210,7 +210,7 @@ pub fn get_puzzle_welcome_message(_game_state: Vec<i64>, inventory: Items) -> Tm
             0 => String::from("Vítejte v 1. levelu! Odznáčky ukažte na Náměstí svobody u orloje."),
             1 => String::from("Vítejte ve 2. levelu! Odznáčky ukažte ve středu Velké pyramidy."),
             2 => String::from("Vítejte ve 3. levelu! Odznáčky ukažte v Řetězové bráně u Zdi nářků."),
-            3 => String::from("Vítejte ve 4. levelu! Odznáček ukažte poblíž vlakové stanice Croydon v Melbourne."),
+            3 => String::from("Vítejte ve 4. levelu! Odznáček ukažte poblíž Opery v Sydney."),
             4 => String::from("Vítejte v 5. levelu! Získáím posledního odznáčku ukončíte kvalifikaci."),
             _ => String::from("Stalo se něco neočekávaného, kontaktujte organizátory."),
         },
