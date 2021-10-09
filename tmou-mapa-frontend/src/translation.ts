@@ -5,6 +5,7 @@ export const translations = {
   popup_neutral_heading: "No...",
   popup_neutral_badge_text: "Jste tu správně, ale odznáček už máte.",
   popup_success_badge_text: "Řešení je správně, získali jste za něj odznáček.",
+  popup_success_badge_finish_text: "Gratulujeme k dokončení kvalifikace.",
   popup_success_teleport_text: "Máte dostatek odznáčků a na mapě se vám otevřela cesta do dalšího levelu.",
   popup_neutral_checkpoint_text: "Teď žádné řešení nedostanete.",
   popup_neutral_search_text: "Jste tu sice správně, ale už jste tu získali všechno, co šlo.",

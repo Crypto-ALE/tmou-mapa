@@ -129,7 +129,8 @@ async function run() {
 
 
   function showBadgePopup(name: string, label?: string) {
-    showTextPopup(translations.popup_success_heading, translations.popup_success_badge_text, name as BadgeClass, label);
+    const popupText = name === 'badge-51' ? translations.popup_success_badge_finish_text : translations.popup_success_badge_text;
+    showTextPopup(translations.popup_success_heading, popupText, name as BadgeClass, label);
   }
 
   function showTeleportBadgePopup() {
