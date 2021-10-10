@@ -118,10 +118,9 @@ export async function getStandings(): Promise<Standings> {
   const res = await fetch(`/admin/standings`);
   const stats_json = await res.json();
 
-  let maxTimestamp = 0;
-
   const standings = stats_json.standings.map((s: any) => {
     const badges = {};
+    let maxTimestamp = 0;
     for (const [k, v] of Object.entries(s.badges)) {
       badges[k] = {};
       for (const b of v as []) {
